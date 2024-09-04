@@ -18,6 +18,26 @@ namespace CMCS.Controllers
             return View();
         }
 
+        public IActionResult Submit()
+        {
+            return View();
+        }
+
+        public IActionResult Claim()
+        {
+            return View();
+        }
+
+        public IActionResult User()
+        {
+            return View();
+        }
+
+        public IActionResult Verify()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

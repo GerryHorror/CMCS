@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "User Profile";
+}
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="user-container">
+    <h2 class="user-title">Edit Your Profile</h2>
+    <form class="user-form">
+        <div class="user-form-group">
+            <label for="userName" class="user-label">Name:</label>
+            <input type="text" id="userName" name="userName" class="user-input" required>
+        </div>
+        <div class="user-form-group">
+            <label for="userEmail" class="user-label">Email:</label>
+            <input type="email" id="userEmail" name="userEmail" class="user-input" required>
+        </div>
+        <div class="user-form-group">
+            <label for="userPhone" class="user-label">Phone:</label>
+            <input type="tel" id="userPhone" name="userPhone" class="user-input">
+        </div>
+        <div class="user-form-group">
+            <label for="userBankName" class="user-label">Bank Name:</label>
+            <input type="text" id="userBankName" name="userBankName" class="user-input">
+        </div>
+        <div class="user-form-group">
+            <label for="userBankAccount" class="user-label">Bank Account Number:</label>
+            <input type="text" id="userBankAccount" name="userBankAccount" class="user-input">
+        </div>
+        <button type="submit" class="user-button">Update Profile</button>
+    </form>
+</div>

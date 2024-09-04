@@ -2,7 +2,30 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="index-container">
+    <h1 class="index-title">Welcome to CMCS</h1>
+    <p class="index-subtitle">Contract Monthly Claim System for Independent Lecturers</p>
+
+    <div class="index-card-container">
+        <div class="index-card">
+            <h3 class="index-card-title">Submit a Claim</h3>
+            <p class="index-card-text">Create a new claim for your contract work</p>
+            <a asp-action="Submit" class="index-card-button">Submit Claim</a>
+        </div>
+        <div class="index-card">
+            <h3 class="index-card-title">View Claims</h3>
+            <p class="index-card-text">Check the status of an existing claim</p>
+            <a asp-action="Claim" class="index-card-button">Claims</a>
+        </div>
+        <div class="index-card">
+            <h3 class="index-card-title">User Profile</h3>
+            <p class="index-card-text">View and update your personal information</p>
+            <a asp-action="User" class="index-card-button">Edit Profile</a>
+        </div>
+        <div class="index-card">
+            <h3 class="index-card-title">Approve Claim</h3>
+            <p class="index-card-text">Approve or verify a claim</p>
+            <a asp-action="Verify" class="index-card-button">Approve Claim</a>
+        </div>
+    </div>
 </div>
