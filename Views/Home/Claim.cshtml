@@ -3,33 +3,61 @@
 }
 
 <div class="claim-container">
-    <h2 class="claim-title">Your Claims</h2>
-    <table class="claim-table">
-        <thead>
-            <tr>
-                <th>Claim ID</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Sample data -->
-            <tr>
-                <td>1001</td>
-                <td>2024-03-15</td>
-                <td>$500.00</td>
-                <td>Pending</td>
-                <td><a href="#" class="claim-action-link">View Details</a></td>
-            </tr>
-            <tr>
-                <td>1002</td>
-                <td>2024-03-20</td>
-                <td>$750.00</td>
-                <td>Approved</td>
-                <td><a href="#" class="claim-action-link">View Details</a></td>
-            </tr>
-        </tbody>
-    </table>
+    <h1 class="claim-title">Your Claims</h1>
+
+    <div class="claim-filters">
+        <input type="text" id="claimSearch" class="claim-search" placeholder="Search claims...">
+        <select id="claimStatus" class="claim-status-filter">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+
+    <div class="claim-table-container">
+        <table class="claim-table">
+            <thead>
+                <tr>
+                    <th>Claim ID</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sample data -->
+                <tr class="claim-row" data-status="Pending">
+                    <td>1001</td>
+                    <td>2024-03-15</td>
+                    <td>R500.00</td>
+                    <td><span class="claim-status claim-status-pending">Pending</span></td>
+                    <td><button class="claim-details-btn">View Details</button></td>
+                </tr>
+                <tr class="claim-row" data-status="Approved">
+                    <td>1002</td>
+                    <td>2024-03-20</td>
+                    <td>R750.00</td>
+                    <td><span class="claim-status claim-status-approved">Approved</span></td>
+                    <td><button class="claim-details-btn">View Details</button></td>
+                </tr>
+                <tr class="claim-row" data-status="Rejected">
+                    <td>1003</td>
+                    <td>2024-03-25</td>
+                    <td>R600.00</td>
+                    <td><span class="claim-status claim-status-rejected">Rejected</span></td>
+                    <td><button class="claim-details-btn">View Details</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="claimModal" class="claim-modal">
+        <div class="claim-modal-content">
+            <span class="claim-modal-close">&times;</span>
+            <h2>Claim Details</h2>
+            <div id="claimDetails"></div>
+        </div>
+    </div>
 </div>
