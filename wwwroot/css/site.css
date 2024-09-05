@@ -228,42 +228,77 @@ h1, h2, h3, h4, h5, h6 {
         }
 
 /* Submit styles */
+
 .submit-container {
     max-width: 600px;
     margin: 0 auto;
     padding: 2rem;
+    background-color: var(--color-light);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .submit-title {
     color: var(--color-primary);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
-.submit-form-group {
-    margin-bottom: 1.5rem;
+.submit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
 }
 
 .submit-label {
-    display: block;
     margin-bottom: 0.5rem;
-    color: var(--color-text);
+    color: var(--color-dark);
+    font-weight: bold;
 }
 
 .submit-input,
 .submit-textarea,
 .submit-file-input {
-    width: 100%;
     padding: 0.5rem;
     border: 1px solid var(--color-secondary);
     border-radius: 4px;
+    font-size: 1rem;
+}
+
+.submit-textarea {
+    resize: vertical;
+}
+
+.input-group {
+    display: flex;
+}
+
+.input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: var(--color-secondary);
+    color: var(--color-light);
+    border: 1px solid var(--color-secondary);
+    border-radius: 4px 0 0 4px;
+}
+
+.input-group .submit-input {
+    border-radius: 0 4px 4px 0;
 }
 
 .submit-button {
-    background-color: var(--color-btn-primary);
-    color: var(--color-btn-text);
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-light);
     border: none;
     border-radius: 4px;
+    font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -271,6 +306,17 @@ h1, h2, h3, h4, h5, h6 {
     .submit-button:hover {
         background-color: var(--color-accent);
     }
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .submit-container {
+        padding: 1rem;
+    }
+}
 
 /* Claim view styles */
 

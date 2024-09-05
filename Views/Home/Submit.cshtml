@@ -3,24 +3,35 @@
 }
 
 <div class="submit-container">
-    <h2 class="submit-title">Submit a New Claim</h2>
-    <form class="submit-form">
-        <div class="submit-form-group">
+    <h1 class="submit-title">Submit a New Claim</h1>
+    <form class="submit-form" asp-action="Submit" method="post" enctype="multipart/form-data">
+
+        <div class="form-group">
             <label for="claimDate" class="submit-label">Claim Date:</label>
-            <input type="date" id="claimDate" name="claimDate" class="submit-input" required>
+            <input type="date" id="claimDate" name="ClaimDate" class="submit-input" required>
         </div>
-        <div class="submit-form-group">
+
+        <div class="form-group">
             <label for="claimAmount" class="submit-label">Claim Amount:</label>
-            <input type="number" id="claimAmount" name="claimAmount" class="submit-input" required>
+            <div class="input-group">
+                <span class="input-group-text">R</span>
+                <input type="number" id="claimAmount" name="ClaimAmount" class="submit-input" step="0.01" min="0" required>
+            </div>
         </div>
-        <div class="submit-form-group">
+
+        <div class="form-group">
             <label for="claimDescription" class="submit-label">Description:</label>
-            <textarea id="claimDescription" name="claimDescription" class="submit-textarea" required></textarea>
+            <textarea id="claimDescription" name="ClaimDescription" class="submit-textarea" rows="4" required></textarea>
         </div>
-        <div class="submit-form-group">
+
+        <div class="form-group">
             <label for="supportingDocument" class="submit-label">Supporting Document:</label>
-            <input type="file" id="supportingDocument" name="supportingDocument" class="submit-file-input">
+            <input type="file" id="supportingDocument" name="SupportingDocument" class="submit-file-input">
+            <small class="form-text text-muted">Upload any relevant documents (PDF, JPG, PNG, max 5MB)</small>
         </div>
-        <button type="submit" class="submit-button">Submit Claim</button>
+
+        <div class="form-group">
+            <button type="submit" class="submit-button">Submit Claim</button>
+        </div>
     </form>
 </div>
