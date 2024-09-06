@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    var userRole = Context.Session.GetString("UserRole");
 }
 
 <main class="index-container">
@@ -11,30 +12,39 @@
     <section class="index-features">
         <h2 class="index-features-title">Quick Actions</h2>
         <div class="index-card-container">
-            <article class="index-card">
-                <i class="fas fa-file-invoice index-card-icon"></i>
-                <h3 class="index-card-title">Submit a Claim</h3>
-                <p class="index-card-text">Create a new claim for your contract work</p>
-                <a asp-action="Submit" class="index-card-button">Submit Claim</a>
-            </article>
-            <article class="index-card">
-                <i class="fas fa-list-alt index-card-icon"></i>
-                <h3 class="index-card-title">View Claims</h3>
-                <p class="index-card-text">Check the status of your existing claims</p>
-                <a asp-action="Claim" class="index-card-button">View Claims</a>
-            </article>
-            <article class="index-card">
-                <i class="fas fa-user-edit index-card-icon"></i>
-                <h3 class="index-card-title">User Profile</h3>
-                <p class="index-card-text">View and update your personal information</p>
-                <a asp-action="User" class="index-card-button">Edit Profile</a>
-            </article>
-            <article class="index-card">
-                <i class="fas fa-check-double index-card-icon"></i>
-                <h3 class="index-card-title">Approve Claims</h3>
-                <p class="index-card-text">Review and approve pending claims</p>
-                <a asp-action="Verify" class="index-card-button">Approve Claims</a>
-            </article>
+            @if (userRole == "lecturer" || userRole == "coordinator" || userRole == "manager")
+            {
+                <article class="index-card">
+                    <i class="fas fa-file-invoice index-card-icon"></i>
+                    <h3 class="index-card-title">Submit a Claim</h3>
+                    <p class="index-card-text">Create a new claim for your contract work</p>
+                    <a asp-action="Submit" class="index-card-button">Submit Claim</a>
+                </article>
+                <article class="index-card">
+                    <i class="fas fa-list-alt index-card-icon"></i>
+                    <h3 class="index-card-title">View Claims</h3>
+                    <p class="index-card-text">Check the status of your existing claims</p>
+                    <a asp-action="Claim" class="index-card-button">View Claims</a>
+                </article>
+            }
+            @if (userRole == "coordinator" || userRole == "manager")
+            {
+                <article class="index-card">
+                    <i class="fas fa-check-double index-card-icon"></i>
+                    <h3 class="index-card-title">Approve Claims</h3>
+                    <p class="index-card-text">Review and approve pending claims</p>
+                    <a asp-action="Verify" class="index-card-button">Approve Claims</a>
+                </article>
+            }
+            @if (userRole != null)
+            {
+                <article class="index-card">
+                    <i class="fas fa-user-edit index-card-icon"></i>
+                    <h3 class="index-card-title">User Profile</h3>
+                    <p class="index-card-text">View and update your personal information</p>
+                    <a asp-action="User" class="index-card-button">Edit Profile</a>
+                </article>
+            }
         </div>
     </section>
 

@@ -15,6 +15,11 @@ namespace CMCS.Controllers
 
         public IActionResult Index()
         {
+            // If user is not logged in, redirect to Login
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserRole")))
+            {
+                return RedirectToAction("Login");
+            }
             return View();
         }
 
@@ -41,6 +46,31 @@ namespace CMCS.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult Login()
+        {
+            // If user is already logged in, redirect to Index
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserRole")))
+            {
+                return RedirectToAction("Index");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(string username, string password, string role)
+        {
+            // Dummy login for prototype purposes only - this will be replaced with a proper login system in the future
+            HttpContext.Session.SetString("UserRole", role);
+            HttpContext.Session.SetString("Username", username);
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

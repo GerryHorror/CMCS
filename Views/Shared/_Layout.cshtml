@@ -37,6 +37,23 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Verify">Approve Claims</a>
                         </li>
                     </ul>
+                    <ul class="navbar-nav">
+                        @if (Context.Session.GetString("UserRole") != null)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-light">Welcome, @Context.Session.GetString("Username") (@Context.Session.GetString("UserRole"))</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-action="Login">Login</a>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
