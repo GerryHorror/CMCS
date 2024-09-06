@@ -32,15 +32,18 @@
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Submit">Submit Claim</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Claim">View Claims</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="User">Edit Profile</a>
-                                </li>
+                                @if (Context.Session.GetString("UserRole") == "lecturer")
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Submit">Submit Claim</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Claim">View Claims</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="User">Edit Profile</a>
+                                    </li>
+                                }
                                 @if (Context.Session.GetString("UserRole") == "coordinator" || Context.Session.GetString("UserRole") == "manager")
                                 {
                                     <li class="nav-item">
