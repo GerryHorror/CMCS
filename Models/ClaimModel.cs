@@ -4,12 +4,14 @@ namespace CMCS.Models
 {
     public class ClaimModel
     {
-        public int ClaimID { get; set; }
-        public int UserID { get; set; }
+        public int ClaimID { get; set; } // This will be the primary key
+        public int UserID { get; set; } // This will be the foreign key
+        public int StatusID { get; set; } // This will be the foreign key
         public decimal ClaimAmount { get; set; }
         public string ClaimType { get; set; }
-        public string ClaimStatus { get; set; }
         public DateTime SubmissionDate { get; set; }
         public DateTime ApprovalDate { get; set; }
+        public decimal HoursWorked { get; set; }
+        public decimal HourlyRate { get; set; }
     }
 }
