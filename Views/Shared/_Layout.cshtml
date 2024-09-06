@@ -21,36 +21,42 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Submit">Submit Claim</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Claim">View Claims</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="User">Edit Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Verify">Approve Claims</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        @if (Context.Session.GetString("UserRole") != null)
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("UserRole")))
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-light">Welcome, @Context.Session.GetString("Username") (@Context.Session.GetString("UserRole"))</span>
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-action="Logout">Logout</a>
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Submit">Submit Claim</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Claim">View Claims</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="User">Edit Profile</a>
+                            </li>
+                            @if (Context.Session.GetString("UserRole") == "coordinator" || Context.Session.GetString("UserRole") == "manager")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Verify">Approve Claims</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("UserRole")))
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link">Welcome, @Context.Session.GetString("Username") (@Context.Session.GetString("UserRole"))</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-action="Login">Login</a>
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
                             </li>
                         }
                     </ul>
