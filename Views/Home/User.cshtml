@@ -1,33 +1,52 @@
 ﻿@{
     ViewData["Title"] = "User Profile";
 }
+
 @{
     ViewData["Title"] = "User Profile";
 }
 
 <div class="user-container">
-    <h2 class="user-title">Edit Your Profile</h2>
-    <form class="user-form">
-        <div class="user-form-group">
-            <label for="userName" class="user-label">Name:</label>
-            <input type="text" id="userName" name="userName" class="user-input" required>
-        </div>
-        <div class="user-form-group">
-            <label for="userEmail" class="user-label">Email:</label>
-            <input type="email" id="userEmail" name="userEmail" class="user-input" required>
-        </div>
-        <div class="user-form-group">
-            <label for="userPhone" class="user-label">Phone:</label>
-            <input type="tel" id="userPhone" name="userPhone" class="user-input">
-        </div>
-        <div class="user-form-group">
-            <label for="userBankName" class="user-label">Bank Name:</label>
-            <input type="text" id="userBankName" name="userBankName" class="user-input">
-        </div>
-        <div class="user-form-group">
-            <label for="userBankAccount" class="user-label">Bank Account Number:</label>
-            <input type="text" id="userBankAccount" name="userBankAccount" class="user-input">
-        </div>
-        <button type="submit" class="user-button">Update Profile</button>
-    </form>
+    <div class="user-card">
+        <h2 class="user-title">Your Profile</h2>
+        <form class="user-form" asp-action="UpdateProfile" method="post">
+            <div class="form-group">
+                <label for="userName" class="user-label">Username:</label>
+                <input type="text" id="userName" name="UserName" class="user-input" value="@ViewBag.UserName" readonly>
+            </div>
+            <div class="form-group">
+                <label for="firstName" class="user-label">First Name:</label>
+                <input type="text" id="firstName" name="FirstName" class="user-input" value="@ViewBag.FirstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName" class="user-label">Last Name:</label>
+                <input type="text" id="lastName" name="LastName" class="user-input" value="@ViewBag.LastName" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="user-label">Email:</label>
+                <input type="email" id="email" name="Email" class="user-input" value="@ViewBag.Email" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber" class="user-label">Phone Number:</label>
+                <input type="tel" id="phoneNumber" name="PhoneNumber" class="user-input" value="@ViewBag.PhoneNumber">
+            </div>
+            <div class="form-group">
+                <label for="bankName" class="user-label">Bank Name:</label>
+                <input type="text" id="bankName" name="BankName" class="user-input" value="@ViewBag.BankName">
+            </div>
+            <div class="form-group">
+                <label for="branchCode" class="user-label">Branch Code:</label>
+                <input type="text" id="branchCode" name="BranchCode" class="user-input" value="@ViewBag.BranchCode">
+            </div>
+            <div class="form-group">
+                <label for="accountNumber" class="user-label">Account Number:</label>
+                <input type="text" id="accountNumber" name="AccountNumber" class="user-input" value="@ViewBag.AccountNumber">
+            </div>
+            <div class="form-group">
+                <label for="address" class="user-label">Address:</label>
+                <textarea id="address" name="Address" class="user-textarea" rows="3">@ViewBag.Address</textarea>
+            </div>
+            <button type="submit" class="user-button">Update Profile</button>
+        </form>
+    </div>
 </div>
