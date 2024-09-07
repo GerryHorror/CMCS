@@ -58,3 +58,27 @@ function initialiseClaimView() {
 document.addEventListener('DOMContentLoaded', function () {
     initialiseClaimView();
 });
+
+/* ********************************************************************************************************************************************************************** */
+
+// Submit view functionality
+
+// This function initialises the submit view functionality. It calculates the claim amount based on the hours worked and hourly rate.
+document.addEventListener('DOMContentLoaded', function () {
+    const hoursWorkedInput = document.getElementById('hoursWorked');
+    const hourlyRateInput = document.getElementById('hourlyRate');
+    const claimAmountInput = document.getElementById('claimAmount');
+
+    // Check if the elements exist before adding event listeners (e.g. the claim amount input is not present on the claim details page)
+    if (hoursWorkedInput && hourlyRateInput && claimAmountInput) {
+        function calculateClaimAmount() {
+            const hoursWorked = parseFloat(hoursWorkedInput.value) || 0;
+            const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
+            const totalAmount = hoursWorked * hourlyRate;
+            claimAmountInput.value = totalAmount.toFixed(2);
+        }
+        // Add event listeners to the hours worked and hourly rate inputs to calculate the claim amount when the user inputs values
+        hoursWorkedInput.addEventListener('input', calculateClaimAmount);
+        hourlyRateInput.addEventListener('input', calculateClaimAmount);
+    }
+});
