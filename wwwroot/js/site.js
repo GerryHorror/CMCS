@@ -194,7 +194,6 @@ function initialiseVerifyView() {
             const action = this.classList.contains('verify-approve-button') ? 'approve' : 'reject';
             const statusCell = row.cells[4].querySelector('.verify-status');
 
-            
             if (action === 'approve') {
                 statusCell.textContent = 'Approved';
                 statusCell.className = 'verify-status verify-status-approved';
@@ -224,4 +223,104 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.querySelector('.verify-container')) {
         initialiseVerifyView();
     }
+
+    // Check if we're on the Manage Lecturers page
+    if (document.querySelector('.manage-lecturers-container')) {
+        initialiseManageLecturers();
+    }
 });
+
+/* ********************************************************************************************************************************************************************** */
+
+// Function for Manage Lecturers view functionality
+
+// This function initialises the Manage Lecturers view functionality. It allows the user to add, edit, and delete lecturers.
+function initialiseManageLecturers() {
+    const form = document.getElementById('lecturerForm');
+    const lecturerTable = document.querySelector('.lecturer-table tbody');
+    const submitButton = document.getElementById('submitButton');
+    const formTitle = document.getElementById('formTitle');
+    let editMode = false;
+
+    // Check if the elements exist before adding event listeners
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Get the values from the form inputs (more fields will be added in the future)
+            const lecturerId = document.getElementById('lecturerId').value;
+            const firstName = document.getElementById('FirstName').value;
+            const lastName = document.getElementById('LastName').value;
+            const email = document.getElementById('Email').value;
+            const phone = document.getElementById('PhoneNumber').value;
+
+            if (editMode) {
+                updateLecturerInTable(lecturerId, firstName, lastName, email, phone);
+            } else {
+                addLecturerToTable(firstName, lastName, email, phone);
+            }
+
+            resetForm();
+        });
+    }
+    // Add event listeners to the edit and delete buttons in the lecturer table to allow the user to edit and delete lecturers
+    if (lecturerTable) {
+        lecturerTable.addEventListener('click', function (e) {
+            if (e.target.classList.contains('edit-lecturer-button')) {
+                const row = e.target.closest('tr');
+                const [name, email, phone] = row.querySelectorAll('td');
+                const [firstName, lastName] = name.textContent.split(' ');
+
+                document.getElementById('lecturerId').value = row.dataset.id || '';
+                document.getElementById('FirstName').value = firstName;
+                document.getElementById('LastName').value = lastName;
+                document.getElementById('Email').value = email.textContent;
+                document.getElementById('PhoneNumber').value = phone.textContent;
+
+                submitButton.textContent = 'Update Lecturer';
+                formTitle.textContent = 'Edit Lecturer';
+                editMode = true;
+            } else if (e.target.classList.contains('delete-lecturer-button')) {
+                if (confirm('Are you sure you want to delete this lecturer?')) {
+                    e.target.closest('tr').remove();
+                }
+            }
+        });
+    }
+    // Reset the form and set the submit button text to 'Add Lecturer' when the user closes the modal or clicks the cancel button
+    function addLecturerToTable(firstName, lastName, email, phone) {
+        const newRow = lecturerTable.insertRow();
+        newRow.dataset.id = Date.now().toString();
+        newRow.innerHTML = `
+            <td>${firstName} ${lastName}</td>
+            <td>${email}</td>
+            <td>${phone}</td>
+            <td>
+                <button class="edit-lecturer-button">Edit</button>
+                <button class="delete-lecturer-button">Delete</button>
+            </td>
+        `;
+    }
+    // Update the lecturer details in the table when the user clicks the submit button in edit mode
+    function updateLecturerInTable(id, firstName, lastName, email, phone) {
+        const row = lecturerTable.querySelector(`tr[data-id="${id}"]`);
+        if (row) {
+            row.innerHTML = `
+                <td>${firstName} ${lastName}</td>
+                <td>${email}</td>
+                <td>${phone}</td>
+                <td>
+                    <button class="edit-lecturer-button">Edit</button>
+                    <button class="delete-lecturer-button">Delete</button>
+                </td>
+            `;
+        }
+    }
+    // Reset the form and set the submit button text to 'Add Lecturer' when the user closes the modal or clicks the cancel button
+    function resetForm() {
+        form.reset();
+        document.getElementById('lecturerId').value = '';
+        submitButton.textContent = 'Add Lecturer';
+        formTitle.textContent = 'Add New Lecturer';
+        editMode = false;
+    }
+}
