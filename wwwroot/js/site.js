@@ -129,3 +129,99 @@ document.addEventListener('DOMContentLoaded', function () {
         initialiseUserProfile();
     }
 });
+
+/* ********************************************************************************************************************************************************************** */
+
+// New function for Verify view functionality
+
+function initialiseVerifyView() {
+    const searchInput = document.getElementById('claimSearch');
+    const statusFilter = document.getElementById('claimStatus');
+    const claimRows = document.querySelectorAll('.verify-row');
+    const modal = document.getElementById('verifyModal');
+    const modalContent = document.getElementById('verifyDetails');
+    const closeBtn = document.querySelector('.verify-modal-close');
+
+    function filterClaims() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusTerm = statusFilter.value.toLowerCase();
+
+        claimRows.forEach(row => {
+            const rowText = row.textContent.toLowerCase();
+            const rowStatus = row.getAttribute('data-status').toLowerCase();
+            const matchesSearch = rowText.includes(searchTerm);
+            const matchesStatus = statusTerm === '' || rowStatus === statusTerm;
+            row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+        });
+    }
+
+    if (searchInput && statusFilter) {
+        searchInput.addEventListener('input', filterClaims);
+        statusFilter.addEventListener('change', filterClaims);
+    }
+
+    document.querySelectorAll('.verify-details-button').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row = this.closest('tr');
+            const details = `
+                <p><strong>Claim ID:</strong> ${row.cells[0].textContent}</p>
+                <p><strong>Lecturer:</strong> ${row.cells[1].textContent}</p>
+                <p><strong>Date:</strong> ${row.cells[2].textContent}</p>
+                <p><strong>Amount:</strong> ${row.cells[3].textContent}</p>
+                <p><strong>Status:</strong> ${row.cells[4].textContent}</p>
+            `;
+            modalContent.innerHTML = details;
+            modal.style.display = 'block';
+        });
+    });
+
+    if (closeBtn) {
+        closeBtn.onclick = function () {
+            modal.style.display = 'none';
+        }
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    document.querySelectorAll('.verify-approve-button, .verify-reject-button').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row = this.closest('tr');
+            const claimId = row.cells[0].textContent;
+            const action = this.classList.contains('verify-approve-button') ? 'approve' : 'reject';
+            const statusCell = row.cells[4].querySelector('.verify-status');
+
+            
+            if (action === 'approve') {
+                statusCell.textContent = 'Approved';
+                statusCell.className = 'verify-status verify-status-approved';
+            } else {
+                statusCell.textContent = 'Rejected';
+                statusCell.className = 'verify-status verify-status-rejected';
+            }
+
+            // Remove approve and reject buttons
+            row.querySelectorAll('.verify-approve-button, .verify-reject-button').forEach(button => button.remove());
+
+            alert(`Claim ${claimId} has been ${action}d.`);
+        });
+    });
+}
+
+// Call the initialisation functions when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+    initialiseClaimView();
+
+    // Check if we're on the User Profile page
+    if (document.getElementById('userProfileForm')) {
+        initialiseUserProfile();
+    }
+
+    // Check if we're on the Verify Claims page
+    if (document.querySelector('.verify-container')) {
+        initialiseVerifyView();
+    }
+});

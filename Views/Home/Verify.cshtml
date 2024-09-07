@@ -4,6 +4,17 @@
 
 <div class="verify-container">
     <h2 class="verify-title">Verify Claims</h2>
+
+    <div class="verify-filters">
+        <input type="text" id="claimSearch" class="verify-search" placeholder="Search claims...">
+        <select id="claimStatus" class="verify-status-filter">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+
     <table class="verify-table">
         <thead>
             <tr>
@@ -11,31 +22,52 @@
                 <th>Lecturer</th>
                 <th>Date</th>
                 <th>Amount</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <!-- Sample data -->
-            <tr>
+            <tr class="verify-row" data-status="Pending">
                 <td>1001</td>
                 <td>John Doe</td>
                 <td>2024-03-15</td>
                 <td>R500.00</td>
+                <td><span class="verify-status verify-status-pending">Pending</span></td>
                 <td>
                     <button class="verify-approve-button">Approve</button>
                     <button class="verify-reject-button">Reject</button>
+                    <button class="verify-details-button">Details</button>
                 </td>
             </tr>
-            <tr>
+            <tr class="verify-row" data-status="Approved">
                 <td>1002</td>
                 <td>Jane Smith</td>
                 <td>2024-03-20</td>
                 <td>R750.00</td>
+                <td><span class="verify-status verify-status-approved">Approved</span></td>
                 <td>
-                    <button class="verify-approve-button">Approve</button>
-                    <button class="verify-reject-button">Reject</button>
+                    <button class="verify-details-button">Details</button>
+                </td>
+            </tr>
+            <tr class="verify-row" data-status="Rejected">
+                <td>1003</td>
+                <td>Alice Johnson</td>
+                <td>2024-03-25</td>
+                <td>R600.00</td>
+                <td><span class="verify-status verify-status-rejected">Rejected</span></td>
+                <td>
+                    <button class="verify-details-button">Details</button>
                 </td>
             </tr>
         </tbody>
     </table>
+</div>
+
+<div id="verifyModal" class="verify-modal">
+    <div class="verify-modal-content">
+        <span class="verify-modal-close">&times;</span>
+        <h2>Claim Details</h2>
+        <div id="verifyDetails"></div>
+    </div>
 </div>
