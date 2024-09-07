@@ -82,3 +82,50 @@ document.addEventListener('DOMContentLoaded', function () {
         hourlyRateInput.addEventListener('input', calculateClaimAmount);
     }
 });
+
+/* ********************************************************************************************************************************************************************** */
+
+// User Profile Functionality
+
+// This function initialises the user profile functionality. It displays a modal message when the user updates their profile.
+function initialiseUserProfile() {
+    var form = document.getElementById('userProfileForm');
+    var modal = document.getElementById('userProfileModal');
+    var span = document.querySelector('.user-profile-modal-close');
+    var modalMessage = document.getElementById('userProfileModalMessage');
+
+    // Check if the elements exist before adding event listeners
+    if (form && modal && span && modalMessage) {
+        form.onsubmit = function (e) {
+            e.preventDefault();
+            modalMessage.textContent = 'Profile updated successfully!';
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+        };
+
+        span.onclick = function () {
+            closeModal();
+        };
+        // Close the modal when the user clicks outside the modal
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        };
+        // Close the modal when the user presses the escape key
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+    } else {
+        console.error('One or more required elements for User Profile are missing from the page.');
+    }
+}
+
+// Call the initialisation function when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function () {
+    // Check if we're on the User Profile page
+    if (document.getElementById('userProfileForm')) {
+        initialiseUserProfile();
+    }
+});

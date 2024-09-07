@@ -2,51 +2,54 @@
     ViewData["Title"] = "User Profile";
 }
 
-@{
-    ViewData["Title"] = "User Profile";
-}
-
 <div class="user-container">
     <div class="user-card">
         <h2 class="user-title">Your Profile</h2>
-        <form class="user-form" asp-action="UpdateProfile" method="post">
+        <form id="userProfileForm" class="user-form" asp-action="User" method="post">
             <div class="form-group">
                 <label for="userName" class="user-label">Username:</label>
-                <input type="text" id="userName" name="UserName" class="user-input" value="@ViewBag.UserName" readonly>
+                <input type="text" id="userName" name="UserName" class="user-input" placeholder="Enter your username">
             </div>
             <div class="form-group">
                 <label for="firstName" class="user-label">First Name:</label>
-                <input type="text" id="firstName" name="FirstName" class="user-input" value="@ViewBag.FirstName" required>
+                <input type="text" id="firstName" name="FirstName" class="user-input" placeholder="Enter your first name">
             </div>
             <div class="form-group">
                 <label for="lastName" class="user-label">Last Name:</label>
-                <input type="text" id="lastName" name="LastName" class="user-input" value="@ViewBag.LastName" required>
+                <input type="text" id="lastName" name="LastName" class="user-input" placeholder="Enter your last name">
             </div>
             <div class="form-group">
                 <label for="email" class="user-label">Email:</label>
-                <input type="email" id="email" name="Email" class="user-input" value="@ViewBag.Email" required>
+                <input type="email" id="email" name="Email" class="user-input" placeholder="Enter your email">
             </div>
             <div class="form-group">
                 <label for="phoneNumber" class="user-label">Phone Number:</label>
-                <input type="tel" id="phoneNumber" name="PhoneNumber" class="user-input" value="@ViewBag.PhoneNumber">
+                <input type="tel" id="phoneNumber" name="PhoneNumber" class="user-input" placeholder="Enter your phone number">
             </div>
             <div class="form-group">
                 <label for="bankName" class="user-label">Bank Name:</label>
-                <input type="text" id="bankName" name="BankName" class="user-input" value="@ViewBag.BankName">
+                <input type="text" id="bankName" name="BankName" class="user-input" placeholder="Enter your bank name">
             </div>
             <div class="form-group">
                 <label for="branchCode" class="user-label">Branch Code:</label>
-                <input type="text" id="branchCode" name="BranchCode" class="user-input" value="@ViewBag.BranchCode">
+                <input type="text" id="branchCode" name="BranchCode" class="user-input" placeholder="Enter your branch code">
             </div>
             <div class="form-group">
                 <label for="accountNumber" class="user-label">Account Number:</label>
-                <input type="text" id="accountNumber" name="AccountNumber" class="user-input" value="@ViewBag.AccountNumber">
+                <input type="text" id="accountNumber" name="AccountNumber" class="user-input" placeholder="Enter your account number">
             </div>
             <div class="form-group">
                 <label for="address" class="user-label">Address:</label>
-                <textarea id="address" name="Address" class="user-textarea" rows="3">@ViewBag.Address</textarea>
+                <textarea id="address" name="Address" class="user-textarea" rows="3" placeholder="Enter your address"></textarea>
             </div>
             <button type="submit" class="user-button">Update Profile</button>
         </form>
+    </div>
+</div>
+
+<div id="userProfileModal" class="modal user-profile-modal">
+    <div class="modal-content user-profile-modal-content">
+        <span class="close user-profile-modal-close">&times;</span>
+        <p id="userProfileModalMessage" class="user-profile-modal-message"></p>
     </div>
 </div>

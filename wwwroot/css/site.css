@@ -539,6 +539,76 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+/* User Profile Modal styles */
+.user-profile-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    animation: fadeIn 0.3s;
+}
+
+.user-profile-modal-content {
+    background-color: var(--color-light);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--color-secondary);
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    animation: slideIn 0.3s;
+}
+
+.user-profile-modal-close {
+    color: var(--color-text);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+    .user-profile-modal-close:hover,
+    .user-profile-modal-close:focus {
+        color: var(--color-primary);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+.user-profile-modal-message {
+    font-size: 18px;
+    color: var(--color-primary);
+    margin-top: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 /* Verify styles */
 .verify-container {
     padding: 2rem;
