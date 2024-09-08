@@ -137,35 +137,27 @@ document.addEventListener('DOMContentLoaded', function () {
 // This function initialises the user profile functionality. It displays a modal message when the user updates their profile.
 function initialiseUserProfile() {
     var form = document.getElementById('userProfileForm');
-    var modal = document.getElementById('userProfileModal');
-    var span = document.querySelector('.user-profile-modal-close');
-    var modalMessage = document.getElementById('userProfileModalMessage');
+    var overlay = document.getElementById('userActionOverlay');
+    var overlayText = document.getElementById('userActionText');
 
-    // Check if the elements exist before adding event listeners
-    if (form && modal && span && modalMessage) {
+    if (form && overlay) {
         form.onsubmit = function (e) {
             e.preventDefault();
-            modalMessage.textContent = 'Profile updated successfully!';
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+            showUserActionOverlay('Profile updated successfully!');
         };
-
-        span.onclick = function () {
-            closeModal();
-        };
-        // Close the modal when the user clicks outside the modal
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        };
-        // Close the modal when the user presses the escape key
-        function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = ''; // Restore scrolling
-        }
     } else {
         console.error('One or more required elements for User Profile are missing from the page.');
+    }
+
+    function showUserActionOverlay(message) {
+        overlayText.textContent = message;
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent scrolling when overlay is open
+
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
+        }, 3000);
     }
 }
 

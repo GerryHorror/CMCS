@@ -3,6 +3,14 @@
 }
 
 <div class="user-container">
+
+    <div id="userActionOverlay" class="user-action-overlay">
+        <div class="user-action-message">
+            <i id="userActionIcon" class="fas fa-user-check"></i>
+            <p id="userActionText"></p>
+        </div>
+    </div>
+
     <div class="user-card">
         <h2 class="user-title">Your Profile</h2>
         <form id="userProfileForm" class="user-form" asp-action="User" method="post">
