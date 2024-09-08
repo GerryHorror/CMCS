@@ -284,11 +284,9 @@ function initialiseManageLecturers() {
     const formTitle = document.getElementById('formTitle');
     let editMode = false;
 
-    // Check if the elements exist before adding event listeners
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
-            // Get the values from the form inputs (more fields will be added in the future)
             const lecturerId = document.getElementById('lecturerId').value;
             const firstName = document.getElementById('FirstName').value;
             const lastName = document.getElementById('LastName').value;
@@ -297,13 +295,16 @@ function initialiseManageLecturers() {
 
             if (editMode) {
                 updateLecturerInTable(lecturerId, firstName, lastName, email, phone);
+                showManageActionOverlay('update', `${firstName} ${lastName}`);
             } else {
                 addLecturerToTable(firstName, lastName, email, phone);
+                showManageActionOverlay('add', `${firstName} ${lastName}`);
             }
 
             resetForm();
         });
     }
+
     // Add event listeners to the edit and delete buttons in the lecturer table to allow the user to edit and delete lecturers
     if (lecturerTable) {
         lecturerTable.addEventListener('click', function (e) {
@@ -323,7 +324,10 @@ function initialiseManageLecturers() {
                 editMode = true;
             } else if (e.target.classList.contains('delete-lecturer-button')) {
                 if (confirm('Are you sure you want to delete this lecturer?')) {
-                    e.target.closest('tr').remove();
+                    const row = e.target.closest('tr');
+                    const name = row.cells[0].textContent;
+                    row.remove();
+                    showManageActionOverlay('delete', name);
                 }
             }
         });
@@ -364,5 +368,33 @@ function initialiseManageLecturers() {
         submitButton.textContent = 'Add Lecturer';
         formTitle.textContent = 'Add New Lecturer';
         editMode = false;
+    }
+    function showManageActionOverlay(action, lecturerName) {
+        const overlay = document.getElementById('manageActionOverlay');
+        const icon = document.getElementById('manageActionIcon');
+        const text = document.getElementById('manageActionText');
+
+        switch (action) {
+            case 'add':
+                icon.className = 'fas fa-user-plus';
+                icon.style.color = 'var(--color-success)';
+                text.textContent = `Lecturer ${lecturerName} has been added.`;
+                break;
+            case 'update':
+                icon.className = 'fas fa-user-edit';
+                icon.style.color = 'var(--color-primary)';
+                text.textContent = `Lecturer ${lecturerName} has been updated.`;
+                break;
+            case 'delete':
+                icon.className = 'fas fa-user-minus';
+                icon.style.color = 'var(--color-error)';
+                text.textContent = `Lecturer ${lecturerName} has been deleted.`;
+                break;
+        }
+
+        overlay.style.display = 'flex';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 3000);
     }
 }
