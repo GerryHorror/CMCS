@@ -65,21 +65,68 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // This function initialises the submit view functionality. It calculates the claim amount based on the hours worked and hourly rate.
 document.addEventListener('DOMContentLoaded', function () {
-    const hoursWorkedInput = document.getElementById('hoursWorked');
-    const hourlyRateInput = document.getElementById('hourlyRate');
-    const claimAmountInput = document.getElementById('claimAmount');
+    const submitForm = document.querySelector('.submit-form');
+    if (submitForm) {
+        const hourlyRateInput = document.getElementById('hourlyRate');
+        const claimAmountInput = document.getElementById('claimAmount');
+        const addEntryButton = document.getElementById('addEntry');
+        const workEntriesContainer = document.getElementById('workEntries');
+        const supportingDocumentInput = document.getElementById('supportingDocument');
+        const successMessage = document.getElementById('successMessage');
 
-    // Check if the elements exist before adding event listeners (e.g. the claim amount input is not present on the claim details page)
-    if (hoursWorkedInput && hourlyRateInput && claimAmountInput) {
+        let entryCount = 1;
+
         function calculateClaimAmount() {
-            const hoursWorked = parseFloat(hoursWorkedInput.value) || 0;
             const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
-            const totalAmount = hoursWorked * hourlyRate;
+            let totalHours = 0;
+
+            document.querySelectorAll('.work-hours').forEach(input => {
+                totalHours += parseFloat(input.value) || 0;
+            });
+
+            const totalAmount = totalHours * hourlyRate;
             claimAmountInput.value = totalAmount.toFixed(2);
         }
-        // Add event listeners to the hours worked and hourly rate inputs to calculate the claim amount when the user inputs values
-        hoursWorkedInput.addEventListener('input', calculateClaimAmount);
+
+        function addNewWorkEntry() {
+            const newEntry = `
+                <div class="work-entry">
+                    <div class="form-group">
+                        <label class="submit-label">Work Date:</label>
+                        <input type="date" name="WorkEntries[${entryCount}].WorkDate" class="submit-input work-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="submit-label">Hours Worked:</label>
+                        <input type="number" name="WorkEntries[${entryCount}].HoursWorked" class="submit-input work-hours" step="0.5" min="0" required>
+                    </div>
+                </div>
+            `;
+            workEntriesContainer.insertAdjacentHTML('beforeend', newEntry);
+            entryCount++;
+        }
+
         hourlyRateInput.addEventListener('input', calculateClaimAmount);
+        workEntriesContainer.addEventListener('input', function (event) {
+            if (event.target.classList.contains('work-hours')) {
+                calculateClaimAmount();
+            }
+        });
+
+        addEntryButton.addEventListener('click', addNewWorkEntry);
+
+        submitForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            if (!supportingDocumentInput.files.length) {
+                alert('Please upload a supporting document before submitting.');
+                return;
+            }
+            const successOverlay = document.getElementById('successOverlay');
+            successOverlay.style.display = 'flex';
+            submitForm.reset();
+            setTimeout(() => {
+                successOverlay.style.display = 'none';
+            }, 3000);
+        });
     }
 });
 

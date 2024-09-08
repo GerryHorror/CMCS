@@ -1,49 +1,65 @@
 ﻿@{
     ViewData["Title"] = "Submit New Claim";
 }
-
 <div class="submit-container">
+    <div id="successOverlay" class="success-overlay">
+        <div class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <p>Claim successfully submitted!</p>
+        </div>
+    </div>
     <div class="submit-card">
-        <h2 class="submit-title">Submit a New Claim</h2>
-        <form class="submit-form" asp-action="Submit" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="claimDate" class="submit-label">Claim Date:</label>
-                <input type="date" id="claimDate" name="ClaimDate" class="submit-input" required>
+        <div class="submit-card">
+            <h2 class="submit-title">Submit a New Claim</h2>
+            <div id="successMessage" class="alert alert-success" style="display: none;">
+                Claim successfully submitted!
             </div>
-
-            <div class="form-group">
-                <label for="hoursWorked" class="submit-label">Hours Worked:</label>
-                <input type="number" id="hoursWorked" name="HoursWorked" class="submit-input" step="0.5" min="0" required>
-            </div>
-
-            <div class="form-group">
-                <label for="hourlyRate" class="submit-label">Hourly Rate:</label>
-                <div class="input-group">
-                    <span class="input-group-text">R</span>
-                    <input type="number" id="hourlyRate" name="HourlyRate" class="submit-input" step="0.01" min="0" required>
+            <form id="claimForm" class="submit-form" asp-action="Submit" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="claimDate" class="submit-label">Claim Date:</label>
+                    <input type="date" id="claimDate" name="ClaimDate" class="submit-input" required>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label for="claimAmount" class="submit-label">Total Claim Amount:</label>
-                <div class="input-group">
-                    <span class="input-group-text">R</span>
-                    <input type="number" id="claimAmount" name="ClaimAmount" class="submit-input" step="0.01" min="0" required readonly>
+                <div class="form-group">
+                    <label for="hourlyRate" class="submit-label">Hourly Rate:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R</span>
+                        <input type="number" id="hourlyRate" name="HourlyRate" class="submit-input" step="0.01" min="0" required>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="claimDescription" class="submit-label">Description:</label>
-                <textarea id="claimDescription" name="ClaimDescription" class="submit-textarea" rows="4" required></textarea>
-            </div>
+                <div id="workEntries">
+                    <div class="work-entry">
+                        <div class="form-group">
+                            <label class="submit-label">Work Date:</label>
+                            <input type="date" name="WorkEntries[0].WorkDate" class="submit-input work-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="submit-label">Hours Worked:</label>
+                            <input type="number" name="WorkEntries[0].HoursWorked" class="submit-input work-hours" step="0.5" min="0" required>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="supportingDocument" class="submit-label">Supporting Document:</label>
-                <input type="file" id="supportingDocument" name="SupportingDocument" class="submit-file-input">
-                <small class="form-text text-muted">Upload any relevant documents (PDF, JPG, PNG, max 5MB)</small>
-            </div>
+                <button type="button" id="addEntry" class="btn btn-secondary">Add Another Work Date</button>
 
-            <button type="submit" class="submit-button">Submit Claim</button>
-        </form>
+                <div class="form-group">
+                    <label for="claimAmount" class="submit-label">Total Claim Amount:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">R</span>
+                        <input type="number" id="claimAmount" name="ClaimAmount" class="submit-input" step="0.01" min="0" required readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="claimDescription" class="submit-label">Description:</label>
+                    <textarea id="claimDescription" name="ClaimDescription" class="submit-textarea" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="supportingDocument" class="submit-label">Supporting Document:</label>
+                    <input type="file" id="supportingDocument" name="SupportingDocument" class="submit-file-input" required>
+                    <small class="form-text text-muted">Upload any relevant documents (PDF, JPG, PNG, max 5MB)</small>
+                </div>
+                <button type="submit" class="submit-button">Submit Claim</button>
+            </form>
+        </div>
     </div>
 </div>
