@@ -13,7 +13,7 @@ namespace CMCS.Models
         public string UserEmail { get; set; }
         public string PhoneNumber { get; set; } // Changed from int to string because South African phone numbers start with 0, and to allow users to enter the country code if they have an international number
         public string BankName { get; set; }
-        public int BranchCode { get; set; }
+        public string BranchCode { get; set; } // Standard Bank branch code starts with 0
         public int BankAccountNumber { get; set; }
         public string Address { get; set; }
         public string UserPassword { get; set; }
