@@ -207,42 +207,6 @@ function initialiseVerifyView() {
         statusFilter.addEventListener('change', filterClaims);
     }
 
-    document.querySelectorAll('.verify-details-button').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const row = this.closest('tr');
-            const details = `
-                <p><strong>Claim ID:</strong> ${row.cells[0].textContent}</p>
-                 <p><strong>User ID:</strong> ${row.getAttribute('data-user-id')}</p>
-                <p><strong>Lecturer:</strong> ${row.cells[1].textContent}</p>
-                <p><strong>Submission Date:</strong> ${row.cells[2].textContent}</p>
-                <p><strong>Claim Amount:</strong> ${row.cells[3].textContent}</p>
-                <p><strong>Status:</strong> ${row.cells[4].textContent}</p>
-                <p><strong>Hours Worked:</strong> ${row.getAttribute('data-hours-worked')}</p>
-                <p><strong>Hourly Rate:</strong> R${row.getAttribute('data-hourly-rate')}</p>
-                <p><strong>Claim Type:</strong> ${row.getAttribute('data-claim-type')}</p>
-                <p><strong>Description:</strong> ${row.getAttribute('data-description')}</p>
-                <h4>Supporting Documents</h4>
-                <ul>
-                    ${row.getAttribute('data-documents').split(',').map(doc => `<li>${doc}</li>`).join('')}
-                </ul>
-            `;
-            modalContent.innerHTML = details;
-            modal.style.display = 'block';
-        });
-    });
-
-    if (closeBtn) {
-        closeBtn.onclick = function () {
-            modal.style.display = 'none';
-        }
-    }
-
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = 'none';
-        }
-    }
-
     document.querySelectorAll('.verify-approve-button, .verify-reject-button').forEach(btn => {
         btn.addEventListener('click', function () {
             const row = this.closest('tr');
@@ -261,9 +225,31 @@ function initialiseVerifyView() {
             // Remove approve and reject buttons
             row.querySelectorAll('.verify-approve-button, .verify-reject-button').forEach(button => button.remove());
 
-            alert(`Claim ${claimId} has been ${action}d.`);
+            // Show overlay
+            showVerifyActionOverlay(action, claimId);
         });
     });
+
+    function showVerifyActionOverlay(action, claimId) {
+        const overlay = document.getElementById('verifyActionOverlay');
+        const icon = document.getElementById('verifyActionIcon');
+        const text = document.getElementById('verifyActionText');
+
+        if (action === 'approve') {
+            icon.className = 'fas fa-check-circle';
+            icon.style.color = 'var(--color-success)';
+            text.textContent = `Claim ${claimId} has been approved.`;
+        } else {
+            icon.className = 'fas fa-times-circle';
+            icon.style.color = 'var(--color-error)';
+            text.textContent = `Claim ${claimId} has been rejected.`;
+        }
+
+        overlay.style.display = 'flex';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 3000);
+    }
 }
 
 // Call the initialisation functions when the DOM is fully loaded

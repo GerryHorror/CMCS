@@ -6,6 +6,13 @@
     <h2 class="verify-title">Verify Claims</h2>
 
     <div class="verify-filters">
+        <div id="verifyActionOverlay" class="verify-action-overlay">
+            <div class="verify-action-message">
+                <i id="verifyActionIcon" class="fas"></i>
+                <p id="verifyActionText"></p>
+            </div>
+            </div>
+        </div>
         <input type="text" id="claimSearch" class="verify-search" placeholder="Search claims...">
         <select id="claimStatus" class="verify-status-filter">
             <option value="">All Statuses</option>
@@ -13,61 +20,62 @@
             <option value="Approved">Approved</option>
             <option value="Rejected">Rejected</option>
         </select>
+
+
+        <table class="verify-table">
+            <thead>
+                <tr>
+                    <th>Claim ID</th>
+                    <th>Lecturer</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sample data -->
+                <tr class="verify-row" data-status="Pending" data-user-id="7823" data-hours-worked="8" data-hourly-rate="250" data-claim-type="Lecture" data-description="Programming 2B Lecture" data-documents="attendance.pdf, timesheet.png">
+                    <td>1001</td>
+                    <td>John Doe</td>
+                    <td>2024-03-15</td>
+                    <td>R2000.00</td>
+                    <td><span class="verify-status verify-status-pending">Pending</span></td>
+                    <td>
+                        <button class="verify-approve-button">Approve</button>
+                        <button class="verify-reject-button">Reject</button>
+                        <button class="verify-details-button">Details</button>
+                    </td>
+                </tr>
+                <tr class="verify-row" data-status="Approved" data-user-id="2678" data-hours-worked="5" data-hourly-rate="200" data-claim-type="Invigilate" data-description="Systems Analysis and Design Exam" data-documents="attendance.pdf, timesheet.png">
+                    <td>1002</td>
+                    <td>Jane Smith</td>
+                    <td>2024-03-20</td>
+                    <td>R1000.00</td>
+                    <td><span class="verify-status verify-status-approved">Approved</span></td>
+                    <td>
+                        <button class="verify-details-button">Details</button>
+                    </td>
+                </tr>
+                <tr class="verify-row" data-status="Rejected" data-user-id="1149" data-hours-worked="8" data-hourly-rate="400" data-claim-type="Lecture" data-description="Software Engineering Lecture" data-documents="attendance.pdf, timesheet.png">
+                    <td>1003</td>
+                    <td>Alice Johnson</td>
+                    <td>2024-03-25</td>
+                    <td>R3200.00</td>
+                    <td><span class="verify-status verify-status-rejected">Rejected</span></td>
+                    <td>
+                        <button class="verify-details-button">Details</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
-    <table class="verify-table">
-        <thead>
-            <tr>
-                <th>Claim ID</th>
-                <th>Lecturer</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Sample data -->
-            <tr class="verify-row" data-status="Pending" data-user-id="7823" data-hours-worked="8" data-hourly-rate="250" data-claim-type="Lecture" data-description="Programming 2B Lecture" data-documents="attendance.pdf, timesheet.png">
-                <td>1001</td>
-                <td>John Doe</td>
-                <td>2024-03-15</td>
-                <td>R2000.00</td>
-                <td><span class="verify-status verify-status-pending">Pending</span></td>
-                <td>
-                    <button class="verify-approve-button">Approve</button>
-                    <button class="verify-reject-button">Reject</button>
-                    <button class="verify-details-button">Details</button>
-                </td>
-            </tr>
-            <tr class="verify-row" data-status="Approved" data-user-id="2678" data-hours-worked="5" data-hourly-rate="200" data-claim-type="Invigilate" data-description="Systems Analysis and Design Exam" data-documents="attendance.pdf, timesheet.png">
-                <td>1002</td>
-                <td>Jane Smith</td>
-                <td>2024-03-20</td>
-                <td>R1000.00</td>
-                <td><span class="verify-status verify-status-approved">Approved</span></td>
-                <td>
-                    <button class="verify-details-button">Details</button>
-                </td>
-            </tr>
-            <tr class="verify-row" data-status="Rejected" data-user-id="1149" data-hours-worked="8" data-hourly-rate="400" data-claim-type="Lecture" data-description="Software Engineering Lecture" data-documents="attendance.pdf, timesheet.png">
-                <td>1003</td>
-                <td>Alice Johnson</td>
-                <td>2024-03-25</td>
-                <td>R3200.00</td>
-                <td><span class="verify-status verify-status-rejected">Rejected</span></td>
-                <td>
-                    <button class="verify-details-button">Details</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div id="verifyModal" class="verify-modal">
-    <div class="verify-modal-content">
-        <span class="verify-modal-close">&times;</span>
-        <h2>Claim Details</h2>
-        <div id="verifyDetails"></div>
+    <div id="verifyModal" class="verify-modal">
+        <div class="verify-modal-content">
+            <span class="verify-modal-close">&times;</span>
+            <h2>Claim Details</h2>
+            <div id="verifyDetails"></div>
+        </div>
     </div>
 </div>
