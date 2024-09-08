@@ -165,10 +165,19 @@ function initialiseVerifyView() {
             const row = this.closest('tr');
             const details = `
                 <p><strong>Claim ID:</strong> ${row.cells[0].textContent}</p>
+                 <p><strong>User ID:</strong> ${row.getAttribute('data-user-id')}</p>
                 <p><strong>Lecturer:</strong> ${row.cells[1].textContent}</p>
-                <p><strong>Date:</strong> ${row.cells[2].textContent}</p>
-                <p><strong>Amount:</strong> ${row.cells[3].textContent}</p>
+                <p><strong>Submission Date:</strong> ${row.cells[2].textContent}</p>
+                <p><strong>Claim Amount:</strong> ${row.cells[3].textContent}</p>
                 <p><strong>Status:</strong> ${row.cells[4].textContent}</p>
+                <p><strong>Hours Worked:</strong> ${row.getAttribute('data-hours-worked')}</p>
+                <p><strong>Hourly Rate:</strong> R${row.getAttribute('data-hourly-rate')}</p>
+                <p><strong>Claim Type:</strong> ${row.getAttribute('data-claim-type')}</p>
+                <p><strong>Description:</strong> ${row.getAttribute('data-description')}</p>
+                <h4>Supporting Documents</h4>
+                <ul>
+                    ${row.getAttribute('data-documents').split(',').map(doc => `<li>${doc}</li>`).join('')}
+                </ul>
             `;
             modalContent.innerHTML = details;
             modal.style.display = 'block';
