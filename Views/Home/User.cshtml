@@ -1,9 +1,41 @@
-﻿@{
+﻿<!--
+    This Razor view file is for the User Profile Page of the Contract Monthly Claim System (CMCS).
+    It includes different sections to provide a user-friendly interface for updating personal information.
+    Below is a brief overview of each section and its purpose:
+
+    1. Stylesheet Link:
+       - Links to the CSS file (`user.css`) that styles this page.
+
+    2. ViewData:
+       - Sets the page title to "User Profile".
+
+    3. Main Container:
+       - The main content of the page is wrapped in a `<div>` element with the class `user-container`.
+
+    4. User Action Overlay:
+       - An overlay that displays messages for user actions, such as profile update success.
+
+    5. User Profile Form:
+       - A form for updating user profile information, including fields for first name, last name, email, phone number, bank details, and address.
+
+    6. Modal for User Profile Update Messages:
+       - A modal that displays messages related to user profile updates, such as success or error messages.
+
+    This structure ensures that users have a clear and intuitive experience when updating their profile information.
+-->
+
+@{
+    // Set the page title
     ViewData["Title"] = "User Profile";
 }
 
+<!-- Link to the CSS file for styling this page -->
+<link rel="stylesheet" href="/css/user.css" />
+
+<!-- Main container for the user profile page -->
 <div class="user-container">
 
+        <!-- Overlay for user actions (e.g., profile update success) -->
     <div id="userActionOverlay" class="user-action-overlay">
         <div class="user-action-message">
             <i id="userActionIcon" class="fas fa-user-check"></i>
@@ -11,8 +43,10 @@
         </div>
     </div>
 
+    <!-- Card container for the user profile form -->
     <div class="user-card">
         <h2 class="user-title">Your Profile</h2>
+        <!-- Form for updating user profile information -->
         <form id="userProfileForm" class="user-form" asp-action="User" method="post">
             <div class="form-group">
                 <label for="firstName" class="user-label">First Name:</label>
@@ -50,7 +84,7 @@
         </form>
     </div>
 </div>
-
+<!-- Modal for displaying user profile update messages -->
 <div id="userProfileModal" class="modal user-profile-modal">
     <div class="modal-content user-profile-modal-content">
         <span class="close user-profile-modal-close">&times;</span>
