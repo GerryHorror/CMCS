@@ -1,23 +1,49 @@
-﻿/* Claim view styles */
+﻿/ /*
+    This CSS file is for the Claim Page of the Contract Monthly Claim System (CMCS).
+    It includes styles for various elements to ensure a consistent and user-friendly interface.
+    Below is a brief overview of the styles and their purposes:
 
+    1. Modal for Claim Details:
+       - Styles for the modal background, including a semi-transparent overlay and fade-in animation.
+
+    2. Claim Status:
+       - Base styles for claim status labels, including padding and border-radius.
+       - Specific styles for different claim statuses, including background and text colours.
+
+    3. Claim Details Grid:
+       - Grid layout for displaying claim details, with responsive adjustments for different screen sizes.
+
+    4. Animations:
+       - Defines the fade-in animation for the modal background.
+       - Defines the slide-in animation for the modal content.
+
+    5. Responsive Adjustments:
+       - Adjustments for smaller screens, including a single-column layout for the claim details grid.
+
+    These styles ensure that the Claim Page is visually appealing and easy to navigate.
+*/
+/* Main container for the claim page */
 .claim-container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto; /* Center the container horizontally */
     padding: 2rem;
 }
 
+/* Title styling for the claim page */
 .claim-title {
     color: var(--color-primary);
     margin-bottom: 2rem;
     text-align: center;
 }
 
+/* Filters section styling */
 .claim-filters {
-    display: flex;
-    justify-content: space-between;
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Space out the filters */
     margin-bottom: 1rem;
 }
 
+/* Search and status filter styling */
 .claim-search, .claim-status-filter {
     padding: 0.5rem;
     border: 1px solid var(--color-secondary);
@@ -25,17 +51,14 @@
 }
 
 .claim-search {
-    flex-grow: 1;
+    flex-grow: 1; /* Allow the search input to grow */
     margin-right: 1rem;
 }
 
-.claim-table-container {
-    overflow-x: auto;
-}
-
+/* Table styling for claims */
 .claim-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* Collapse borders. This helps with spacing and styling */
     margin-top: 1rem;
 }
 
@@ -50,6 +73,7 @@
         color: var(--color-light);
     }
 
+/* Claim status styling */
 .claim-status {
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
@@ -71,67 +95,143 @@
     color: var(--color-light);
 }
 
-.claim-details-btn {
+/* Button styling for claim details */
+.claim-details-button {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth transition for background colour */
     background-color: var(--color-secondary);
     color: var(--color-light);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
-    .claim-details-btn:hover {
-        background-color: var(--color-accent);
+    .claim-details-button:hover {
+        opacity: 0.8; /* Slightly reduce opacity on hover */
     }
 
+/* Modal styling for claim details */
 .claim-modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
+    display: none; /* Hide the modal by default */
+    position: fixed; /* Fixed position to overlay on top of the content */
+    z-index: 1000; /* Ensure the modal is on top of other elements */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    overflow: auto; /* Allow scrolling if the content is too long */
+    background-color: rgba(0,0,0,0.4); /* Semi-transparent background */
+    animation: fadeIn 0.3s; /* Fade-in animation for the modal */
 }
 
 .claim-modal-content {
     background-color: var(--color-light);
-    margin: 15% auto;
-    padding: 20px;
+    margin: 5% auto;
+    padding: 2rem;
     border: 1px solid var(--color-secondary);
-    width: 80%;
+    width: 90%;
     max-width: 600px;
     border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s;
 }
 
+/* Close button styling for the modal */
 .claim-modal-close {
-    color: #aaa;
-    float: right;
+    color: var(--color-text);
+    float: right; /* Float the close button to the right */
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    transition: color 0.3s ease;
 }
 
     .claim-modal-close:hover,
     .claim-modal-close:focus {
-        color: #000;
-        text-decoration: none;
-        cursor: pointer;
+        color: var(--color-primary); /* Change colour on hover or focus */
+        text-decoration: none; /* Remove underline on hover or focus */
     }
 
-@media (max-width: 768px) {
-    .claim-filters {
-        flex-direction: column;
-    }
+/* Modal title and details styling */
+.claim-modal-title {
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--color-secondary);
+    padding-bottom: 0.5rem;
+}
 
-    .claim-search, .claim-status-filter {
-        margin-bottom: 1rem;
-    }
+/* Grid layout for claim details */
+.claim-modal-details {
+    display: grid; /* Use grid layout for details */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid layout. It calculates the number of columns based on available space */
+    gap: 1rem; /* Add gap between grid items */
+}
 
-    .claim-table th, .claim-table td {
+    .claim-modal-details p {
+        margin: 0;
         padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .claim-modal-details strong {
+        color: var(--color-primary);
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .claim-modal-details h4 {
+        grid-column: 1 / -1; /* Span the full width of the grid */
+        margin-top: 1rem;
+        color: var(--color-primary);
+    }
+
+    .claim-modal-details ul {
+        grid-column: 1 / -1;
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .claim-modal-details li {
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+    }
+
+/* Keyframes for the fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Keyframes for the slide-in animation */
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .claim-modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+
+    .claim-modal-details {
+        grid-template-columns: 1fr;
     }
 }

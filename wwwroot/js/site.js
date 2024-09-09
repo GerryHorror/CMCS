@@ -50,63 +50,78 @@ const showActionOverlay = (overlayId, iconClass, iconColor, message, duration = 
 
 // Claim view functionality - handles search, filtering, and viewing claim details
 const initialiseClaimView = () => {
-    // Get elements for search and filtering claims
+    // Get the modal and its details element from the DOM
+    const modal = document.getElementById('claimModal');
+    const modalDetails = document.getElementById('claimDetails');
+    // Get the close button for the modal
+    const closeBtn = document.querySelector('.claim-modal-close');
+    // Get all the claim rows, search input, and status filter elements
+    const claimRows = document.querySelectorAll('.claim-row');
     const searchInput = document.getElementById('claimSearch');
     const statusFilter = document.getElementById('claimStatus');
-    // Get all claim rows and the modal elements
-    const claimRows = document.querySelectorAll('.claim-row');
-    // Get modal (popup) elements for displaying claim details and close button
-    const modal = document.getElementById('claimModal');
-    const modalContent = document.getElementById('claimDetails');
-    const closeBtn = document.querySelector('.claim-modal-close');
-    // Function to filter claims based on search term and status filter
+
+    // Function to show the modal with claim details
+    const showModal = (row) => {
+        // Get the claim data from the row's dataset
+        const claimData = row.dataset;
+        // Create the details HTML using the claim data
+        const details = `
+            <p><strong>Claim ID:</strong> ${row.cells[0].textContent}</p>
+            <p><strong>User ID:</strong> ${claimData.userId}</p>
+            <p><strong>Date:</strong> ${row.cells[1].textContent}</p>
+            <p><strong>Claim Amount:</strong> ${row.cells[2].textContent}</p>
+            <p><strong>Status:</strong> ${row.cells[3].textContent}</p>
+            <p><strong>Hours Worked:</strong> ${claimData.hoursWorked}</p>
+            <p><strong>Hourly Rate:</strong> R${claimData.hourlyRate}</p>
+            <p><strong>Claim Type:</strong> ${claimData.claimType}</p>
+            <p><strong>Description:</strong> ${claimData.description}</p>
+            <h4>Supporting Documents</h4>
+            <ul>
+                ${claimData.documents.split(',').map(doc => `<li>${doc.trim()}</li>`).join('')}
+            </ul>
+        `;
+        // Set the modal details and display the modal
+        modalDetails.innerHTML = details;
+        modal.style.display = 'block';
+    };
+
+    // Add event listener to show the modal when a claim details button is clicked
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('claim-details-button')) {
+            const row = e.target.closest('tr');
+            showModal(row);
+        }
+    });
+
+    // Add event listener to close the modal when the close button is clicked
+    if (closeBtn) {
+        closeBtn.onclick = () => modal.style.display = 'none';
+    }
+
+    // Add event listener to close the modal when clicking outside of it
+    window.onclick = (event) => {
+        if (event.target == modal) modal.style.display = 'none';
+    };
+
+    // Function to filter claims based on search term and status
     const filterClaims = () => {
         const searchTerm = searchInput.value.toLowerCase();
         const statusTerm = statusFilter.value.toLowerCase();
-        // Loop through each claim row and check if it matches the search term and status filter
+
+        // Loop through each claim row and check if it matches the search term and status
         claimRows.forEach(row => {
-            // Convert row text and status to lowercase for case-insensitive search
             const rowText = row.textContent.toLowerCase();
-            // Get the status of the claim row and convert it to lowercase
             const rowStatus = row.getAttribute('data-status').toLowerCase();
             const matchesSearch = rowText.includes(searchTerm);
-            // Check if the row status matches the selected status filter or if the filter is empty
             const matchesStatus = statusTerm === '' || rowStatus === statusTerm;
-            // Show the row if it matches the search term and status filter, otherwise hide it
             row.style.display = matchesSearch && matchesStatus ? '' : 'none';
         });
     };
-    // Add event listeners for filtering claims when user types in search or changes the status filter
+
+    // Add event listeners to filter claims when the search input or status filter changes
     if (searchInput && statusFilter) {
         searchInput.addEventListener('input', filterClaims);
         statusFilter.addEventListener('change', filterClaims);
-    }
-    // Add event listeners for viewing claim details when user clicks on a claim row
-    document.querySelectorAll('.claim-details-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const row = this.closest('tr');
-            // Get claim details from the row cells and display them in the modal
-            const details = `
-                <p><strong>Claim ID:</strong> ${row.cells[0].textContent}</p>
-                <p><strong>Date:</strong> ${row.cells[1].textContent}</p>
-                <p><strong>Amount:</strong> ${row.cells[2].textContent}</p>
-                <p><strong>Status:</strong> ${row.cells[3].textContent}</p>
-            `;
-            modalContent.innerHTML = details;
-            modal.style.display = 'block';
-        });
-    });
-    // Add event listeners for closing the modal when user clicks on close button
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            modal.style.display = 'none';
-        }
-    }
-    // Add event listener for closing the modal when user clicks outside the modal
-    window.onclick = (event) => {
-        if (event.target == modal) {
-            modal.style.display = 'none';
-        }
     }
 };
 
@@ -271,7 +286,6 @@ const initialiseVerifyView = () => {
                 <p><strong>Description:</strong> ${row.getAttribute('data-description')}</p>
                 <h4>Supporting Documents</h4>
                 <ul>
-                // Split the documents string into an array, map each document to an li element, and join them into a single string
                     ${row.getAttribute('data-documents').split(',').map(doc => `<li>${doc.trim()}</li>`).join('')}
                 </ul>
             `;
