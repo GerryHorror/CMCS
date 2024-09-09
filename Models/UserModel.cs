@@ -1,4 +1,11 @@
-﻿/* Boiler plate code for the User Model. This model is used to store the user details. The UserID is the primary key, UserName is the name of the user, FirstName is the first name of the user, LastName is the last name of the user, UserEmail is the email of the user, PhoneNumber is the phone number of the user, BankDetails is the bank details of the user, BankAccountNumber is the bank account number of the user, Address is the address of the user and UserPassword is the password of the user. Functionality will be added to this model in the future.
+﻿/*
+    Student Name: Gérard Blankenberg
+    Student Number: ST10046280
+    Module: PROG6212
+    POE Part 1
+*/
+
+/* Boiler plate code for the User Model. This model is used to store the user details. The UserID is the primary key, UserName is the name of the user, FirstName is the first name of the user, LastName is the last name of the user, UserEmail is the email of the user, PhoneNumber is the phone number of the user, BankDetails is the bank details of the user, BankAccountNumber is the bank account number of the user, Address is the address of the user and UserPassword is the password of the user. Functionality will be added to this model in the future.
  */
 
 namespace CMCS.Models
