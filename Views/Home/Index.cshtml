@@ -1,14 +1,57 @@
-﻿@{
+﻿<!--
+    This Razor view file is for the Home Page of the Contract Monthly Claim System (CMCS).
+    It includes different sections to provide a welcoming and informative interface for users.
+    Below is a brief overview of each section and its purpose:
+
+    1. Stylesheet Link:
+       - Links to the CSS file (`index.css`) that styles this page.
+
+    2. ViewData and User Role:
+       - Sets the page title to "Home Page".
+       - Retrieves the user's role from the session to customise the content based on their role.
+
+    3. Main Container:
+       - The main content of the page is wrapped in a `<main>` element with the class `index-container`.
+
+    4. Hero Section:
+       - A welcoming section with a title and subtitle introducing the CMCS.
+
+    5. Features Section:
+       - Displays quick action cards based on the user's role:
+         - Lecturer:
+           - Submit a Claim: Allows lecturers to create a new claim.
+           - View Claims: Allows lecturers to check the status of their claims.
+           - User Profile: Allows lecturers to view and update their personal information.
+         - Coordinator or Manager:
+           - Approve Claims: Allows coordinators or managers to review and approve pending claims.
+           - Manage Lecturers: Allows coordinators or managers to manage lecturer accounts.
+
+    6. Information Section:
+       - Provides information about CMCS, including its purpose and key features.
+       - Lists the benefits of using the system, such as easy claim submission, transparent tracking, secure document upload, and efficient approval process.
+
+    This structure ensures that users have a clear and intuitive experience when navigating the Home Page.
+-->
+<!-- Link to the CSS file for styling this page -->
+<link rel="stylesheet" href="/css/index.css" />
+
+@{
+    // Set the page title
     ViewData["Title"] = "Home Page";
+    // Retrieve the user's role from the session
     var userRole = Context.Session.GetString("UserRole");
 }
 
+<!-- Main container for the page -->
 <main class="index-container">
+
+    <!-- Hero section with a welcoming message -->
     <section class="index-hero">
         <h1 class="index-title">Welcome to CMCS</h1>
         <p class="index-subtitle">Contract Monthly Claim System for Independent Lecturers</p>
     </section>
 
+    <!-- Features section with quick action cards based on user role -->
     <section class="index-features">
         <h2 class="index-features-title">Quick Actions</h2>
         <div class="index-card-container">
@@ -51,6 +94,7 @@
         </div>
     </section>
 
+    <!-- Information section about CMCS and its key features -->
     <section class="index-info">
         <h2 class="index-info-title">About CMCS</h2>
         <p class="index-info-text">
