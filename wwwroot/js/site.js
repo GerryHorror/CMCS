@@ -1,4 +1,11 @@
-﻿/**
+﻿/*
+    Student Name: Gérard Blankenberg
+    Student Number: ST10046280
+    Module: PROG6212
+    POE Part 1
+*/
+
+/**
  * This JavaScript file contains various functions to handle different views and functionalities on the web app.
  * The functionalities are modularised into separate functions for better organisation and maintainability.
  * Below is a brief overview of each section and its purpose:
