@@ -1,10 +1,43 @@
-﻿@{
+﻿<!--
+    This Razor view file is for the Manage Lecturers Page of the Contract Monthly Claim System (CMCS).
+    It includes different sections to provide an interface for managing lecturer accounts.
+    Below is a brief overview of each section and its purpose:
+
+    1. ViewData:
+       - Sets the page title to "Manage Lecturers".
+
+    2. Stylesheet Link:
+       - Links to the CSS file (`manage.css`) that styles this page.
+
+    3. Main Container:
+       - The main content of the page is wrapped in a `<div>` element with the class `manage-lecturers-container`.
+
+    4. Action Overlay:
+       - A hidden overlay that displays action messages (e.g., success or error messages) to the user.
+
+    5. Add Lecturer Form:
+       - A form for adding new lecturers, including fields for first name, last name, email, and phone number.
+       - Includes a submit button to add the lecturer.
+
+    6. Lecturer List:
+       - Displays a list of current lecturers in a table format.
+       - Each row includes the lecturer's name, email, phone number, and action buttons for editing or deleting the lecturer.
+
+    This structure ensures that users have a clear and intuitive experience when managing lecturer accounts.
+-->
+
+@{
+    // Set the page title
     ViewData["Title"] = "Manage Lecturers";
 }
+
+<!-- Stylesheet for the Manage Lecturers page -->
+<link rel="stylesheet" href="~/css/manage.css" />
 
 <div class="manage-lecturers-container">
     <h2 class="manage-lecturers-title">Manage Lecturers</h2>
 
+    <!-- Action Overlay for displaying messages to the user -->
     <div id="manageActionOverlay" class="manage-action-overlay">
         <div class="manage-action-message">
             <i id="manageActionIcon" class="fas"></i>
@@ -12,6 +45,7 @@
         </div>
     </div>
 
+    <!-- Add Lecturer Form -->
     <div class="add-lecturer-form">
         <h3 id="formTitle">Add New Lecturer</h3>
         <form id="lecturerForm">
@@ -36,6 +70,7 @@
         </form>
     </div>
 
+    <!-- Lecturer List -->
     <div class="lecturer-list">
         <h3>Current Lecturers</h3>
         <table class="lecturer-table">
@@ -51,7 +86,7 @@
                 <tr>
                     <td>John Doe</td>
                     <td>john.doe@example.com</td>
-                    <td>+27 123 456 7890</td>
+                    <td>+27 23 456 7890</td>
                     <td>
                         <button class="edit-lecturer-button">Edit</button>
                         <button class="delete-lecturer-button">Delete</button>
