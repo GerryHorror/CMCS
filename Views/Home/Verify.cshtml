@@ -1,10 +1,44 @@
-﻿@{
+﻿<!--
+    This Razor view file is for the Verify Claims Page of the Contract Monthly Claim System (CMCS).
+    It includes different sections to provide a comprehensive interface for coordinators and managers to verify claims.
+    Below is a brief overview of each section and its purpose:
+
+    1. Stylesheet Link:
+       - Links to the CSS file (`verify.css`) that styles this page.
+
+    2. ViewData:
+       - Sets the page title to "Verify Claims".
+
+    3. Main Container:
+       - The main content of the page is wrapped in a `<div>` element with the class `verify-container`.
+
+    4. Modal for Claim Details:
+       - A modal dialog to display detailed information about a specific claim.
+
+    5. Action Overlay:
+       - An overlay to show action messages (e.g., claim approved or rejected).
+
+    6. Search and Filter:
+       - Input fields to search and filter claims based on status.
+
+    7. Claims Table:
+       - A table displaying the list of claims with options to approve, reject, or view details.
+
+    This structure ensures that coordinators and managers have a clear and efficient experience when verifying claims.
+-->
+
+@{
+    // Set the page title
     ViewData["Title"] = "Verify Claims";
 }
 
+<!-- Link to the CSS file for styling the Verify Claims page -->
+<link rel="stylesheet" href="/css/verify.css" />
+
+<!-- Main content of the Verify Claims page -->
 <div class="verify-container">
     <h2 class="verify-title">Verify Claims</h2>
-
+    <!-- Modal for displaying claim details -->
     <div id="verifyModal" class="verify-modal">
         <div class="verify-modal-content">
             <span class="verify-modal-close">&times;</span>
@@ -12,14 +46,14 @@
             <div id="verifyDetails" class="verify-modal-details"></div>
         </div>
     </div>
-
+    <!-- Overlay for action messages -->
     <div id="verifyActionOverlay" class="verify-action-overlay">
         <div class="verify-action-message">
             <i id="verifyActionIcon" class="fas"></i>
             <p id="verifyActionText"></p>
         </div>
     </div>
-
+    <!-- Search and filter options for claims -->
     <input type="text" id="claimSearch" class="verify-search" placeholder="Search claims...">
     <select id="claimStatus" class="verify-status-filter">
         <option value="">All Statuses</option>
@@ -28,7 +62,7 @@
         <option value="Rejected">Rejected</option>
     </select>
 
-
+    <!-- Table to display claims with options to approve, reject, or view details -->
     <table class="verify-table">
         <thead>
             <tr>

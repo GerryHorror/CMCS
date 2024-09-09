@@ -1,0 +1,318 @@
+﻿/*
+    This CSS file contains the styles for the Verify Claims Page of the Contract Monthly Claim System (CMCS).
+    It includes various styles to ensure a visually appealing and user-friendly interface.
+    Below is a brief overview of each section and its purpose:
+
+    1. Verify Container:
+       - Styles the main container of the page, setting maximum width, centering it, and adding padding.
+
+    2. Title:
+       - Styles the title of the verify page, including colour, margin, and text alignment.
+
+    3. Filters:
+       - Styles the search and filter input fields, including padding, border, and border radius.
+
+    4. Table:
+       - Styles the table displaying the list of claims, including width, border, padding, and text alignment.
+
+    5. Status Labels:
+       - Styles the status labels (Pending, Approved, Rejected) with different background colours and text colours.
+
+    6. Buttons:
+       - Styles the action buttons (Approve, Reject, Details) with background colours, text colours, padding, and hover effects.
+
+    7. Modal:
+       - Styles the modal dialog for displaying claim details, including background colour, padding, border, and animations.
+
+    8. Action Overlay:
+       - Styles the overlay for displaying action messages, including background colour, padding, border radius, and animations.
+
+    9. Media Queries:
+       - Includes responsive styles for smaller screens, adjusting the layout of filters, table, and modal content.
+
+    These styles ensure that the Verify Claims Page is visually consistent and provides a pleasant user experience.
+*/
+
+/* Main container for the verify page */
+.verify-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Title styling for the verify page */
+.verify-title {
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Filters section styling */
+.verify-filters {
+    display: flex;
+    justify-content: space-between; /* Space out the filters */
+    margin-bottom: 1rem;
+}
+
+/* Search and status filter styling */
+.verify-search, .verify-status-filter {
+    padding: 0.5rem;
+    border: 1px solid var(--color-secondary);
+    border-radius: 4px;
+}
+
+.verify-search {
+    flex-grow: 1; /* Allow the search input to grow */
+    margin-right: 1rem;
+}
+
+/* Table styling for claims */
+.verify-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+    .verify-table th, .verify-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--color-secondary);
+    }
+
+    .verify-table th {
+        background-color: var(--color-primary);
+        color: var(--color-light);
+    }
+
+/* Claim status styling */
+.verify-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.verify-status-pending {
+    background-color: var(--color-warning);
+    color: var(--color-dark);
+}
+
+.verify-status-approved {
+    background-color: var(--color-success);
+    color: var(--color-light);
+}
+
+.verify-status-rejected {
+    background-color: var(--color-error);
+    color: var(--color-light);
+}
+
+/* Buttons for approving, rejecting, and viewing details */
+.verify-approve-button,
+.verify-reject-button,
+.verify-details-button {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 0.25rem;
+}
+
+.verify-approve-button {
+    background-color: var(--color-success);
+    color: var(--color-light);
+}
+
+.verify-reject-button {
+    background-color: var(--color-error);
+    color: var(--color-light);
+}
+
+.verify-details-button {
+    background-color: var(--color-secondary);
+    color: var(--color-light);
+}
+
+    /* Hover effect for buttons */
+    .verify-approve-button:hover,
+    .verify-reject-button:hover,
+    .verify-details-button:hover {
+        opacity: 0.8;
+    }
+
+/* Modal dialogue for displaying claim details */
+.verify-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); /* Semi-transparent background */
+    animation: fadeIn 0.3s;
+}
+
+/* Modal content container */
+.verify-modal-content {
+    background-color: var(--color-light);
+    margin: 5% auto;
+    padding: 2rem;
+    border: 1px solid var(--color-secondary);
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideIn 0.3s;
+}
+
+/* Close button for the modal */
+.verify-modal-close {
+    color: var(--color-text);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+    /* Hover and focus state for the close button */
+    .verify-modal-close:hover,
+    .verify-modal-close:focus {
+        color: var(--color-primary);
+        text-decoration: none;
+    }
+
+/* Modal title styling */
+.verify-modal-title {
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--color-secondary);
+    padding-bottom: 0.5rem;
+}
+
+/* Modal details section styling */
+.verify-modal-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid layout */
+    gap: 1rem;
+}
+
+    .verify-modal-details p {
+        margin: 0;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .verify-modal-details strong {
+        color: var(--color-primary);
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .verify-modal-details h4 {
+        grid-column: 1 / -1;
+        margin-top: 1rem;
+        color: var(--color-primary);
+    }
+
+    .verify-modal-details ul {
+        grid-column: 1 / -1;
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .verify-modal-details li {
+        background-color: #f8f9fa;
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+    }
+
+/* Animation keyframes for fade-in and slide-in effects */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 768px) {
+    .verify-modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+
+    .verify-modal-details {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Action overlay for displaying messages */
+.verify-action-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Message container within the action overlay */
+.verify-action-message {
+    background-color: var(--color-light);
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s;
+}
+
+    .verify-action-message i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .verify-action-message p {
+        font-size: 1.2rem;
+        color: var(--color-primary);
+        margin: 0;
+    }
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .verify-filters {
+        flex-direction: column;
+    }
+
+    .verify-search, .verify-status-filter {
+        margin-bottom: 1rem;
+    }
+
+    .verify-table th, .verify-table td {
+        padding: 0.5rem;
+    }
+}
