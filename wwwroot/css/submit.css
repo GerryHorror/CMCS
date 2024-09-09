@@ -1,31 +1,66 @@
-﻿/* Submit styles */
+﻿/*
+    This CSS file contains the styles for the Submit Page of the Contract Monthly Claim System (CMCS).
+    It includes various styles to ensure a visually appealing and user-friendly interface.
+    Below is a brief overview of each section and its purpose:
 
+    1. Submit Container:
+       - Styles the main container of the submit page, setting maximum width, centering it, and adding padding.
+
+    2. Title:
+       - Styles the title of the submit page, including text alignment and margin.
+
+    3. Form:
+       - Styles the form, including layout, gap between elements, and input styles.
+
+    4. Input Group:
+       - Styles the input group, including alignment and custom input group text.
+
+    5. Button:
+       - Styles the submit button, including background colour, text colour, padding, border radius, and hover effects.
+
+    6. Additional Elements:
+       - Styles additional elements like the add entry button, work entry, and success alert.
+
+    7. Media Queries:
+       - Adjusts styles for smaller screens.
+
+    8. Success Overlay:
+       - Styles the success overlay and message, including animations.
+
+    These styles ensure that the Submit Page is visually consistent and provides a pleasant user experience.
+*/
+
+/* Main container for the submit page */
 .submit-container {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: var(--color-light);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px; /* Set maximum width */
+    margin: 2rem auto; /* Centre the container based on the width */
+    padding: 2rem; /* Add padding around the container */
+    background-color: var(--color-light); /* Set background colour */
+    border-radius: 8px; /* Add border radius */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
 }
 
+/* Title of the submit page */
 .submit-title {
     color: var(--color-primary);
     margin-bottom: 1.5rem;
     text-align: center;
 }
 
+/* Form styles */
 .submit-form {
-    display: flex;
-    flex-direction: column;
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Arrange elements in a column */
     gap: 1rem;
 }
 
+/* Label for form inputs */
 .submit-label {
     font-weight: bold;
     color: var(--color-primary);
 }
 
+/* Input styles for text and textarea */
 .submit-input,
 .submit-textarea {
     width: 100%;
@@ -36,7 +71,7 @@
 }
 
 .submit-textarea {
-    resize: vertical;
+    resize: vertical; /* Allow vertical resizing of textarea. This allows users to expand the textarea as needed. */
 }
 
 .input-group {
@@ -55,6 +90,7 @@
     border-radius: 0 4px 4px 0;
 }
 
+/* Button styles */
 .submit-button {
     background-color: var(--color-primary);
     color: var(--color-light);
@@ -63,64 +99,71 @@
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease; /* Add a smooth transition for the background colour */
 }
 
+    /* Hover effect for the submit button */
     .submit-button:hover {
         background-color: var(--color-accent);
     }
 
+/* Add entry button styling */
 #addEntry {
-    align-self: flex-start;
+    align-self: flex-start; /* Align the button to the start of the container */
     margin-bottom: 1rem;
 }
 
+/* Work entry styling */
 .work-entry {
-    border: 1px solid var(--color-secondary);
+    border: 1px solid var(--color-secondary); /* Add border around the work entry */
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
 }
 
+/* Success alert styling */
 .alert-success {
-    background-color: var(--color-success);
+    background-color: var(--color-success); /* Background color for the success alert */
     color: var(--color-light);
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
 }
 
+/* Media queries for smaller screens */
 @media (max-width: 768px) {
     .submit-container {
-        padding: 1rem;
+        padding: 1rem; /* Adjust padding for smaller screens */
     }
 }
 
+/* Success overlay styling */
 .success-overlay {
-    display: none;
-    position: fixed;
+    display: none; /* This hides the overlay by default */
+    position: fixed; /* Fixed position for the overlay (stays in place even when scrolling) */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 1000; /* This ensures the overlay is on top of other elements (higher z-index) */
     justify-content: center;
     align-items: center;
 }
 
+/* Success message styling */
 .success-message {
     background-color: var(--color-light);
     padding: 2rem;
     border-radius: 8px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 0.5s;
+    animation: fadeIn 0.5s; /* Apply fade-in animation */
 }
 
     .success-message i {
-        font-size: 3rem;
-        color: var(--color-success);
+        font-size: 3rem; /* Font size for the icon */
+        color: var(--color-success); /* Colour for the icon */
         margin-bottom: 1rem;
     }
 
@@ -130,6 +173,7 @@
         margin: 0;
     }
 
+/* Keyframes for fade in animation */
 @keyframes fadeIn {
     from {
         opacity: 0;

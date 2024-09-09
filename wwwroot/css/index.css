@@ -48,171 +48,195 @@
     These styles ensure that the Home Page is visually consistent and provides a pleasant user experience.
 */
 
+/* Keyframes for the border animation */
 @keyframes borderAnimation {
     0% {
-        border-color: var(--color-primary);
+        border-color: var(--color-primary); /* Initial border colour */
     }
 
     33% {
-        border-color: var(--color-secondary);
+        border-color: var(--color-secondary); /* Change border colour at 33% */
     }
 
     66% {
-        border-color: var(--color-accent);
+        border-color: var(--color-accent); /* Change border colour at 66% */
     }
 
     100% {
-        border-color: var(--color-primary);
+        border-color: var(--color-primary); /* Final border colour */
     }
 }
 
+/* Main container for the index page */
 .index-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    max-width: 1200px; /* Set maximum width of the container */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 2rem; /* Padding inside the container */
 }
 
+/* Hero section styling */
 .index-hero {
-    text-align: center;
-    margin-bottom: 3rem;
-    padding: 3rem 0;
-    background-color: var(--color-primary);
-    color: var(--color-light);
-    border-radius: 8px;
+    text-align: center; /* Center align text */
+    margin-bottom: 3rem; /* Add margin at the bottom */
+    padding: 3rem 0; /* Padding inside the hero section */
+    background-color: var(--color-primary); /* Background color of the hero section */
+    color: var(--color-light); /* Text color in the hero section */
+    border-radius: 8px; /* Rounded corners for the hero section */
 }
 
+/* Title in the hero section */
 .index-title {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 2.5rem; /* Font size of the title */
+    margin-bottom: 1rem; /* Add margin at the bottom */
 }
 
+/* Subtitle in the hero section */
 .index-subtitle {
-    font-size: 1.2rem;
-    opacity: 0.8;
+    font-size: 1.2rem; /* Font size of the subtitle */
+    opacity: 0.8; /* Slighty reduce opacity for a subtle effect */
 }
 
+/* Features section styling */
 .index-features {
-    margin-bottom: 3rem;
-    padding: 2rem;
-    border: 2px solid var(--color-primary);
-    border-radius: 8px;
-    animation: borderAnimation 10s infinite;
-    transition: box-shadow 0.3s ease;
+    margin-bottom: 3rem; /* Add margin at the bottom */
+    padding: 2rem; /* Add padding inside the features section */
+    border: 2px solid var(--color-primary); /* Border around the features section */
+    border-radius: 8px; /* Rounded corners for the features section */
+    animation: borderAnimation 10s infinite; /* Apply the border animation */
+    transition: box-shadow 0.3s ease; /* Add a smooth transition for box shadow */
 }
 
+    /* Hover effect for the features section */
     .index-features:hover {
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow on hover */
     }
 
+/* Title for the features section */
 .index-features-title {
-    text-align: center;
-    color: var(--color-primary);
-    margin-bottom: 2rem;
-    position: relative;
-    display: inline-block;
-    left: 50%;
-    transform: translateX(-50%);
+    text-align: center; /* Center align the title */
+    color: var(--color-primary); /* Text colour for the title */
+    margin-bottom: 2rem; /* Add margin at the bottom */
+    position: relative; /* Position the title relative to its container */
+    display: inline-block; /* Display the title as an inline block */
+    left: 50%; /* Move the title 50% to the left */
+    transform: translateX(-50%); /* Center the title horizontally */
 }
 
+    /* Underline effect for the features title */
     .index-features-title::after {
-        content: '';
-        display: block;
-        width: 50px;
-        height: 2px;
-        background-color: var(--color-primary);
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        transition: width 0.3s ease;
+        content: ''; /* Add content after the title */
+        display: block; /* Display the content as a block element */
+        width: 50px; /* Initial width of the underline */
+        height: 2px; /* Height of the underline */
+        background-color: var(--color-primary); /* Colour of the underline */
+        position: absolute; /* Position the underline absolutely */
+        bottom: -10px; /* Position the underline below the title */
+        left: 50%; /* Move the underline 50% to the left */
+        transform: translateX(-50%); /* Center the underline horizontally */
+        transition: width 0.3s ease; /* Add a smooth transition for the width */
     }
 
+/* Hover effect for the features title */
 .index-features:hover .index-features-title::after {
     width: 100px;
 }
 
+/* Card container for the feature cards */
 .index-card-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+    display: grid; /* Use grid layout for the cards */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid layout (it calculates the number of columns based on the available space) */
+    gap: 2rem; /* Add gap between the cards */
 }
 
+/* Feature card styling */
 .index-card {
-    background-color: var(--color-light);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    text-align: center;
-    transition: transform 0.3s ease;
+    background-color: var(--color-light); /* Background colour of the card */
+    border-radius: 8px; /* Rounded corners for the card */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    padding: 1.5rem; /* Padding inside the card */
+    text-align: center; /* Center align text */
+    transition: transform 0.3s ease; /* Add a smooth transition for the transform */
 }
 
+    /* Hover effect for the feature cards */
     .index-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-5px); /* Move the card up slightly on hover */
     }
 
+/* Card icon styling */
 .index-card-icon {
-    font-size: 2rem;
-    color: var(--color-primary);
-    margin-bottom: 1rem;
+    font-size: 2rem; /* Font size of the icon */
+    color: var(--color-primary); /* Colour of the icon */
+    margin-bottom: 1rem; /* Add margin at the bottom */
 }
 
+/* Card title styling */
 .index-card-title {
-    color: var(--color-primary);
-    margin-bottom: 1rem;
+    color: var(--color-primary); /* Colour of the title */
+    margin-bottom: 1rem; /* Add margin at the bottom */
 }
 
+/* Card text styling */
 .index-card-text {
-    color: var(--color-text);
-    margin-bottom: 1.5rem;
+    color: var(--color-text); /* Colour of the text */
+    margin-bottom: 1.5rem; /* Add margin at the bottom */
 }
 
+/* Card button styling */
 .index-card-button {
-    display: inline-block;
-    background-color: var(--color-btn-primary);
-    color: var(--color-btn-text);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+    display: inline-block; /* Display the button as an inline block */
+    background-color: var(--color-btn-primary); /* Background colour of the button */
+    color: var(--color-btn-text); /* Text colour of the button */
+    padding: 0.5rem 1rem; /* Padding inside the button */
+    border-radius: 4px; /* Rounded corners for the button */
+    text-decoration: none; /* Remove underline from the button */
+    transition: background-color 0.3s ease; /* Add a smooth transition for the background colour */
 }
 
+    /* Hover effect for the card button */
     .index-card-button:hover {
-        background-color: var(--color-accent);
+        background-color: var(--color-accent); /* Change background colour on hover */
     }
 
+/* Information section styling */
 .index-info {
-    background-color: var(--color-light);
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-light); /* Background colour of the information section */
+    border-radius: 8px; /* Rounded corners for the information section */
+    padding: 2rem; /* Padding inside the information section */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
 }
 
+/* Information title styling */
 .index-info-title {
     color: var(--color-primary);
     margin-bottom: 1rem;
 }
 
+/* Information text styling */
 .index-info-text {
     color: var(--color-text);
     margin-bottom: 1rem;
 }
 
+/* List in the information section */
 .index-info-list {
-    list-style-type: none;
+    list-style-type: none; /* Remove default list style */
     padding-left: 0;
 }
 
+    /* List items in the information section */
     .index-info-list li {
         color: var(--color-text);
         margin-bottom: 0.5rem;
         padding-left: 1.5rem;
-        position: relative;
+        position: relative; /* Position the list item relative to its container */
     }
 
+        /* Custom bullet points for the list items */
         .index-info-list li::before {
-            content: "\2022";
+            content: "\2022"; /* Bullet point character */
             color: var(--color-primary);
-            font-weight: bold;
+            font-weight: bold; /* Bold font for the bullet point */
             position: absolute;
             left: 0;
         }

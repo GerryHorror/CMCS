@@ -1,15 +1,64 @@
-﻿<link rel="stylesheet" href="/css/submit.css" />
+﻿<!--
+    This Razor view file is for the "Submit New Claim" page of the Contract Monthly Claim System (CMCS).
+    It allows users to submit a new claim by filling out a form with relevant details.
+    Below is a brief overview of each section and its purpose:
+
+    1. Stylesheet Link:
+       - Links to the CSS file (`submit.css`) that styles this page.
+
+    2. ViewData Title:
+       - Sets the title of the page to "Submit New Claim".
+
+    3. Submit Container:
+       - The main container for the page content, styled with the class `submit-container`.
+
+    4. Success Overlay:
+       - A hidden overlay that displays a success message when a claim is successfully submitted.
+
+    5. Submit Card:
+       - A card-like container that holds the form for submitting a new claim.
+
+    6. Form Title:
+       - Displays the title of the form, "Submit a New Claim".
+
+    7. Success Message:
+       - A hidden alert that displays a success message when a claim is successfully submitted.
+
+    8. Claim Form:
+       - The main form for submitting a new claim, including various input fields and labels:
+         - **Claim Date**: Input for the date of the claim.
+         - **Hourly Rate**: Input for the hourly rate, with a currency symbol.
+         - **Work Entries**: Section for entering multiple work dates and hours worked.
+         - **Add Another Work Date**: Button to add more work entries.
+         - **Total Claim Amount**: Input for the total claim amount, calculated automatically.
+         - **Description**: Text area for a description of the claim.
+         - **Supporting Document**: File input for uploading relevant documents.
+
+    9. Submit Button:
+       - Button to submit the form.
+
+    This structure ensures that users can easily fill out and submit a new claim with all necessary details.
+-->
+<!-- Stylesheet for the Submit New Claim page -->
+<link rel="stylesheet" href="/css/submit.css" />
 
 @{
+    // Set the title of the page
     ViewData["Title"] = "Submit New Claim";
 }
+
+<!-- Main container for the page content -->
 <div class="submit-container">
+
+    <!-- Success overlay for displaying a success message -->
     <div id="successOverlay" class="success-overlay">
         <div class="success-message">
             <i class="fas fa-check-circle"></i>
             <p>Claim successfully submitted!</p>
         </div>
     </div>
+
+    <!-- Card container for the submit form -->
     <div class="submit-card">
         <div class="submit-card">
             <h2 class="submit-title">Submit a New Claim</h2>
@@ -29,6 +78,7 @@
                     </div>
                 </div>
 
+                <!-- Work Entries Section -->
                 <div id="workEntries">
                     <div class="work-entry">
                         <div class="form-group">
@@ -44,6 +94,7 @@
 
                 <button type="button" id="addEntry" class="btn btn-secondary">Add Another Work Date</button>
 
+                <!-- Total Claim Amount and Description -->
                 <div class="form-group">
                     <label for="claimAmount" class="submit-label">Total Claim Amount:</label>
                     <div class="input-group">
@@ -55,6 +106,7 @@
                     <label for="claimDescription" class="submit-label">Description:</label>
                     <textarea id="claimDescription" name="ClaimDescription" class="submit-textarea" rows="4" required></textarea>
                 </div>
+                <!-- Supporting Document Upload -->
                 <div class="form-group">
                     <label for="supportingDocument" class="submit-label">Supporting Document:</label>
                     <input type="file" id="supportingDocument" name="SupportingDocument" class="submit-file-input" required>
