@@ -1,0 +1,155 @@
+﻿/*
+    This CSS file contains the styles for the Login Page of the Contract Monthly Claim System (CMCS).
+    It includes various styles to ensure a visually appealing and user-friendly interface.
+    Below is a brief overview of each section and its purpose:
+
+    1. Login Container:
+       - Styles the main container of the login page, centering its content and setting background colour and padding.
+
+    2. Login Card:
+       - Styles the card element that contains the login form, including background colour, border radius, box shadow, padding, and hover effects.
+
+    3. Login Header:
+       - Styles the header of the login card, including text alignment and margin.
+
+    4. Login Title and Subtitle:
+       - Styles the main title and subtitle in the login header, including font size, colour, and margin.
+
+    5. Login Form:
+       - Styles the login form, including layout and spacing of form groups.
+
+    6. Form Groups:
+       - Styles individual form groups, including margin and label styling.
+
+    7. Login Labels:
+       - Styles the labels in the form groups, including font size, colour, and margin.
+
+    8. Login Inputs:
+       - Styles the input fields in the form groups, including padding, border, border radius, font size, and focus effects.
+
+    9. Login Button:
+       - Styles the login button, including background colour, border, border radius, text colour, padding, cursor, and hover effects.
+
+    10. Media Queries:
+        - Adjusts the padding and font size for smaller screens to ensure responsiveness.
+
+    These styles ensure that the Login Page is visually consistent and provides a pleasant user experience.
+*/
+
+/* Main container for the login page */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Full height of the viewport */
+    background-color: var(--color-background);
+    padding: 2rem;
+}
+
+/* Login card styles */
+.login-card {
+    background-color: var(--color-light);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    transition: transform 0.3s ease;
+}
+
+    /* Hover effect for the login card */
+    .login-card:hover {
+        transform: translateY(-5px);
+    }
+
+/* Login header styles */
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Login title and subtitle styles */
+.login-title {
+    color: var(--color-primary);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    color: var(--color-secondary);
+    font-size: 1rem;
+}
+
+/* Login form styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form group styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Login label styles */
+.login-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+    .login-label i {
+        margin-right: 0.5rem;
+        color: var(--color-secondary);
+    }
+
+/* Login input styles */
+.login-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--color-secondary);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+    /* Focus effect for login input */
+    .login-input:focus {
+        border-color: var(--color-primary);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
+    }
+
+.login-button {
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: 4px;
+    color: var(--color-light);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .login-button:hover {
+        background-color: var(--color-accent);
+    }
+
+    .login-button i {
+        margin-right: 0.5rem;
+    }
+
+/* Media queries for responsiveness */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1.5rem;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+}

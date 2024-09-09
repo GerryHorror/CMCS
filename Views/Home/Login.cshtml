@@ -1,30 +1,73 @@
-﻿@{
+﻿<!--
+    This Razor view file is for the Login Page of the Contract Monthly Claim System (CMCS).
+    It includes different sections to provide a welcoming and secure interface for users to log in.
+    Below is a brief overview of each section and its purpose:
+
+    1. Stylesheet Link:
+       - Links to the CSS file (`login.css`) that styles this page.
+
+    2. ViewData and Layout:
+       - Sets the page title to "Login".
+       - Specifies the layout file to be used for this page.
+
+    3. Main Container:
+       - The main content of the page is wrapped in a `<div>` element with the class `login-container`.
+
+    4. Login Card:
+       - A card element that contains the login form and a welcoming message.
+
+    5. Login Form:
+       - A form that allows users to enter their username, password, and role to log in.
+       - Includes input fields for username, password, and role selection.
+       - A submit button to send the login credentials.
+
+    This structure ensures that users have a clear and secure experience when logging into the CMCS.
+-->
+
+@{
+    // Set the page title and layout
     ViewData["Title"] = "Login";
     Layout = "_Layout";
 }
 
+<!-- Stylesheet for the Login Page -->
+<link rel="stylesheet" href="~/css/login.css">
+
+<!-- Main Container for the Login Page -->
 <div class="login-container">
     <div class="login-card">
-        <h2 class="login-title">Welcome to CMCS</h2>
-        <p class="login-subtitle">Contract Monthly Claim System</p>
+        <!-- Login Header with Title and Subtitle -->
+        <div class="login-header">
+            <h2 class="login-title">Welcome to CMCS</h2>
+            <p class="login-subtitle">Contract Monthly Claim System</p>
+        </div>
         <form class="login-form" asp-action="Login" method="post">
             <div class="form-group">
-                <label for="username" class="login-label">Username</label>
+                <label for="username" class="login-label">
+                    <i class="fas fa-user"></i> Username
+                </label>
                 <input type="text" id="username" name="username" class="login-input" required>
             </div>
             <div class="form-group">
-                <label for="password" class="login-label">Password</label>
+                <label for="password" class="login-label">
+                    <i class="fas fa-lock"></i> Password
+                </label>
                 <input type="password" id="password" name="password" class="login-input" required>
             </div>
             <div class="form-group">
-                <label for="role" class="login-label">Role</label>
+                <label for="role" class="login-label">
+                    <i class="fas fa-user-tag"></i> Role
+                </label>
+                <!-- Dropdown for Role Selection -->
                 <select id="role" name="role" class="login-input">
                     <option value="lecturer">Lecturer</option>
                     <option value="coordinator">Programme Coordinator</option>
                     <option value="manager">Academic Manager</option>
                 </select>
             </div>
-            <button type="submit" class="login-button">Login</button>
+            <button type="submit" class="login-button">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
         </form>
     </div>
 </div>
