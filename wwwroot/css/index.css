@@ -1,4 +1,52 @@
-﻿/* Index styles */
+﻿/*
+    This CSS file contains the styles for the Home Page of the Contract Monthly Claim System (CMCS).
+    It includes various styles to ensure a visually appealing and user-friendly interface.
+    Below is a brief overview of each section and its purpose:
+
+    1. Keyframes for Border Animation:
+       - Defines an animation for changing the border colour of elements.
+
+    2. Index Container:
+       - Styles the main container of the page, setting maximum width, centering it, and adding padding.
+
+    3. Hero Section:
+       - Styles the hero section with a background colour, text alignment, padding, and border radius.
+
+    4. Title and Subtitle:
+       - Styles the main title and subtitle in the hero section, including font size and margin.
+
+    5. Features Section:
+       - Styles the features section, including border, padding, animation, and hover effects.
+
+    6. Features Title:
+       - Styles the title of the features section, including text alignment, colour, and an underline effect on hover.
+
+    7. Card Container:
+       - Uses a grid layout to arrange the feature cards.
+
+    8. Feature Cards:
+       - Styles individual feature cards, including background colour, border radius, padding, text alignment, and hover effects.
+
+    9. Card Icons:
+       - Styles the icons in the feature cards, including size and colour.
+
+    10. Card Titles and Text:
+        - Styles the titles and text in the feature cards, including colour and margin.
+
+    11. Card Buttons:
+        - Styles the buttons in the feature cards, including background colour, text colour, padding, border radius, and hover effects.
+
+    12. Information Section:
+        - Styles the information section, including background colour, border radius, padding, and box shadow.
+
+    13. Information Title and Text:
+        - Styles the title and text in the information section, including colour and margin.
+
+    14. Information List:
+        - Styles the list in the information section, including list style, padding, and custom bullet points.
+
+    These styles ensure that the Home Page is visually consistent and provides a pleasant user experience.
+*/
 
 @keyframes borderAnimation {
     0% {
