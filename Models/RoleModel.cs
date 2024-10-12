@@ -10,11 +10,15 @@
  - RoleName: This will be the name of the role (Lecturer, Program Coordinator, Academic Manager).
  */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace CMCS.Models
 {
     public class RoleModel
     {
+        [Key]
         public int RoleID { get; set; } // This will be the primary key
+
         public string RoleName { get; set; }
     }
 }

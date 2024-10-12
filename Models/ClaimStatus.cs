@@ -10,11 +10,15 @@
  - StatusName: will be the name of the status (Pending, Approved, Rejected).
  */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace CMCS.Models
 {
     public class ClaimStatus
     {
+        [Key]
         public int StatusID { get; set; } // This will be the primary key
+
         public string StatusName { get; set; }
     }
 }

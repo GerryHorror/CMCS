@@ -1,3 +1,6 @@
+using CMCS.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace CMCS
 {
     public class Program
@@ -16,6 +19,9 @@ namespace CMCS
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            // Add database context to the container (Dependency Injection)
+            builder.Services.AddDbContext<CMCSDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
