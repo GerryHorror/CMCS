@@ -206,13 +206,39 @@ const initialiseSubmitView = () => {
 
 // User Profile Functionality - handles form submission and shows success message when the form is submitted
 const initialiseUserProfile = () => {
-    // Get the user profile form element
     const form = document.getElementById('userProfileForm');
-    // Add event listener for form submission and show a success message when the form is submitted
     if (form) {
-        form.onsubmit = (e) => {
+        form.onsubmit = async (e) => {
             e.preventDefault();
-            showActionOverlay('userActionOverlay', 'fas fa-user-check', 'var(--color-success)', 'Profile updated successfully!');
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Server response:', result);
+
+                if (result.success) {
+                    showActionOverlay('userActionOverlay', 'fas fa-user-check', 'var(--color-success)', 'Profile updated successfully!');
+                    // Clear password field after successful update
+                    document.getElementById('UserPassword').value = '';
+                } else {
+                    let errorMessage = result.message;
+                    if (result.errors && result.errors.length > 0) {
+                        errorMessage += ': ' + result.errors.join(', ');
+                    }
+                    showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', errorMessage);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An error occurred. Please try again.');
+            }
         };
     } else {
         console.error('User Profile form is missing from the page.');

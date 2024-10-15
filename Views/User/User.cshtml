@@ -29,7 +29,7 @@
 
     This structure ensures that users have a clear and intuitive experience when updating their profile information.
 -->
-@model List<CMCS.Models.UserModel>
+@model CMCS.Models.UserModel
 
 @{
     // Set the page title
@@ -55,37 +55,52 @@
         <h2 class="user-title">Your Profile</h2>
         <!-- Form for updating user profile information -->
         <form id="userProfileForm" class="user-form" asp-action="User" method="post">
+            <input type="hidden" asp-for="UserID" />
+            <input type="hidden" asp-for="UserName" />
             <div class="form-group">
-                <label for="firstName" class="user-label">First Name:</label>
-                <input type="text" id="firstName" name="FirstName" class="user-input" placeholder="Enter your first name">
+                <label asp-for="FirstName" class="user-label">First Name:</label>
+                <input asp-for="FirstName" class="user-input" placeholder="Enter your first name">
+                <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="lastName" class="user-label">Last Name:</label>
-                <input type="text" id="lastName" name="LastName" class="user-input" placeholder="Enter your last name">
+                <label asp-for="LastName" class="user-label">Last Name:</label>
+                <input asp-for="LastName" class="user-input" placeholder="Enter your last name">
+                <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="email" class="user-label">Email:</label>
-                <input type="email" id="email" name="Email" class="user-input" placeholder="Enter your email">
+                <label asp-for="UserEmail" class="user-label">Email:</label>
+                <input asp-for="UserEmail" class="user-input" placeholder="Enter your email">
+                <span asp-validation-for="UserEmail" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="phoneNumber" class="user-label">Phone Number:</label>
-                <input type="tel" id="phoneNumber" name="PhoneNumber" class="user-input" placeholder="Enter your phone number">
+                <label asp-for="PhoneNumber" class="user-label">Phone Number:</label>
+                <input asp-for="PhoneNumber" class="user-input" placeholder="Enter your phone number">
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="bankName" class="user-label">Bank Name:</label>
-                <input type="text" id="bankName" name="BankName" class="user-input" placeholder="Enter your bank name">
+                <label asp-for="BankName" class="user-label">Bank Name:</label>
+                <input asp-for="BankName" class="user-input" placeholder="Enter your bank name">
+                <span asp-validation-for="BankName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="branchCode" class="user-label">Branch Code:</label>
-                <input type="text" id="branchCode" name="BranchCode" class="user-input" placeholder="Enter your branch code">
+                <label asp-for="BranchCode" class="user-label">Branch Code:</label>
+                <input asp-for="BranchCode" class="user-input" placeholder="Enter your branch code">
+                <span asp-validation-for="BranchCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="accountNumber" class="user-label">Account Number:</label>
-                <input type="text" id="accountNumber" name="AccountNumber" class="user-input" placeholder="Enter your account number">
+                <label asp-for="BankAccountNumber" class="user-label">Account Number:</label>
+                <input asp-for="BankAccountNumber" class="user-input" placeholder="Enter your account number">
+                <span asp-validation-for="BankAccountNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="address" class="user-label">Address:</label>
-                <textarea id="address" name="Address" class="user-textarea" rows="3" placeholder="Enter your address"></textarea>
+                <label asp-for="Address" class="user-label">Address:</label>
+                <textarea asp-for="Address" class="user-textarea" rows="3" placeholder="Enter your address"></textarea>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserPassword" class="user-label">Password:</label>
+                <input asp-for="UserPassword" class="user-input" type="password" placeholder="Leave blank to keep current password">
+                <span asp-validation-for="UserPassword" class="text-danger"></span>
             </div>
             <button type="submit" class="user-button">Update Profile</button>
         </form>

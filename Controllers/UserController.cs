@@ -23,18 +23,71 @@ namespace CMCS.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Manage()
+        // Display the User page
+        public async Task<IActionResult> User()
         {
-            var roles = await _context.Roles.ToListAsync();
-            var lecturers = await _context.Users.Include(u => u.Role).ToListAsync();
-
-            var viewModel = new ManageViewModel
+            var userId = HttpContext.Session.GetInt32("UserID");
+            if (!userId.HasValue)
             {
-                Roles = roles,
-                Users = lecturers
-            };
+                return RedirectToAction("Login", "Home");
+            }
 
-            return View(viewModel);
+            var user = await _context.Users.FindAsync(userId.Value);
+
+            return View(user);
+        }
+
+        // Edit the user details
+        [HttpPost]
+        public async Task<IActionResult> User(UserModel userModel)
+        {
+            ModelState.Remove("UserName");
+            ModelState.Remove("UserPassword");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userId = HttpContext.Session.GetInt32("UserID");
+                    if (!userId.HasValue)
+                    {
+                        return Json(new { success = false, message = "User not authenticated" });
+                    }
+
+                    var existingUser = await _context.Users.FindAsync(userId.Value);
+                    if (existingUser == null)
+                    {
+                        return Json(new { success = false, message = "User not found" });
+                    }
+
+                    // Update only specific fields
+                    existingUser.FirstName = userModel.FirstName;
+                    existingUser.LastName = userModel.LastName;
+                    existingUser.UserEmail = userModel.UserEmail;
+                    existingUser.PhoneNumber = userModel.PhoneNumber;
+                    existingUser.BankName = userModel.BankName;
+                    existingUser.BranchCode = userModel.BranchCode;
+                    existingUser.BankAccountNumber = userModel.BankAccountNumber;
+                    existingUser.Address = userModel.Address;
+
+                    // Update password if a new one is provided
+                    if (!string.IsNullOrEmpty(userModel.UserPassword))
+                    {
+                        existingUser.UserPassword = userModel.UserPassword;
+                    }
+
+                    await _context.SaveChangesAsync();
+
+                    return Json(new { success = true, message = "Profile updated successfully" });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { success = false, message = "An error occurred while updating the profile", error = ex.Message });
+                }
+            }
+
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, message = "Invalid data", errors = errors });
         }
 
         [HttpPost]
