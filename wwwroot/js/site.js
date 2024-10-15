@@ -136,32 +136,26 @@ const initialiseClaimView = () => {
 
 // Submit view functionality - handles form submission, adding work entries, and uploading supporting documents
 const initialiseSubmitView = () => {
-    // Get the submit form and input elements for hourly rate, claim amount, and supporting document
     const submitForm = document.querySelector('.submit-form');
     if (submitForm) {
-        const hourlyRateInput = document.getElementById('hourlyRate');
-        const claimAmountInput = document.getElementById('claimAmount');
+        const hourlyRateInput = document.getElementById('HourlyRate');
+        const claimAmountInput = document.getElementById('ClaimAmount');
         const addEntryButton = document.getElementById('addEntry');
         const workEntriesContainer = document.getElementById('workEntries');
         const supportingDocumentInput = document.getElementById('supportingDocument');
-        // Counter for work entries
         let entryCount = 1;
-        // Function to calculate the claim amount based on hourly rate and total hours worked (sum of all work entries)
+
         const calculateClaimAmount = () => {
-            // Get the hourly rate value from the input element or set it to 0 if empty
             const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
             let totalHours = 0;
-            // Loop through all work hours input elements and calculate the total hours worked
             document.querySelectorAll('.work-hours').forEach(input => {
                 totalHours += parseFloat(input.value) || 0;
             });
-            // Calculate the total amount by multiplying total hours worked with hourly rate and set the claim amount input value
             const totalAmount = totalHours * hourlyRate;
             claimAmountInput.value = totalAmount.toFixed(2);
         };
-        // Function to add a new work entry (work date and hours worked) to the form
+
         const addNewWorkEntry = () => {
-            // Create a new work entry HTML template with input fields for work date and hours worked (when the user clicks on the add entry button)
             const newEntry = `
                 <div class="work-entry">
                     <div class="form-group">
@@ -174,30 +168,49 @@ const initialiseSubmitView = () => {
                     </div>
                 </div>
             `;
-            // Insert the new work entry HTML template into the work entries container and increment the entry count
             workEntriesContainer.insertAdjacentHTML('beforeend', newEntry);
             entryCount++;
         };
-        // Add event listeners for input, click, and form submission events
+
         hourlyRateInput.addEventListener('input', calculateClaimAmount);
         workEntriesContainer.addEventListener('input', (event) => {
             if (event.target.classList.contains('work-hours')) {
                 calculateClaimAmount();
             }
         });
-        // Add event listener for adding a new work entry when user clicks on the add entry button
         addEntryButton.addEventListener('click', addNewWorkEntry);
-        // Add event listener for submitting the form and showing a success message when the form is submitted
-        submitForm.addEventListener('submit', (event) => {
-            // Prevent the default form submission behaviour to handle it manually
+
+        submitForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             if (!supportingDocumentInput.files.length) {
                 alert('Please upload a supporting document before submitting.');
                 return;
             }
-            // Show a success message when the form is submitted successfully
-            showActionOverlay('successOverlay', 'fas fa-check-circle', 'var(--color-success)', 'Claim successfully submitted!');
-            submitForm.reset();
+
+            const formData = new FormData(submitForm);
+
+            try {
+                const response = await fetch(submitForm.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showActionOverlay('successOverlay', 'fas fa-check-circle', 'var(--color-success)', 'Claim successfully submitted!');
+                    submitForm.reset();
+                } else {
+                    let errorMessage = result.message;
+                    if (result.errors && result.errors.length > 0) {
+                        errorMessage += ': ' + result.errors.join(', ');
+                    }
+                    showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', errorMessage);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An error occurred. Please try again.');
+            }
         });
     }
 };

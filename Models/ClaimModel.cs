@@ -32,7 +32,7 @@ namespace CMCS.Models
 
         // Navigation property (this is used to create a relationship between the Claim and User tables)
 
-        public UserModel User { get; set; }
-        public ClaimStatus Status { get; set; }
+        public UserModel? User { get; set; }
+        public ClaimStatus? Status { get; set; }
     }
 }

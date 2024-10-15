@@ -24,6 +24,7 @@ namespace CMCS.Models
         public string DocumentName { get; set; }
         public string DocumentType { get; set; }
         public DateTime UploadDate { get; set; }
+        public byte[] FileContent { get; set; }
 
         // Navigation property (this is used to create a relationship between the Document and User tables)
         public ClaimModel Claim { get; set; }

@@ -38,14 +38,6 @@ namespace CMCS.Controllers
 
         // <-------------------------------------------------------------------------------------->
 
-        /// Action method for the Submit page
-        public IActionResult Submit()
-        {
-            return View();
-        }
-
-        // <-------------------------------------------------------------------------------------->
-
         /// Action method for the Claim page
         public IActionResult Claim()
         {

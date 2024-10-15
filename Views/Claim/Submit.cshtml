@@ -4,7 +4,6 @@
     Module: PROG6212
     POE Part 1
 -->
-
 <!--
     This Razor view file is for the "Submit New Claim" page of the Contract Monthly Claim System (CMCS).
     It allows users to submit a new claim by filling out a form with relevant details.
@@ -48,7 +47,7 @@
 -->
 <!-- Stylesheet for the Submit New Claim page -->
 <link rel="stylesheet" href="/css/submit.css" />
-
+@model CMCS.Models.ClaimModel
 @{
     // Set the title of the page
     ViewData["Title"] = "Submit New Claim";
@@ -72,16 +71,19 @@
             <div id="successMessage" class="alert alert-success" style="display: none;">
                 Claim successfully submitted!
             </div>
-            <form id="claimForm" class="submit-form" asp-action="Submit" method="post" enctype="multipart/form-data">
+            <form id="claimForm" class="submit-form" asp-controller="Claim" asp-action="Submit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="UserID" value="@Context.Session.GetInt32("UserID")" />
+
                 <div class="form-group">
-                    <label for="claimDate" class="submit-label">Claim Date:</label>
-                    <input type="date" id="claimDate" name="ClaimDate" class="submit-input" required>
+                    <label asp-for="SubmissionDate" class="submit-label">Claim Date:</label>
+                    <input asp-for="SubmissionDate" type="date" class="submit-input" required>
                 </div>
+
                 <div class="form-group">
-                    <label for="hourlyRate" class="submit-label">Hourly Rate:</label>
+                    <label asp-for="HourlyRate" class="submit-label">Hourly Rate:</label>
                     <div class="input-group">
                         <span class="input-group-text">R</span>
-                        <input type="number" id="hourlyRate" name="HourlyRate" class="submit-input" step="0.01" min="0" required>
+                        <input asp-for="HourlyRate" type="number" class="submit-input" step="0.01" min="0" required>
                     </div>
                 </div>
 
@@ -103,22 +105,24 @@
 
                 <!-- Total Claim Amount and Description -->
                 <div class="form-group">
-                    <label for="claimAmount" class="submit-label">Total Claim Amount:</label>
+                    <label asp-for="ClaimAmount" class="submit-label">Total Claim Amount:</label>
                     <div class="input-group">
                         <span class="input-group-text">R</span>
-                        <input type="number" id="claimAmount" name="ClaimAmount" class="submit-input" step="0.01" min="0" required readonly>
+                        <input asp-for="ClaimAmount" type="number" class="submit-input" step="0.01" min="0" required readonly>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label for="claimDescription" class="submit-label">Description:</label>
-                    <textarea id="claimDescription" name="ClaimDescription" class="submit-textarea" rows="4" required></textarea>
+                    <label asp-for="ClaimType" class="submit-label">Description:</label>
+                    <textarea asp-for="ClaimType" class="submit-textarea" rows="4" required></textarea>
                 </div>
                 <!-- Supporting Document Upload -->
                 <div class="form-group">
                     <label for="supportingDocument" class="submit-label">Supporting Document:</label>
-                    <input type="file" id="supportingDocument" name="SupportingDocument" class="submit-file-input" required>
+                    <input type="file" id="supportingDocument" name="supportingDocument" class="submit-file-input" required>
                     <small class="form-text text-muted">Upload any relevant documents (PDF, JPG, PNG, max 5MB)</small>
                 </div>
+
                 <button type="submit" class="submit-button">Submit Claim</button>
             </form>
         </div>

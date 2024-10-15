@@ -19,5 +19,24 @@ namespace CMCS
                 context.SaveChanges();
             }
         }
+
+        public static void SeedClaimStatuses(CMCSDbContext context)
+        {
+            if (!context.ClaimStatuses.Any())
+            {
+                context.ClaimStatuses.AddRange(
+                    new ClaimStatus { StatusName = "Pending" },
+                    new ClaimStatus { StatusName = "Approved" },
+                    new ClaimStatus { StatusName = "Rejected" }
+                );
+                context.SaveChanges();
+            }
+        }
+
+        public static void Initialise(CMCSDbContext context)
+        {
+            SeedRoles(context);
+            SeedClaimStatuses(context);
+        }
     }
 }
