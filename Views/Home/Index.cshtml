@@ -63,7 +63,7 @@
     <section class="index-features">
         <h2 class="index-features-title">Quick Actions</h2>
         <div class="index-card-container">
-            @if (userRole == "lecturer")
+            @if (userRole == "Lecturer")
             {
                 <article class="index-card">
                     <i class="fas fa-file-invoice index-card-icon"></i>
@@ -84,7 +84,7 @@
                     <a asp-action="User" class="index-card-button">Edit Profile</a>
                 </article>
             }
-            @if (userRole == "coordinator" || userRole == "manager")
+            @if (userRole == "Coordinator" || userRole == "Manager")
             {
                 <article class="index-card">
                     <i class="fas fa-check-double index-card-icon"></i>

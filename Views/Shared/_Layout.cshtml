@@ -41,7 +41,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                                 </li>
-                                @if (Context.Session.GetString("UserRole") == "lecturer")
+                                @if (Context.Session.GetString("UserRole") == "Lecturer")
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Submit">Submit Claim</a>
@@ -53,7 +53,7 @@
                                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="User">Edit Profile</a>
                                     </li>
                                 }
-                                @if (Context.Session.GetString("UserRole") == "coordinator" || Context.Session.GetString("UserRole") == "manager")
+                                @if (Context.Session.GetString("UserRole") == "Coordinator" || Context.Session.GetString("UserRole") == "Manager")
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Verify">Approve Claims</a>

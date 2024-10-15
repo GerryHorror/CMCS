@@ -4,7 +4,6 @@
     Module: PROG6212
     POE Part 1
 -->
-
 <!--
     This Razor view file is for the Login Page of the Contract Monthly Claim System (CMCS).
     It includes different sections to provide a welcoming and secure interface for users to log in.
@@ -30,7 +29,7 @@
 
     This structure ensures that users have a clear and secure experience when logging into the CMCS.
 -->
-
+@model CMCS.Models.LoginModel
 @{
     // Set the page title and layout
     ViewData["Title"] = "Login";
@@ -49,19 +48,22 @@
             <p class="login-subtitle">Contract Monthly Claim System</p>
         </div>
         <form class="login-form" asp-action="Login" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label for="username" class="login-label">
+                <label asp-for="Username" class="login-label">
                     <i class="fas fa-user"></i> Username
                 </label>
-                <input type="text" id="username" name="username" class="login-input" required>
+                <input asp-for="Username" class="login-input" required>
+                <span asp-validation-for="Username" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label for="password" class="login-label">
+                <label asp-for="Password" class="login-label">
                     <i class="fas fa-lock"></i> Password
                 </label>
-                <input type="password" id="password" name="password" class="login-input" required>
+                <input asp-for="Password" type="password" class="login-input" required>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label for="role" class="login-label">
                     <i class="fas fa-user-tag"></i> Role
                 </label>
@@ -71,7 +73,7 @@
                     <option value="coordinator">Programme Coordinator</option>
                     <option value="manager">Academic Manager</option>
                 </select>
-            </div>
+            </div> *@
             <button type="submit" class="login-button">
                 <i class="fas fa-sign-in-alt"></i> Login
             </button>
