@@ -25,6 +25,13 @@ namespace CMCS
 
             var app = builder.Build();
 
+            // Seed the database with roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<CMCSDbContext>();
+                DatabaseSeeder.SeedRoles(context);
+            }
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {

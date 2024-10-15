@@ -324,7 +324,7 @@ const initialiseVerifyView = () => {
 
 // Manage Lecturers functionality - handles adding, editing, and deleting lecturers in a table
 
-// Function to initialise the Manage Lecturers view
+// Function to initialise the Manage view
 const initialiseManageLecturers = () => {
     // Get the lecturer form, lecturer table, submit button, form title, and edit mode flag
     const form = document.getElementById('lecturerForm');
@@ -337,10 +337,8 @@ const initialiseManageLecturers = () => {
     // Function to show an overlay message with an icon and message based on the action (add, update, delete) and lecturer name
     const handleLecturerAction = (action, firstName, lastName) => {
         const lecturerName = `${firstName} ${lastName}`;
-        // Set the icon class, color, and message based on the action (add, update, delete)
         let iconClass, iconColor, message;
 
-        // Switch statement to set the icon class, color, and message based on the action
         switch (action) {
             case 'add':
                 iconClass = 'fas fa-user-plus';
@@ -358,14 +356,13 @@ const initialiseManageLecturers = () => {
                 message = `Lecturer ${lecturerName} has been deleted.`;
                 break;
         }
-        // Show the overlay message with the icon, color, and message for the action
         showActionOverlay('manageActionOverlay', iconClass, iconColor, message);
     };
 
-    // Function to add a new lecturer to the table with the provided first name, last name, email, and phone number
-    const addLecturerToTable = (firstName, lastName, email, phone) => {
+    // Function to add a new lecturer to the table
+    const addLecturerToTable = (id, firstName, lastName, email, phone) => {
         const newRow = lecturerTable.insertRow();
-        newRow.dataset.id = Date.now().toString();
+        newRow.dataset.id = id;
         newRow.innerHTML = `
             <td>${firstName} ${lastName}</td>
             <td>${email}</td>
@@ -377,7 +374,7 @@ const initialiseManageLecturers = () => {
         `;
     };
 
-    // Function to update a lecturer in the table with the provided id, first name, last name, email, and phone number
+    // Function to update a lecturer in the table
     const updateLecturerInTable = (id, firstName, lastName, email, phone) => {
         const row = lecturerTable.querySelector(`tr[data-id="${id}"]`);
         if (row) {
@@ -393,7 +390,7 @@ const initialiseManageLecturers = () => {
         }
     };
 
-    // Function to reset the form fields, set the submit button text to 'Add Lecturer', set the form title to 'Add New Lecturer', and set edit mode to false (add mode)
+    // Function to reset the form fields
     const resetForm = () => {
         form.reset();
         document.getElementById('lecturerId').value = '';
@@ -402,30 +399,65 @@ const initialiseManageLecturers = () => {
         editMode = false;
     };
 
-    // Add event listeners for form submission and table row clicks to edit or delete lecturers in the table
+    // Event listener for form submission
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const lecturerId = document.getElementById('lecturerId').value;
-            const firstName = document.getElementById('FirstName').value;
-            const lastName = document.getElementById('LastName').value;
-            const email = document.getElementById('Email').value;
-            const phone = document.getElementById('PhoneNumber').value;
 
-            // Check if the first name, last name, email, and phone number are not empty
+            const formData = new FormData(form);
+            console.log('RoleID:', formData.get('RoleID'));
+            //let lecturerId = null;
+
+            // Log form data to console for debugging
+            console.log('Form data:', Object.fromEntries(formData));
+
             if (editMode) {
-                updateLecturerInTable(lecturerId, firstName, lastName, email, phone);
-                handleLecturerAction('update', firstName, lastName);
-            } else {
-                addLecturerToTable(firstName, lastName, email, phone);
-                handleLecturerAction('add', firstName, lastName);
+                const lecturerIdElement = document.getElementById('lecturerId');
+                if (lecturerIdElement) {
+                    lecturerId = lecturerIdElement.value;
+                }
             }
-            // Reset the form fields after adding or updating a lecturer in the table
-            resetForm();
+
+            const url = editMode ? `/User/EditLecturer/${lecturerId}` : '/User/AddLecturer';
+            const method = editMode ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (editMode) {
+                            updateLecturerInTable(
+                                lecturerId,
+                                formData.get('FirstName'),
+                                formData.get('LastName'),
+                                formData.get('UserEmail'),
+                                formData.get('PhoneNumber')
+                            );
+                            handleLecturerAction('update', formData.get('FirstName'), formData.get('LastName'));
+                        } else {
+                            addLecturerToTable(
+                                data.id,
+                                formData.get('FirstName'),
+                                formData.get('LastName'),
+                                formData.get('UserEmail'),
+                                formData.get('PhoneNumber')
+                            );
+                            handleLecturerAction('add', formData.get('FirstName'), formData.get('LastName'));
+                        }
+                        resetForm();
+                    } else {
+                        console.error('Failed to add lecturer:', data);
+                        alert('Failed to add lecturer: ' + data.message + '\n' + (data.errors ? data.errors.join('\n') : ''));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
     }
 
-    // Add event listener for table row clicks to edit or delete lecturers in the table based on the clicked button
+    // Event listener for table row clicks to edit or delete lecturers
     if (lecturerTable) {
         lecturerTable.addEventListener('click', (e) => {
             if (e.target.classList.contains('edit-lecturer-button')) {
@@ -433,25 +465,43 @@ const initialiseManageLecturers = () => {
                 const [name, email, phone] = row.querySelectorAll('td');
                 const [firstName, lastName] = name.textContent.split(' ');
 
-                // Set the form fields with the lecturer details from the row and set the submit button text to 'Update Lecturer', form title to 'Edit Lecturer', and edit mode to true
                 document.getElementById('lecturerId').value = row.dataset.id || '';
+                document.getElementById('RoleID').value = row.dataset.roleId || '';
+                document.getElementById('UserName').value = row.dataset.userName || '';
                 document.getElementById('FirstName').value = firstName;
                 document.getElementById('LastName').value = lastName;
-                document.getElementById('Email').value = email.textContent;
+                document.getElementById('UserEmail').value = email.textContent;
                 document.getElementById('PhoneNumber').value = phone.textContent;
 
-                // Set the submit button text to 'Update Lecturer', form title to 'Edit Lecturer', and edit mode to true
+                // Populate other fields if available in dataset attributes
+                document.getElementById('Address').value = row.dataset.address || '';
+                document.getElementById('BankName').value = row.dataset.bankName || '';
+                document.getElementById('BranchCode').value = row.dataset.branchCode || '';
+                document.getElementById('BankAccountNumber').value = row.dataset.bankAccountNumber || '';
+
                 submitButton.textContent = 'Update Lecturer';
                 formTitle.textContent = 'Edit Lecturer';
                 editMode = true;
-            }
-            // Else if the clicked element is a delete button, show a confirmation dialog and delete the lecturer row if confirmed
-            else if (e.target.classList.contains('delete-lecturer-button')) {
+            } else if (e.target.classList.contains('delete-lecturer-button')) {
                 if (confirm('Are you sure you want to delete this lecturer?')) {
                     const row = e.target.closest('tr');
+                    const lecturerId = row.dataset.id;
                     const name = row.cells[0].textContent;
-                    row.remove();
-                    handleLecturerAction('delete', ...name.split(' '));
+
+                    // Make a DELETE request to delete the lecturer
+                    fetch(`/User/DeleteLecturer/${lecturerId}`, {
+                        method: 'DELETE'
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                row.remove();
+                                handleLecturerAction('delete', ...name.split(' '));
+                            } else {
+                                console.error('Failed to delete lecturer:', data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
                 }
             }
         });

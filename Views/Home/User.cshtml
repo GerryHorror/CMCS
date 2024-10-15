@@ -4,7 +4,6 @@
     Module: PROG6212
     POE Part 1
 -->
-
 <!--
     This Razor view file is for the User Profile Page of the Contract Monthly Claim System (CMCS).
     It includes different sections to provide a user-friendly interface for updating personal information.
@@ -30,6 +29,7 @@
 
     This structure ensures that users have a clear and intuitive experience when updating their profile information.
 -->
+@model List<CMCS.Models.UserModel>
 
 @{
     // Set the page title
@@ -42,7 +42,7 @@
 <!-- Main container for the user profile page -->
 <div class="user-container">
 
-        <!-- Overlay for user actions (e.g., profile update success) -->
+    <!-- Overlay for user actions (e.g., profile update success) -->
     <div id="userActionOverlay" class="user-action-overlay">
         <div class="user-action-message">
             <i id="userActionIcon" class="fas fa-user-check"></i>

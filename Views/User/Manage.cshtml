@@ -1,0 +1,167 @@
+﻿<!--
+    Student Name: Gérard Blankenberg
+    Student Number: ST10046280
+    Module: PROG6212
+    POE Part 1
+-->
+<!--
+    This Razor view file is for the Manage Lecturers Page of the Contract Monthly Claim System (CMCS).
+    It includes different sections to provide an interface for managing lecturer accounts.
+    Below is a brief overview of each section and its purpose:
+
+    1. ViewData:
+       - Sets the page title to "Manage Lecturers".
+
+    2. Stylesheet Link:
+       - Links to the CSS file (`manage.css`) that styles this page.
+
+    3. Main Container:
+       - The main content of the page is wrapped in a `<div>` element with the class `manage-lecturers-container`.
+
+    4. Action Overlay:
+       - A hidden overlay that displays action messages (e.g., success or error messages) to the user.
+
+    5. Add Lecturer Form:
+       - A form for adding new lecturers, including fields for first name, last name, email, and phone number.
+       - Includes a submit button to add the lecturer.
+
+    6. Lecturer List:
+       - Displays a list of current lecturers in a table format.
+       - Each row includes the lecturer's name, email, phone number, and action buttons for editing or deleting the lecturer.
+
+    This structure ensures that users have a clear and intuitive experience when managing lecturer accounts.
+-->
+@model CMCS.Models.ManageViewModel
+
+@{
+    ViewData["Title"] = "Manage Lecturers";
+}
+
+<link rel="stylesheet" href="~/css/manage.css" />
+
+<div class="manage-lecturers-container">
+    <h2 class="manage-lecturers-title">Manage Lecturers</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    <!-- Add Lecturer Form -->
+    <div class="add-lecturer-form">
+        <h3 id="formTitle">Add New Lecturer</h3>
+        <form id="lecturerForm" asp-action="AddLecturer" asp-controller="User" method="post">
+
+            <div class="form-group">
+                <label for="RoleID">Role:</label>
+                <select id="RoleID" name="RoleID" required>
+                    <option value="">Select a role</option>
+                    @foreach (var role in Model.Roles)
+                    {
+                        <option value="@role.RoleID">@role.RoleName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="UserName">Username:</label>
+                <input type="text" id="UserName" name="UserName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="FirstName">First Name:</label>
+                <input type="text" id="FirstName" name="FirstName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="LastName">Last Name:</label>
+                <input type="text" id="LastName" name="LastName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="UserEmail">Email:</label>
+                <input type="email" id="UserEmail" name="UserEmail" required>
+            </div>
+
+            <div class="form-group">
+                <label for="PhoneNumber">Phone Number:</label>
+                <input type="tel" id="PhoneNumber" name="PhoneNumber">
+            </div>
+
+            <div class="form-group">
+                <label for="Address">Address:</label>
+                <textarea id="Address" name="Address" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="BankName">Bank Name:</label>
+                <input type="text" id="BankName" name="BankName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="BranchCode">Branch Code:</label>
+                <input type="text" id="BranchCode" name="BranchCode" required>
+            </div>
+
+            <div class="form-group">
+                <label for="BankAccountNumber">Bank Account Number:</label>
+                <input type="text" id="BankAccountNumber" name="BankAccountNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="UserPassword">Password:</label>
+                <input type="password" id="UserPassword" name="UserPassword" required>
+            </div>
+
+            <button type="submit" id="submitButton" class="add-lecturer-button">Add Lecturer</button>
+        </form>
+    </div>
+
+    <!-- Lecturer List -->
+    <div class="lecturer-list">
+        <h3>Current Lecturers</h3>
+        <table class="lecturer-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.FirstName @user.LastName</td>
+                        <td>@user.UserEmail</td>
+                        <td>@user.PhoneNumber</td>
+                        <td>@user.Role?.RoleName</td>
+                        <td>
+                            <button class="edit-user-button">Edit</button>
+                            <button class="delete-user-button">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

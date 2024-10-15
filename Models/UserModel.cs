@@ -18,6 +18,7 @@ namespace CMCS.Models
         [Key]
         public int UserID { get; set; } // This will be the primary key
 
+        [Required(ErrorMessage = "Role is required")]
         [ForeignKey("Role")]
         public int RoleID { get; set; } // This will be the foreign key
 
@@ -33,6 +34,6 @@ namespace CMCS.Models
         public string UserPassword { get; set; }
 
         // Navigation property (this is used to create a relationship between the User and Role tables)
-        public RoleModel Role { get; set; }
+        public virtual RoleModel? Role { get; set; }
     }
 }
