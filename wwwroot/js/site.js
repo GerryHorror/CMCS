@@ -255,25 +255,17 @@ const initialiseUserProfile = () => {
 // Verify view functionality - handles search, filtering, viewing claim details, and approving/rejecting claims
 // This function is used to initialise the verify view functionality
 const initialiseVerifyView = () => {
-    // Get elements for search and filtering claims
     const searchInput = document.getElementById('claimSearch');
-    // Get elements for search and filtering claims
     const statusFilter = document.getElementById('claimStatus');
-    // Get all claim rows and the modal elements
     const claimRows = document.querySelectorAll('.verify-row');
-    // Get modal (popup) elements for displaying claim details and close button
     const modal = document.getElementById('verifyModal');
-    // Get modal content element for displaying claim details
     const modalContent = document.getElementById('verifyDetails');
-    // Get close button for the modal
     const closeBtn = document.querySelector('.verify-modal-close');
 
-    // Function to filter claims based on search term and status filter. Performs a case-insensitive search to match the search term with the claim details.
     const filterClaims = () => {
         const searchTerm = searchInput.value.toLowerCase();
         const statusTerm = statusFilter.value.toLowerCase();
 
-        // Loop through each claim row and check if it matches the search term and status filter
         claimRows.forEach(row => {
             const rowText = row.textContent.toLowerCase();
             const rowStatus = row.getAttribute('data-status').toLowerCase();
@@ -282,75 +274,98 @@ const initialiseVerifyView = () => {
             row.style.display = matchesSearch && matchesStatus ? '' : 'none';
         });
     };
-    // Add event listeners for filtering claims when user types in search or changes the status filter. If the search input or status filter is not found, the event listeners are not added.
+
     if (searchInput && statusFilter) {
         searchInput.addEventListener('input', filterClaims);
         statusFilter.addEventListener('change', filterClaims);
     }
-    // Function to handle approve or reject action on a claim. Updates the status cell, removes approve/reject buttons, and shows an overlay message.
-    const handleVerifyAction = (row, action) => {
-        const claimId = row.cells[0].textContent;
-        const statusCell = row.cells[4].querySelector('.verify-status');
-        // Update the status cell text and class based on the action (approve or reject)
-        statusCell.textContent = action === 'approve' ? 'Approved' : 'Rejected';
-        statusCell.className = `verify-status verify-status-${action}d`;
 
-        // Remove approve and reject buttons from the row after action is performed
-        row.querySelectorAll('.verify-approve-button, .verify-reject-button').forEach(button => button.remove());
+    const handleVerifyAction = async (claimId, action) => {
+        try {
+            const response = await fetch('/Approval/UpdateStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    claimId: parseInt(claimId),
+                    status: action === 'approve' ? 'Approved' : 'Rejected'
+                }),
+            });
 
-        // Show overlay message with success or error icon based on the action (approve or reject)
-        const iconClass = action === 'approve' ? 'fas fa-check-circle' : 'fas fa-times-circle';
-        const iconColor = action === 'approve' ? 'var(--color-success)' : 'var(--color-error)';
-        const message = `Claim ${claimId} has been ${action}d.`;
-        showActionOverlay('verifyActionOverlay', iconClass, iconColor, message);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to update claim status: ${errorText}`);
+            }
+
+            const result = await response.json();
+            if (result.success) {
+                const row = document.querySelector(`.verify-row[data-id="${claimId}"]`);
+                const statusCell = row.querySelector('.verify-status');
+                statusCell.textContent = action === 'approve' ? 'Approved' : 'Rejected';
+                statusCell.className = `verify-status verify-status-${action === 'approve' ? 'approved' : 'rejected'}`;
+                row.querySelectorAll('.verify-approve-button, .verify-reject-button').forEach(btn => btn.remove());
+                showActionOverlay('verifyActionOverlay', `fas fa-${action === 'approve' ? 'check' : 'times'}-circle`, `var(--color-${action === 'approve' ? 'success' : 'error'})`, result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showActionOverlay('verifyActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', error.message);
+        }
     };
 
-    // Add event listeners for viewing claim details and approving/rejecting claims when user clicks on the buttons in the claim row
-    document.addEventListener('click', (e) => {
-        // Check if the clicked element is a verify details, approve, or reject button
-        if (e.target.classList.contains('verify-details-button')) {
-            const row = e.target.closest('tr');
-            // Get the claim details from the row attributes and display them in the modal content (popup)
+    const showClaimDetails = async (claimId) => {
+        try {
+            const response = await fetch(`/Approval/Details/${claimId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch claim details');
+            }
+            const claim = await response.json();
+
             const details = `
-                <p><strong>Claim ID:</strong> ${row.cells[0].textContent}</p>
-                <p><strong>User ID:</strong> ${row.getAttribute('data-user-id')}</p>
-                <p><strong>Lecturer:</strong> ${row.cells[1].textContent}</p>
-                <p><strong>Submission Date:</strong> ${row.cells[2].textContent}</p>
-                <p><strong>Claim Amount:</strong> ${row.cells[3].textContent}</p>
-                <p><strong>Status:</strong> ${row.cells[4].textContent}</p>
-                <p><strong>Hours Worked:</strong> ${row.getAttribute('data-hours-worked')}</p>
-                <p><strong>Hourly Rate:</strong> R${row.getAttribute('data-hourly-rate')}</p>
-                <p><strong>Claim Type:</strong> ${row.getAttribute('data-claim-type')}</p>
-                <p><strong>Description:</strong> ${row.getAttribute('data-description')}</p>
-                <h4>Supporting Documents</h4>
+                <p><strong>Claim ID:</strong> ${claim.claimID}</p>
+                <p><strong>Lecturer:</strong> ${claim.firstName} ${claim.lastName}</p>
+                <p><strong>Submission Date:</strong> ${new Date(claim.submissionDate).toLocaleDateString()}</p>
+                <p><strong>Claim Amount:</strong> R${claim.claimAmount.toFixed(2)}</p>
+                <p><strong>Status:</strong> ${claim.statusName}</p>
+                <p><strong>Hours Worked:</strong> ${claim.hoursWorked}</p>
+                <p><strong>Hourly Rate:</strong> R${claim.hourlyRate.toFixed(2)}</p>
+                <p><strong>Claim Type:</strong> ${claim.claimType}</p>
+                <h4>Supporting Documents:</h4>
                 <ul>
-                    ${row.getAttribute('data-documents').split(',').map(doc => `<li>${doc.trim()}</li>`).join('')}
+                    ${claim.documents.map(doc => `<li>${doc}</li>`).join('')}
                 </ul>
             `;
-            // Set the modal content to the claim details and display the modal
+
             modalContent.innerHTML = details;
             modal.style.display = 'block';
-            // Add event listeners for approve and reject buttons in the modal content (popup) to handle the actions
+        } catch (error) {
+            console.error('Error fetching claim details:', error);
+        }
+    };
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('verify-details-button')) {
+            const claimId = e.target.getAttribute('data-id');
+            showClaimDetails(claimId);
         } else if (e.target.classList.contains('verify-approve-button')) {
-            handleVerifyAction(e.target.closest('tr'), 'approve');
+            const claimId = e.target.getAttribute('data-id');
+            handleVerifyAction(claimId, 'approve');
         } else if (e.target.classList.contains('verify-reject-button')) {
-            handleVerifyAction(e.target.closest('tr'), 'reject');
+            const claimId = e.target.getAttribute('data-id');
+            handleVerifyAction(claimId, 'reject');
         }
     });
-    // Add event listener for closing the modal when user clicks on close button
+
     if (closeBtn) {
-        closeBtn.onclick = () => {
-            modal.style.display = 'none';
-        }
+        closeBtn.onclick = () => modal.style.display = 'none';
     }
-    // Add event listener for closing the modal when user clicks outside the modal
+
     window.onclick = (event) => {
         if (event.target == modal) {
             modal.style.display = 'none';
         }
-    }
+    };
 };
-
 // <------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
 // Manage Lecturers functionality - handles adding, editing, and deleting lecturers in a table

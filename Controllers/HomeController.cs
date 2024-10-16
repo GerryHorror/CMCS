@@ -50,12 +50,6 @@ namespace CMCS.Controllers
 
         // <-------------------------------------------------------------------------------------->
 
-        // Action method for the Verify page
-        public IActionResult Verify()
-        {
-            return View();
-        }
-
         // <-------------------------------------------------------------------------------------->
 
         // Action method for the Privacy page
