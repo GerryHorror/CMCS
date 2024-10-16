@@ -4,7 +4,6 @@
     Module: PROG6212
     POE Part 1
 -->
-
 <!--
     This Razor view file is for the Claim Page of the Contract Monthly Claim System (CMCS).
     It includes different sections to provide a detailed view and management of claims.
@@ -33,6 +32,8 @@
 
     This structure ensures that users can easily view, search, and manage their claims.
 -->
+@model ClaimViewModel
+
 @{
     // Set the page title
     ViewData["Title"] = "View Claims";
@@ -78,38 +79,33 @@
                 <th>Date</th>
                 <th>Amount</th>
                 <th>Status</th>
+                <th>Supporting Document</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Sample data -->
-            <tr class="claim-row" data-status="Pending" data-user-id="7823" data-hours-worked="8" data-hourly-rate="250" data-claim-type="Lecture" data-description="Programming 2B Lecture" data-documents="attendance.pdf, timesheet.png">
-                <td>1001</td>
-                <td>2024-03-15</td>
-                <td>R2000.00</td>
-                <td><span class="claim-status claim-status-pending">Pending</span></td>
-                <td>
-                    <button class="claim-details-button">Details</button>
-                </td>
-            </tr>
-            <tr class="claim-row" data-status="Approved" data-user-id="2678" data-hours-worked="5" data-hourly-rate="200" data-claim-type="Invigilate" data-description="Systems Analysis and Design Exam" data-documents="attendance.pdf, timesheet.png">
-                <td>1002</td>
-                <td>2024-03-20</td>
-                <td>R1000.00</td>
-                <td><span class="claim-status claim-status-approved">Approved</span></td>
-                <td>
-                    <button class="claim-details-button">Details</button>
-                </td>
-            </tr>
-            <tr class="claim-row" data-status="Rejected" data-user-id="1149" data-hours-worked="8" data-hourly-rate="400" data-claim-type="Lecture" data-description="Software Engineering Lecture" data-documents="attendance.pdf, timesheet.png">
-                <td>1003</td>
-                <td>2024-03-25</td>
-                <td>R3200.00</td>
-                <td><span class="claim-status claim-status-rejected">Rejected</span></td>
-                <td>
-                    <button class="claim-details-button">Details</button>
-                </td>
-            </tr>
+            @foreach (var claim in Model.Claims)
+            {
+                <tr class="claim-row" data-status="@claim.Status.StatusName" data-id="@claim.ClaimID">
+                    <td>@claim.ClaimID</td>
+                    <td>@claim.SubmissionDate.ToShortDateString()</td>
+                    <td>R @claim.ClaimAmount.ToString("F2")</td>
+                    <td><span class="claim-status claim-status-@claim.Status.StatusName.ToLower()">@claim.Status.StatusName</span></td>
+                    <td>
+                        @if (Model.Documents.TryGetValue(claim.ClaimID, out var docs) && docs.Any())
+                        {
+                            @docs.First().DocumentName
+                        }
+                        else
+                        {
+                            <span>No document</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="claim-details-button" data-id="@claim.ClaimID">Details</button>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>

@@ -26,6 +26,60 @@ namespace CMCS.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Claim()
+        {
+            var userId = HttpContext.Session.GetInt32("UserID");
+            if (!userId.HasValue)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            var claims = await _context.Claims.Where(c => c.UserID == userId.Value).Include(c => c.Status).OrderByDescending(c => c.SubmissionDate).ToListAsync();
+
+            var claimIds = claims.Select(c => c.ClaimID).ToList();
+            var documents = await _context.Documents.Where(d => claimIds.Contains(d.ClaimID)).ToListAsync();
+
+            var viewModel = new ClaimViewModel
+            {
+                Claims = claims,
+                Documents = documents.GroupBy(d => d.ClaimID).ToDictionary(g => g.Key, g => g.ToList())
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserID");
+            if (!userId.HasValue)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            var claim = await _context.Claims.Include(c => c.Status).FirstOrDefaultAsync(c => c.ClaimID == id && c.UserID == userId.Value);
+
+            if (claim == null)
+            {
+                return NotFound();
+            }
+
+            var documents = await _context.Documents.Where(d => d.ClaimID == id).ToListAsync();
+
+            return Json(new
+            {
+                claim.ClaimID,
+                claim.SubmissionDate,
+                claim.ClaimAmount,
+                claim.Status.StatusName,
+                claim.HoursWorked,
+                claim.HourlyRate,
+                claim.ClaimType,
+                Documents = documents.Select(d => d.DocumentName).ToList()
+            });
+        }
+
+        [HttpGet]
         public IActionResult Submit()
         {
             return View();
@@ -36,9 +90,7 @@ namespace CMCS.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors)
-                                              .Select(e => e.ErrorMessage)
-                                              .ToList();
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 _logger.LogError("ModelState is invalid. Errors: {Errors}", string.Join(", ", errors));
                 return Json(new { success = false, message = "Invalid data", errors = errors });
             }
