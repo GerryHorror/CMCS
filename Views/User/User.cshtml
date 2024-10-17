@@ -80,8 +80,23 @@
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BankName" class="user-label">Bank Name:</label>
-                <input asp-for="BankName" class="user-input" placeholder="Enter your bank name">
+                <label asp-for="BankName" class="user-label">Bank:</label>
+                <select asp-for="BankName" id="BankName" class="user-input" required>
+                    <option value="">Select a bank</option>
+                    <option value="StandardBank">Standard Bank</option>
+                    <option value="FNB">FNB</option>
+                    <option value="ABSA">ABSA</option>
+                    <option value="Capitec">Capitec</option>
+                    <option value="Nedbank">Nedbank</option>
+                    <option value="TymeBank">Tyme Bank</option>
+                    <option value="BankOfAthens">Bank of Athens</option>
+                    <option value="BidvestBank">Bidvest Bank</option>
+                    <option value="Investec">Investec</option>
+                    <option value="SAPostBank">SA Post Bank (Post Office)</option>
+                    <option value="AfricanBank">African Bank</option>
+                    <option value="DiscoveryBank">Discovery Bank</option>
+                    <option value="OldMutual">Old Mutual</option>
+                </select>
                 <span asp-validation-for="BankName" class="text-danger"></span>
             </div>
             <div class="form-group">

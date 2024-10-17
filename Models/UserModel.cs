@@ -43,9 +43,7 @@ namespace CMCS.Models
         [Phone(ErrorMessage = "Invalid phone number")]
         public string PhoneNumber { get; set; } // Changed from int to string because South African phone numbers start with 0, and to allow users to enter the country code if they have an international number
 
-        [Required(ErrorMessage = "Bank name is required")]
-        [StringLength(100, ErrorMessage = "Bank name cannot exceed 100 characters")]
-        [RegularExpression(@"^[a-zA-Z\s-]*$", ErrorMessage = "Bank name can only contain letters, spaces, and hyphens")]
+        [Required(ErrorMessage = "Bank is required")]
         public string BankName { get; set; }
 
         [Required(ErrorMessage = "Branch code is required")]

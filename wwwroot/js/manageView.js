@@ -29,6 +29,32 @@ const initialiseManageLecturers = () => {
     // Flag to track if the form is in edit mode
     let editMode = false;
 
+    const branchCodes = {
+        StandardBank: "051001",
+        FNB: "250655",
+        ABSA: "632005",
+        Capitec: "470010",
+        Nedbank: "198765",
+        TymeBank: "678910",
+        BankOfAthens: "410506",
+        BidvestBank: "462005",
+        Investec: "580105",
+        SAPostBank: "460005",
+        AfricanBank: "430000",
+        DiscoveryBank: "679000",
+        OldMutual: "462005"
+    };
+
+    const bankNameSelect = document.getElementById('BankName');
+    const branchCodeInput = document.getElementById('BranchCode');
+
+    if (bankNameSelect && branchCodeInput) {
+        bankNameSelect.addEventListener('change', function () {
+            const selectedBank = this.value;
+            branchCodeInput.value = branchCodes[selectedBank] || '';
+        });
+    }
+
     // Function to show an overlay message with an icon and message based on the action (add, update, delete) and lecturer name
     const handleLecturerAction = (action, firstName, lastName) => {
         const lecturerName = `${firstName} ${lastName}`;
