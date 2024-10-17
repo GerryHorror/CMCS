@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using CMCS.Data;
 using Microsoft.EntityFrameworkCore;
-using static CMCS.Models.LoginModel;
 
 namespace CMCS.Controllers
 {
@@ -25,66 +24,93 @@ namespace CMCS.Controllers
             _context = context;
         }
 
-        /// Action method for the Index page
         public IActionResult Index()
         {
-            // If user is not logged in, redirect to Login
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserRole")))
+            try
             {
-                return RedirectToAction("Login");
+                if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserRole")))
+                {
+                    _logger.LogInformation("Redirecting unauthenticated user to Login");
+                    return RedirectToAction("Login");
+                }
+                return View();
             }
-            return View();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred in the Index action");
+                return StatusCode(500, "An unexpected error occurred. Please try again later.");
+            }
         }
 
-        // <-------------------------------------------------------------------------------------->
-
-        // Action method for the Privacy page
         public IActionResult Privacy()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred in the Privacy action");
+                return StatusCode(500, "An unexpected error occurred. Please try again later.");
+            }
         }
 
-        // <-------------------------------------------------------------------------------------->
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // Action method for the Login page
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            // Check if the user exists in the database
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // Get the user from the database and check if the password is correct
-                var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserName == model.Username);
+                _logger.LogWarning("Invalid login attempt: ModelState is invalid");
+                return View(model);
+            }
+
+            try
+            {
+                var user = await _context.Users.Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.UserName == model.Username);
 
                 if (user != null && VerifyPassword(model.Password, user.UserPassword))
                 {
                     HttpContext.Session.SetInt32("UserID", user.UserID);
                     HttpContext.Session.SetString("Username", user.UserName);
                     HttpContext.Session.SetString("UserRole", user.Role.RoleName);
+                    _logger.LogInformation("User {Username} logged in successfully", user.UserName);
                     return RedirectToAction("Index", "Home");
                 }
-                // Message for invalid username or password
-                ModelState.AddModelError("", "Invalid username or password");
-            }
 
-            return View(model);
+                _logger.LogWarning("Failed login attempt for username: {Username}", model.Username);
+                ModelState.AddModelError("", "Invalid username or password");
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred during login for username: {Username}", model.Username);
+                ModelState.AddModelError("", "An error occurred during login. Please try again.");
+                return View(model);
+            }
         }
 
-        // <-------------------------------------------------------------------------------------->
-
-        // Action method for logging out
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index");
+            try
+            {
+                var username = HttpContext.Session.GetString("Username");
+                HttpContext.Session.Clear();
+                _logger.LogInformation("User {Username} logged out", username);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred during logout");
+                return StatusCode(500, "An unexpected error occurred during logout. Please try again.");
+            }
         }
-
-        // <-------------------------------------------------------------------------------------->
 
         private bool VerifyPassword(string inputPassword, string storedPassword)
         {
