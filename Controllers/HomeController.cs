@@ -55,14 +55,10 @@ namespace CMCS.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            //// Dummy login for prototype purposes only - this will be replaced with a proper login system in the future
-            //HttpContext.Session.SetString("UserRole", role);
-            //HttpContext.Session.SetString("Username", username);
-            //return RedirectToAction("Index");
-
             // Check if the user exists in the database
             if (ModelState.IsValid)
             {
+                // Get the user from the database and check if the password is correct
                 var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserName == model.Username);
 
                 if (user != null && VerifyPassword(model.Password, user.UserPassword))
@@ -72,7 +68,7 @@ namespace CMCS.Controllers
                     HttpContext.Session.SetString("UserRole", user.Role.RoleName);
                     return RedirectToAction("Index", "Home");
                 }
-
+                // Message for invalid username or password
                 ModelState.AddModelError("", "Invalid username or password");
             }
 
