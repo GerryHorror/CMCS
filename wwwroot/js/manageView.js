@@ -97,13 +97,14 @@ const initialiseManageLecturers = () => {
     };
 
     // Function to update a lecturer in the table
-    const updateLecturerInTable = (id, firstName, lastName, email, phone) => {
+    const updateLecturerInTable = (id, firstName, lastName, email, phone, roleName) => {
         const row = lecturerTable.querySelector(`tr[data-id="${id}"]`);
         if (row) {
             row.innerHTML = `
                 <td>${firstName} ${lastName}</td>
                 <td>${email}</td>
                 <td>${phone}</td>
+                <td>${roleName || ''}</td>
                 <td>
                     <button class="edit-lecturer-button">Edit</button>
                     <button class="delete-lecturer-button">Delete</button>
@@ -121,14 +122,58 @@ const initialiseManageLecturers = () => {
         editMode = false;
     };
 
+    const debounce = (func, delay) => {
+        let debounceTimer;
+        return function () {
+            const context = this;
+            const args = arguments;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        }
+    };
+
+    const checkDuplicate = debounce((field, value) => {
+        fetch(`/User/CheckDuplicate?field=${field}&value=${encodeURIComponent(value)}`)
+            .then(response => response.json())
+            .then(data => {
+                const inputField = document.getElementById(field);
+                if (data.isDuplicate) {
+                    inputField.classList.add('error-field');
+                    showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', `This ${field.toLowerCase()} already exists.`);
+                } else {
+                    inputField.classList.remove('error-field');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }, 500);
+
+    document.getElementById('UserName').addEventListener('input', (e) => checkDuplicate('UserName', e.target.value));
+    document.getElementById('UserEmail').addEventListener('input', (e) => checkDuplicate('UserEmail', e.target.value));
+    document.getElementById('PhoneNumber').addEventListener('input', (e) => checkDuplicate('PhoneNumber', e.target.value));
+
+    const checkNameDuplicate = debounce(() => {
+        const firstName = document.getElementById('FirstName').value;
+        const lastName = document.getElementById('LastName').value;
+        if (firstName && lastName) {
+            checkDuplicate('Name', `${firstName} ${lastName}`);
+        }
+    }, 500);
+
+    document.getElementById('FirstName').addEventListener('input', checkNameDuplicate);
+    document.getElementById('LastName').addEventListener('input', checkNameDuplicate);
+
     // Event listener for form submission
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
+            if (document.querySelectorAll('.error-field').length > 0) {
+                showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Please correct the highlighted fields before submitting.');
+                return;
+            }
+
             const formData = new FormData(form);
             console.log('RoleID:', formData.get('RoleID'));
-            //let lecturerId = null;
 
             // Log form data to console for debugging
             console.log('Form data:', Object.fromEntries(formData));
@@ -174,10 +219,13 @@ const initialiseManageLecturers = () => {
                         resetForm();
                     } else {
                         console.error('Failed to add lecturer:', data);
-                        alert('Failed to add lecturer: ' + data.message + '\n' + (data.errors ? data.errors.join('\n') : ''));
+                        showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Failed to add lecturer: ' + data.message);
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An unexpected error occurred. Please try again.');
+                });
         });
     }
 
@@ -186,7 +234,7 @@ const initialiseManageLecturers = () => {
         lecturerTable.addEventListener('click', (e) => {
             if (e.target.classList.contains('edit-lecturer-button')) {
                 const row = e.target.closest('tr');
-                const [name, email, phone] = row.querySelectorAll('td');
+                const [name, email, phone, role] = row.querySelectorAll('td');
                 const [firstName, lastName] = name.textContent.split(' ');
 
                 document.getElementById('lecturerId').value = row.dataset.id || '';
@@ -223,9 +271,13 @@ const initialiseManageLecturers = () => {
                                 handleLecturerAction('delete', ...name.split(' '));
                             } else {
                                 console.error('Failed to delete lecturer:', data.message);
+                                showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Failed to delete lecturer: ' + data.message);
                             }
                         })
-                        .catch(error => console.error('Error:', error));
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An unexpected error occurred while deleting. Please try again.');
+                        });
                 }
             }
         });

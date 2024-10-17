@@ -91,7 +91,7 @@
 
             <div class="form-group">
                 <label for="UserName">Username:</label>
-                <input type="text" id="UserName" name="UserName" required maxlength="50">
+                <input type="text" id="UserName" name="UserName" required maxlength="50" class="@(ViewData.ModelState["UserName"]?.Errors.Count > 0 ? "error-field" : "")">
                 <span class="text-danger field-validation-valid" data-valmsg-for="UserName" data-valmsg-replace="true"></span>
             </div>
 

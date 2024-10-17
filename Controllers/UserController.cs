@@ -143,15 +143,27 @@ namespace CMCS.Controllers
             {
                 try
                 {
-                    // Save the new user to the database
+                    var existingUser = await _context.Users.FirstOrDefaultAsync(u =>
+                        u.UserName == userModel.UserName ||
+                        u.UserEmail == userModel.UserEmail ||
+                        u.PhoneNumber == userModel.PhoneNumber ||
+                        (u.FirstName == userModel.FirstName && u.LastName == userModel.LastName));
+
+                    if (existingUser != null)
+                    {
+                        string duplicateField = "";
+                        if (existingUser.UserName == userModel.UserName) duplicateField = "username";
+                        else if (existingUser.UserEmail == userModel.UserEmail) duplicateField = "email";
+                        else if (existingUser.PhoneNumber == userModel.PhoneNumber) duplicateField = "phone number";
+                        else if (existingUser.FirstName == userModel.FirstName && existingUser.LastName == userModel.LastName) duplicateField = "name";
+
+                        return Json(new { success = false, message = $"A user with this {duplicateField} already exists." });
+                    }
+
                     _context.Users.Add(userModel);
                     await _context.SaveChangesAsync();
-
-                    // Retrieve the newly added user with the Role navigation property loaded
-                    var addedUser = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserID == userModel.UserID);
-
                     _logger.LogInformation("New lecturer added successfully. ID: {UserId}", userModel.UserID);
-                    return Json(new { success = true, id = userModel.UserID, roleName = addedUser.Role?.RoleName });
+                    return Json(new { success = true, id = userModel.UserID });
                 }
                 catch (DbUpdateException ex)
                 {
@@ -172,6 +184,15 @@ namespace CMCS.Controllers
 
             _logger.LogWarning("Invalid model state in AddLecturer. Errors: {Errors}", string.Join(", ", errors));
             return Json(new { success = false, message = "Invalid data", errors });
+        }
+
+        private async Task<bool> IsUserDuplicate(UserModel userModel)
+        {
+            return await _context.Users.AnyAsync(u =>
+                u.UserName == userModel.UserName ||
+                u.UserEmail == userModel.UserEmail ||
+                u.PhoneNumber == userModel.PhoneNumber ||
+                (u.FirstName == userModel.FirstName && u.LastName == userModel.LastName));
         }
     }
 }
