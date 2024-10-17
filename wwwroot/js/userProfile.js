@@ -1,0 +1,65 @@
+﻿// Reusable function for showing overlays. This function is used to show success and error messages to the user.
+const showActionOverlay = (overlayId, iconClass, iconColor, message, duration = 3000) => {
+    // Get the overlay, icon and text elements from the DOM using the overlayId parameter
+    const overlay = document.getElementById(overlayId);
+    const icon = overlay.querySelector('i');
+    const text = overlay.querySelector('p');
+    // Set the icon class, color and text content to the values passed in as parameters to the function (i.e . iconClass, iconColor and message)
+    icon.className = iconClass;
+    icon.style.color = iconColor;
+    text.textContent = message;
+    // Display the overlay by setting its display style to 'flex' (i.e. show the overlay as a flex container)
+    overlay.style.display = 'flex';
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, duration);
+};
+
+// <------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
+// User Profile Functionality - handles form submission and shows success message when the form is submitted
+const initialiseUserProfile = () => {
+    const form = document.getElementById('userProfileForm');
+    if (form) {
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Server response:', result);
+
+                if (result.success) {
+                    showActionOverlay('userActionOverlay', 'fas fa-user-check', 'var(--color-success)', 'Profile updated successfully!');
+                    // Clear password field after successful update
+                    document.getElementById('UserPassword').value = '';
+                } else {
+                    let errorMessage = result.message;
+                    if (result.errors && result.errors.length > 0) {
+                        errorMessage += ': ' + result.errors.join(', ');
+                    }
+                    showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', errorMessage);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An error occurred. Please try again.');
+            }
+        };
+    } else {
+        console.error('User Profile form is missing from the page.');
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('userProfileForm')) {
+        initialiseUserProfile();
+    }
+});

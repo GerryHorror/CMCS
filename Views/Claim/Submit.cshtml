@@ -45,13 +45,18 @@
 
     This structure ensures that users can easily fill out and submit a new claim with all necessary details.
 -->
-<!-- Stylesheet for the Submit New Claim page -->
-<link rel="stylesheet" href="/css/submit.css" />
+
 @model CMCS.Models.ClaimModel
 @{
     // Set the title of the page
     ViewData["Title"] = "Submit New Claim";
 }
+
+<!-- Link to the CSS file for styling this page -->
+<link rel="stylesheet" href="/css/submit.css" />
+
+<!-- Link to the JS file -->
+<script src="~/js/submitView.js"></script>
 
 <!-- Main container for the page content -->
 <div class="submit-container">
