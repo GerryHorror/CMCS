@@ -17,27 +17,41 @@ namespace CMCS.Controllers
     public class UserController : Controller
     {
         private readonly CMCSDbContext _context;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(CMCSDbContext context)
+        public UserController(CMCSDbContext context, ILogger<UserController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // Display the User page
         public async Task<IActionResult> User()
         {
-            var userId = HttpContext.Session.GetInt32("UserID");
-            if (!userId.HasValue)
+            try
             {
-                return RedirectToAction("Login", "Home");
+                var userId = HttpContext.Session.GetInt32("UserID");
+                if (!userId.HasValue)
+                {
+                    _logger.LogWarning("Unauthorised access attempt to User action");
+                    return RedirectToAction("Login", "Home");
+                }
+
+                var user = await _context.Users.FindAsync(userId.Value);
+                if (user == null)
+                {
+                    _logger.LogWarning("User not found for ID: {UserId}", userId.Value);
+                    return NotFound("User not found");
+                }
+
+                return View(user);
             }
-
-            var user = await _context.Users.FindAsync(userId.Value);
-
-            return View(user);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving user details");
+                return StatusCode(500, "An unexpected error occurred. Please try again later.");
+            }
         }
 
-        // Edit the user details
         [HttpPost]
         public async Task<IActionResult> User(UserModel userModel)
         {
@@ -51,12 +65,14 @@ namespace CMCS.Controllers
                     var userId = HttpContext.Session.GetInt32("UserID");
                     if (!userId.HasValue)
                     {
+                        _logger.LogWarning("Unauthorised update attempt");
                         return Json(new { success = false, message = "User not authenticated" });
                     }
 
                     var existingUser = await _context.Users.FindAsync(userId.Value);
                     if (existingUser == null)
                     {
+                        _logger.LogWarning("User not found for update. ID: {UserId}", userId.Value);
                         return Json(new { success = false, message = "User not found" });
                     }
 
@@ -77,36 +93,50 @@ namespace CMCS.Controllers
                     }
 
                     await _context.SaveChangesAsync();
+                    _logger.LogInformation("User profile updated successfully. ID: {UserId}", userId.Value);
 
                     return Json(new { success = true, message = "Profile updated successfully" });
                 }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Database error occurred while updating user profile");
+                    return Json(new { success = false, message = "A database error occurred while updating the profile", error = ex.Message });
+                }
                 catch (Exception ex)
                 {
-                    return Json(new { success = false, message = "An error occurred while updating the profile", error = ex.Message });
+                    _logger.LogError(ex, "An unexpected error occurred while updating user profile");
+                    return Json(new { success = false, message = "An unexpected error occurred while updating the profile", error = ex.Message });
                 }
             }
 
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            _logger.LogWarning("Invalid model state in User update. Errors: {Errors}", string.Join(", ", errors));
             return Json(new { success = false, message = "Invalid data", errors = errors });
         }
 
         public async Task<IActionResult> Manage()
         {
-            var viewModel = new ManageViewModel
+            try
             {
-                Users = await _context.Users.Include(u => u.Role).ToListAsync(),
-                Roles = await _context.Roles.ToListAsync()
-            };
-            return View(viewModel);
+                var viewModel = new ManageViewModel
+                {
+                    Users = await _context.Users.Include(u => u.Role).ToListAsync(),
+                    Roles = await _context.Roles.ToListAsync()
+                };
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving user management data");
+                return StatusCode(500, "An unexpected error occurred. Please try again later.");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> AddLecturer([FromForm] UserModel userModel)
         {
-            // Log received data
-            Console.WriteLine($"Received UserModel: {System.Text.Json.JsonSerializer.Serialize(userModel)}");
+            _logger.LogInformation("Received AddLecturer request: {UserModel}", System.Text.Json.JsonSerializer.Serialize(userModel));
 
-            // Explicitly set Role to null as we're not creating a new role here
             userModel.Role = null;
 
             if (ModelState.IsValid)
@@ -115,12 +145,18 @@ namespace CMCS.Controllers
                 {
                     _context.Users.Add(userModel);
                     await _context.SaveChangesAsync();
+                    _logger.LogInformation("New lecturer added successfully. ID: {UserId}", userModel.UserID);
                     return Json(new { success = true, id = userModel.UserID });
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Database error occurred while adding new lecturer");
+                    return Json(new { success = false, message = "Error saving to database", error = ex.Message });
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Exception: {ex.Message}");
-                    return Json(new { success = false, message = "Error saving to database", error = ex.Message });
+                    _logger.LogError(ex, "Unexpected error occurred while adding new lecturer");
+                    return Json(new { success = false, message = "An unexpected error occurred", error = ex.Message });
                 }
             }
 
@@ -129,8 +165,7 @@ namespace CMCS.Controllers
                 .Select(e => e.ErrorMessage)
                 .ToList();
 
-            Console.WriteLine($"ModelState Errors: {string.Join(", ", errors)}");
-
+            _logger.LogWarning("Invalid model state in AddLecturer. Errors: {Errors}", string.Join(", ", errors));
             return Json(new { success = false, message = "Invalid data", errors });
         }
     }
