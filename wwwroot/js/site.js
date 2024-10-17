@@ -156,12 +156,29 @@ const initialiseSubmitView = () => {
                     </div>
                     <div class="form-group">
                         <label class="submit-label">Hours Worked:</label>
-                        <input type="number" name="WorkEntries[${entryCount}].HoursWorked" class="submit-input work-hours" step="0.5" min="0" required>
+                        <input type="number" name="WorkEntries[${entryCount}].HoursWorked" class="submit-input work-hours" step="0.5" min="1" max="8" required>
                     </div>
+                    <button type="button" class="btn btn-danger remove-entry">Remove</button>
                 </div>
             `;
             workEntriesContainer.insertAdjacentHTML('beforeend', newEntry);
             entryCount++;
+        };
+
+        const removeWorkEntry = (event) => {
+            if (event.target.classList.contains('remove-entry')) {
+                event.target.closest('.work-entry').remove();
+                renumberEntries();
+                calculateClaimAmount();
+            }
+        };
+
+        const renumberEntries = () => {
+            document.querySelectorAll('.work-entry').forEach((entry, index) => {
+                entry.querySelector('.work-date').name = `WorkEntries[${index}].WorkDate`;
+                entry.querySelector('.work-hours').name = `WorkEntries[${index}].HoursWorked`;
+            });
+            entryCount = document.querySelectorAll('.work-entry').length;
         };
 
         hourlyRateInput.addEventListener('input', calculateClaimAmount);
@@ -170,28 +187,28 @@ const initialiseSubmitView = () => {
                 calculateClaimAmount();
             }
         });
+        workEntriesContainer.addEventListener('click', removeWorkEntry);
         addEntryButton.addEventListener('click', addNewWorkEntry);
 
         submitForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             if (!supportingDocumentInput.files.length) {
-                alert('Please upload a supporting document before submitting.');
+                showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Please upload a supporting document before submitting.');
                 return;
             }
-
             const formData = new FormData(submitForm);
-
             try {
                 const response = await fetch(submitForm.action, {
                     method: 'POST',
                     body: formData
                 });
-
                 const result = await response.json();
-
                 if (result.success) {
                     showActionOverlay('successOverlay', 'fas fa-check-circle', 'var(--color-success)', 'Claim successfully submitted!');
                     submitForm.reset();
+                    // Reset work entries to initial state
+                    workEntriesContainer.innerHTML = '';
+                    addNewWorkEntry();
                 } else {
                     let errorMessage = result.message;
                     if (result.errors && result.errors.length > 0) {

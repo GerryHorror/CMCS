@@ -73,18 +73,18 @@
             </div>
             <form id="claimForm" class="submit-form" asp-controller="Claim" asp-action="Submit" method="post" enctype="multipart/form-data">
                 <input type="hidden" asp-for="UserID" value="@Context.Session.GetInt32("UserID")" />
-
+                <input type="hidden" asp-for="SubmissionDate" id="submissionDate">
                 <div class="form-group">
-                    <label asp-for="SubmissionDate" class="submit-label">Claim Date:</label>
-                    <input asp-for="SubmissionDate" type="date" class="submit-input" required>
+                    <label class="submit-label">Claim Submission Date:</label>
+                    <input type="text" id="displaySubmissionDate" class="submit-input" readonly>
                 </div>
-
                 <div class="form-group">
                     <label asp-for="HourlyRate" class="submit-label">Hourly Rate:</label>
                     <div class="input-group">
                         <span class="input-group-text">R</span>
                         <input asp-for="HourlyRate" type="number" class="submit-input" step="0.01" min="0" required>
                     </div>
+                    <span asp-validation-for="HourlyRate" class="text-danger"></span>
                 </div>
 
                 <!-- Work Entries Section -->
@@ -96,7 +96,8 @@
                         </div>
                         <div class="form-group">
                             <label class="submit-label">Hours Worked:</label>
-                            <input type="number" name="WorkEntries[0].HoursWorked" class="submit-input work-hours" step="0.5" min="0" required>
+                            <input type="number" name="WorkEntries[0].HoursWorked" class="submit-input work-hours" step="0.5" min="1" max="8" required>
+                            <span class="text-danger" data-valmsg-for="WorkEntries[0].HoursWorked" data-valmsg-replace="true"></span>
                         </div>
                     </div>
                 </div>
@@ -110,13 +111,17 @@
                         <span class="input-group-text">R</span>
                         <input asp-for="ClaimAmount" type="number" class="submit-input" step="0.01" min="0" required readonly>
                     </div>
+                    <span asp-validation-for="ClaimAmount" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="ClaimType" class="submit-label">Description:</label>
                     <textarea asp-for="ClaimType" class="submit-textarea" rows="4" required></textarea>
+                    <span asp-validation-for="ClaimType" class="text-danger"></span>
                 </div>
+
                 <!-- Supporting Document Upload -->
+
                 <div class="form-group">
                     <label for="supportingDocument" class="submit-label">Supporting Document:</label>
                     <input type="file" id="supportingDocument" name="supportingDocument" class="submit-file-input" required>
@@ -128,3 +133,15 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var today = new Date();
+            var formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('submissionDate').value = formattedDate;
+            document.getElementById('displaySubmissionDate').value = today.toLocaleDateString();
+        });
+    </script>
+}

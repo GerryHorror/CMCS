@@ -25,9 +25,16 @@ namespace CMCS.Models
 
         public decimal ClaimAmount { get; set; }
         public string ClaimType { get; set; }
+
+        [Required(ErrorMessage = "Submission date is required")]
+        [DataType(DataType.Date)]
         public DateTime SubmissionDate { get; set; }
+
         public DateTime ApprovalDate { get; set; }
         public decimal HoursWorked { get; set; }
+
+        [Required(ErrorMessage = "Hourly rate is required")]
+        [Range(150, 350, ErrorMessage = "Hourly rate must be between 150 and 350")]
         public decimal HourlyRate { get; set; }
 
         // Navigation property (this is used to create a relationship between the Claim and User tables)

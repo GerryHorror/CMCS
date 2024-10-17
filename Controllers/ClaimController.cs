@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using CMCS.Models;
 using CMCS.Data;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace CMCS.Controllers
 {
@@ -110,10 +111,24 @@ namespace CMCS.Controllers
                     claimModel.SubmissionDate = DateTime.Now;
                     claimModel.StatusID = await _context.ClaimStatuses.Where(s => s.StatusName == "Pending").Select(s => s.StatusID).FirstOrDefaultAsync();
 
+                    // Validate work entries
+                    foreach (var entry in workEntries)
+                    {
+                        if (entry.WorkDate > claimModel.SubmissionDate)
+                        {
+                            ModelState.AddModelError("", "Work date cannot be after the submission date.");
+                            return View(claimModel);
+                        }
+                        if (entry.HoursWorked < 1 || entry.HoursWorked > 8)
+                        {
+                            ModelState.AddModelError("", "Hours worked must be between 1 and 8.");
+                            return View(claimModel);
+                        }
+                    }
+
                     // Calculate total hours worked and claim amount
-                    decimal totalHours = workEntries.Sum(w => w.HoursWorked);
-                    claimModel.HoursWorked = totalHours;
-                    claimModel.ClaimAmount = totalHours * claimModel.HourlyRate;
+                    claimModel.HoursWorked = workEntries.Sum(w => w.HoursWorked);
+                    claimModel.ClaimAmount = claimModel.HoursWorked * claimModel.HourlyRate;
 
                     _context.Claims.Add(claimModel);
                     await _context.SaveChangesAsync();
