@@ -137,6 +137,24 @@ namespace CMCS.Controllers
                     return Json(new { success = false, message = "User not authenticated" });
                 }
 
+                // File validation
+                if (supportingDocument != null)
+                {
+                    // Check file size (e.g., 5MB limit)
+                    if (supportingDocument.Length > 5 * 1024 * 1024)
+                    {
+                        return Json(new { success = false, message = "File size exceeds 5MB limit" });
+                    }
+
+                    // Check file type
+                    var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx" };
+                    var fileExtension = Path.GetExtension(supportingDocument.FileName).ToLowerInvariant();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        return Json(new { success = false, message = "Only .pdf, .docx, and .xlsx files are allowed" });
+                    }
+                }
+
                 claimModel.UserID = userId.Value;
                 claimModel.SubmissionDate = DateTime.Now;
                 claimModel.StatusID = await _context.ClaimStatuses

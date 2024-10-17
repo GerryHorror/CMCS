@@ -126,11 +126,10 @@
                 </div>
 
                 <!-- Supporting Document Upload -->
-
                 <div class="form-group">
                     <label for="supportingDocument" class="submit-label">Supporting Document:</label>
-                    <input type="file" id="supportingDocument" name="supportingDocument" class="submit-file-input" required>
-                    <small class="form-text text-muted">Upload any relevant documents (PDF, JPG, PNG, max 5MB)</small>
+                    <input type="file" id="supportingDocument" name="supportingDocument" class="submit-file-input" accept=".pdf,.docx,.xlsx" data-max-size="5242880" required>
+                    <small class="form-text text-muted">Upload any relevant documents (PDF, JPG, XLSX, max 5MB)</small>
                 </div>
 
                 <button type="submit" class="submit-button">Submit Claim</button>

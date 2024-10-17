@@ -83,10 +83,28 @@ const initialiseSubmitView = () => {
 
         submitForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            if (!supportingDocumentInput.files.length) {
+
+            // File validation
+            const supportingDocument = supportingDocumentInput.files[0];
+            if (!supportingDocument) {
                 showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Please upload a supporting document before submitting.');
                 return;
             }
+
+            // Check file size (5MB limit)
+            if (supportingDocument.size > 5 * 1024 * 1024) {
+                showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'File size exceeds 5MB limit.');
+                return;
+            }
+
+            // Check file type
+            const allowedExtensions = ['.pdf', '.docx', '.xlsx'];
+            const fileExtension = supportingDocument.name.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes('.' + fileExtension)) {
+                showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Only .pdf, .docx, and .xlsx files are allowed.');
+                return;
+            }
+
             const formData = new FormData(submitForm);
             try {
                 const response = await fetch(submitForm.action, {
