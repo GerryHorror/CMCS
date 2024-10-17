@@ -7,7 +7,7 @@ namespace CMCS.Models
         [Required(ErrorMessage = "Work date is required")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [PastOrPresentDate(ErrorMessage = "Work date cannot be in the future")]
+        [PastOrPresentDate(ErrorMessage = "Work date cannot be after the submission date.")]
         public DateTime WorkDate { get; set; }
 
         [Required(ErrorMessage = "Hours worked is required")]
@@ -22,7 +22,7 @@ namespace CMCS.Models
             DateTime date = (DateTime)value;
             if (date > DateTime.Today)
             {
-                return new ValidationResult(ErrorMessage ?? "Date cannot be in the future.");
+                return new ValidationResult(ErrorMessage ?? "Date cannot be after the submission date.");
             }
             return ValidationResult.Success;
         }

@@ -29,55 +29,86 @@ namespace CMCS.Controllers
         [HttpGet]
         public async Task<IActionResult> Claim()
         {
-            var userId = HttpContext.Session.GetInt32("UserID");
-            if (!userId.HasValue)
+            try
             {
-                return RedirectToAction("Login", "Home");
+                var userId = HttpContext.Session.GetInt32("UserID");
+                if (!userId.HasValue)
+                {
+                    _logger.LogWarning("Unauthorised access attempt to Claim action");
+                    return RedirectToAction("Login", "Home");
+                }
+
+                var claims = await _context.Claims
+                    .Where(c => c.UserID == userId.Value)
+                    .Include(c => c.Status)
+                    .OrderByDescending(c => c.SubmissionDate)
+                    .ToListAsync();
+
+                var claimIds = claims.Select(c => c.ClaimID).ToList();
+                var documents = await _context.Documents
+                    .Where(d => claimIds.Contains(d.ClaimID))
+                    .ToListAsync();
+
+                var viewModel = new ClaimViewModel
+                {
+                    Claims = claims,
+                    Documents = documents.GroupBy(d => d.ClaimID).ToDictionary(g => g.Key, g => g.ToList())
+                };
+
+                return View(viewModel);
             }
-
-            var claims = await _context.Claims.Where(c => c.UserID == userId.Value).Include(c => c.Status).OrderByDescending(c => c.SubmissionDate).ToListAsync();
-
-            var claimIds = claims.Select(c => c.ClaimID).ToList();
-            var documents = await _context.Documents.Where(d => claimIds.Contains(d.ClaimID)).ToListAsync();
-
-            var viewModel = new ClaimViewModel
+            catch (Exception ex)
             {
-                Claims = claims,
-                Documents = documents.GroupBy(d => d.ClaimID).ToDictionary(g => g.Key, g => g.ToList())
-            };
-
-            return View(viewModel);
+                _logger.LogError(ex, "Error occurred while retrieving claims for user");
+                return StatusCode(500, "An error occurred while retrieving your claims. Please try again later.");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var userId = HttpContext.Session.GetInt32("UserID");
-            if (!userId.HasValue)
+            try
             {
-                return RedirectToAction("Login", "Home");
+                var userId = HttpContext.Session.GetInt32("UserID");
+                if (!userId.HasValue)
+                {
+                    _logger.LogWarning("Unauthorised access attempt to Details action");
+                    return RedirectToAction("Login", "Home");
+                }
+
+                var claim = await _context.Claims
+                    .Include(c => c.Status)
+                    .FirstOrDefaultAsync(c => c.ClaimID == id && c.UserID == userId.Value);
+
+                if (claim == null)
+                {
+                    _logger.LogWarning("Attempt to access non-existent or unauthorised claim: {ClaimId}", id);
+                    return NotFound(new { success = false, message = "Claim not found or access denied" });
+                }
+
+                var documents = await _context.Documents
+                    .Where(d => d.ClaimID == id)
+                    .Select(d => d.DocumentName)
+                    .ToListAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    claim.ClaimID,
+                    claim.SubmissionDate,
+                    claim.ClaimAmount,
+                    claim.Status.StatusName,
+                    claim.HoursWorked,
+                    claim.HourlyRate,
+                    claim.ClaimType,
+                    Documents = documents
+                });
             }
-
-            var claim = await _context.Claims.Include(c => c.Status).FirstOrDefaultAsync(c => c.ClaimID == id && c.UserID == userId.Value);
-
-            if (claim == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                _logger.LogError(ex, "Error occurred while retrieving details for claim {ClaimId}", id);
+                return StatusCode(500, new { success = false, message = "An error occurred while retrieving claim details." });
             }
-
-            var documents = await _context.Documents.Where(d => d.ClaimID == id).ToListAsync();
-
-            return Json(new
-            {
-                claim.ClaimID,
-                claim.SubmissionDate,
-                claim.ClaimAmount,
-                claim.Status.StatusName,
-                claim.HoursWorked,
-                claim.HourlyRate,
-                claim.ClaimType,
-                Documents = documents.Select(d => d.DocumentName).ToList()
-            });
         }
 
         [HttpGet]
@@ -92,78 +123,84 @@ namespace CMCS.Controllers
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                _logger.LogError("ModelState is invalid. Errors: {Errors}", string.Join(", ", errors));
+                _logger.LogWarning("Invalid model state in Submit action. Errors: {Errors}", string.Join(", ", errors));
                 return Json(new { success = false, message = "Invalid data", errors = errors });
             }
 
-            if (ModelState.IsValid)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                using var transaction = await _context.Database.BeginTransactionAsync();
-                try
+                var userId = HttpContext.Session.GetInt32("UserID");
+                if (!userId.HasValue)
                 {
-                    var userId = HttpContext.Session.GetInt32("UserID");
-                    if (!userId.HasValue)
+                    _logger.LogWarning("Unauthorised claim submission attempt");
+                    return Json(new { success = false, message = "User not authenticated" });
+                }
+
+                claimModel.UserID = userId.Value;
+                claimModel.SubmissionDate = DateTime.Now;
+                claimModel.StatusID = await _context.ClaimStatuses
+                    .Where(s => s.StatusName == "Pending")
+                    .Select(s => s.StatusID)
+                    .FirstOrDefaultAsync();
+
+                // Validate work entries
+                foreach (var entry in workEntries)
+                {
+                    if (entry.WorkDate > claimModel.SubmissionDate)
                     {
-                        return Json(new { success = false, message = "User not authenticated" });
+                        ModelState.AddModelError("", "Work date cannot be after the submission date.");
+                        return Json(new { success = false, message = "Invalid work entry date" });
                     }
-
-                    claimModel.UserID = userId.Value;
-                    claimModel.SubmissionDate = DateTime.Now;
-                    claimModel.StatusID = await _context.ClaimStatuses.Where(s => s.StatusName == "Pending").Select(s => s.StatusID).FirstOrDefaultAsync();
-
-                    // Validate work entries
-                    foreach (var entry in workEntries)
+                    if (entry.HoursWorked < 1 || entry.HoursWorked > 8)
                     {
-                        if (entry.WorkDate > claimModel.SubmissionDate)
-                        {
-                            ModelState.AddModelError("", "Work date cannot be after the submission date.");
-                            return View(claimModel);
-                        }
-                        if (entry.HoursWorked < 1 || entry.HoursWorked > 8)
-                        {
-                            ModelState.AddModelError("", "Hours worked must be between 1 and 8.");
-                            return View(claimModel);
-                        }
+                        ModelState.AddModelError("", "Hours worked must be between 1 and 8.");
+                        return Json(new { success = false, message = "Invalid work hours" });
                     }
+                }
 
-                    // Calculate total hours worked and claim amount
-                    claimModel.HoursWorked = workEntries.Sum(w => w.HoursWorked);
-                    claimModel.ClaimAmount = claimModel.HoursWorked * claimModel.HourlyRate;
+                // Calculate total hours worked and claim amount
+                claimModel.HoursWorked = workEntries.Sum(w => w.HoursWorked);
+                claimModel.ClaimAmount = claimModel.HoursWorked * claimModel.HourlyRate;
 
-                    _context.Claims.Add(claimModel);
+                _context.Claims.Add(claimModel);
+                await _context.SaveChangesAsync();
+
+                // Handle file upload
+                if (supportingDocument != null && supportingDocument.Length > 0)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await supportingDocument.CopyToAsync(memoryStream);
+
+                    var document = new DocumentModel
+                    {
+                        ClaimID = claimModel.ClaimID,
+                        DocumentName = supportingDocument.FileName,
+                        DocumentType = supportingDocument.ContentType,
+                        UploadDate = DateTime.Now,
+                        FileContent = memoryStream.ToArray()
+                    };
+
+                    _context.Documents.Add(document);
                     await _context.SaveChangesAsync();
-
-                    // Handle file upload
-                    if (supportingDocument != null && supportingDocument.Length > 0)
-                    {
-                        using var memoryStream = new MemoryStream();
-                        await supportingDocument.CopyToAsync(memoryStream);
-
-                        var document = new DocumentModel
-                        {
-                            ClaimID = claimModel.ClaimID,
-                            DocumentName = supportingDocument.FileName,
-                            DocumentType = supportingDocument.ContentType,
-                            UploadDate = DateTime.Now,
-                            FileContent = memoryStream.ToArray()
-                        };
-
-                        _context.Documents.Add(document);
-                        await _context.SaveChangesAsync();
-                    }
-
-                    await transaction.CommitAsync();
-                    return Json(new { success = true, message = "Claim submitted successfully" });
                 }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    _logger.LogError(ex, "Error occurred while submitting claim");
-                    return Json(new { success = false, message = "An error occurred while submitting the claim", error = ex.Message });
-                }
+
+                await transaction.CommitAsync();
+                _logger.LogInformation("Claim {ClaimId} submitted successfully", claimModel.ClaimID);
+                return Json(new { success = true, message = "Claim submitted successfully" });
             }
-
-            return Json(new { success = false, message = "Invalid data", errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Database error occurred while submitting claim");
+                return Json(new { success = false, message = "A database error occurred while submitting the claim", error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Unexpected error occurred while submitting claim");
+                return Json(new { success = false, message = "An unexpected error occurred while submitting the claim", error = ex.Message });
+            }
         }
     }
 }
