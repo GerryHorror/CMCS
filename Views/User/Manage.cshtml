@@ -82,52 +82,62 @@
 
             <div class="form-group">
                 <label for="UserName">Username:</label>
-                <input type="text" id="UserName" name="UserName" required>
+                <input type="text" id="UserName" name="UserName" required maxlength="50">
+                <span class="text-danger field-validation-valid" data-valmsg-for="UserName" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="FirstName">First Name:</label>
-                <input type="text" id="FirstName" name="FirstName" required>
+                <input type="text" id="FirstName" name="FirstName" required maxlength="100" pattern="^[a-zA-Z\s-]*$">
+                <span class="text-danger field-validation-valid" data-valmsg-for="FirstName" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="LastName">Last Name:</label>
-                <input type="text" id="LastName" name="LastName" required>
+                <input type="text" id="LastName" name="LastName" required maxlength="100" pattern="^[a-zA-Z\s-]*$">
+                <span class="text-danger field-validation-valid" data-valmsg-for="LastName" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="UserEmail">Email:</label>
                 <input type="email" id="UserEmail" name="UserEmail" required>
+                <span class="text-danger field-validation-valid" data-valmsg-for="UserEmail" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="PhoneNumber">Phone Number:</label>
                 <input type="tel" id="PhoneNumber" name="PhoneNumber">
+                <span class="text-danger field-validation-valid" data-valmsg-for="PhoneNumber" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="Address">Address:</label>
-                <textarea id="Address" name="Address" required></textarea>
+                <textarea id="Address" name="Address" maxlength="200"></textarea>
+                <span class="text-danger field-validation-valid" data-valmsg-for="Address" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="BankName">Bank Name:</label>
-                <input type="text" id="BankName" name="BankName" required>
+                <input type="text" id="BankName" name="BankName" required pattern="^[a-zA-Z\s-]*$">
+                <span class="text-danger field-validation-valid" data-valmsg-for="BankName" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="BranchCode">Branch Code:</label>
-                <input type="text" id="BranchCode" name="BranchCode" required>
+                <input type="text" id="BranchCode" name="BranchCode" required pattern="^\d{6}$">
+                <span class="text-danger field-validation-valid" data-valmsg-for="BranchCode" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="BankAccountNumber">Bank Account Number:</label>
-                <input type="text" id="BankAccountNumber" name="BankAccountNumber" required>
+                <input type="text" id="BankAccountNumber" name="BankAccountNumber" required pattern="^\d{9,12}$">
+                <span class="text-danger field-validation-valid" data-valmsg-for="BankAccountNumber" data-valmsg-replace="true"></span>
             </div>
 
             <div class="form-group">
                 <label for="UserPassword">Password:</label>
-                <input type="password" id="UserPassword" name="UserPassword" required>
+                <input type="password" id="UserPassword" name="UserPassword" required minlength="6" maxlength="100">
+                <span class="text-danger field-validation-valid" data-valmsg-for="UserPassword" data-valmsg-replace="true"></span>
             </div>
 
             <button type="submit" id="submitButton" class="add-lecturer-button">Add Lecturer</button>
@@ -156,8 +166,8 @@
                         <td>@user.PhoneNumber</td>
                         <td>@user.Role?.RoleName</td>
                         <td>
-                            <button class="edit-user-button">Edit</button>
-                            <button class="delete-user-button">Delete</button>
+                            <button class="edit-lecturer-button">Edit</button>
+                            <button class="delete-lecturer-button">Delete</button>
                         </td>
                     </tr>
                 }
@@ -165,3 +175,58 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $.validator.addMethod(
+                "regex",
+                function(value, element, regexp) {
+                    var re = new RegExp(regexp);
+                    return this.optional(element) || re.test(value);
+                },
+                "Please check your input."
+            );
+
+            $("#lecturerForm").validate({
+                rules: {
+                    FirstName: {
+                        regex: /^[a-zA-Z\s-]*$/
+                    },
+                    LastName: {
+                        regex: /^[a-zA-Z\s-]*$/
+                    },
+                    BankName: {
+                        regex: /^[a-zA-Z\s-]*$/
+                    },
+                    BranchCode: {
+                        regex: /^\d{6}$/
+                    },
+                    BankAccountNumber: {
+                        regex: /^\d{9,12}$/
+                    }
+                },
+                messages: {
+                    FirstName: {
+                        regex: "First name can only contain letters, spaces, and hyphens"
+                    },
+                    LastName: {
+                        regex: "Last name can only contain letters, spaces, and hyphens"
+                    },
+                    BankName: {
+                        regex: "Bank name can only contain letters, spaces, and hyphens"
+                    },
+                    BranchCode: {
+                        regex: "Branch code must be 6 digits"
+                    },
+                    BankAccountNumber: {
+                        regex: "Bank account number must be between 9 and 12 digits"
+                    }
+                }
+            });
+        });
+    </script>
+}
