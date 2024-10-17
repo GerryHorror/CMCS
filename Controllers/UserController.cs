@@ -90,6 +90,16 @@ namespace CMCS.Controllers
             return Json(new { success = false, message = "Invalid data", errors = errors });
         }
 
+        public async Task<IActionResult> Manage()
+        {
+            var viewModel = new ManageViewModel
+            {
+                Users = await _context.Users.Include(u => u.Role).ToListAsync(),
+                Roles = await _context.Roles.ToListAsync()
+            };
+            return View(viewModel);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddLecturer([FromForm] UserModel userModel)
         {
