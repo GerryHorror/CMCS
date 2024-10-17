@@ -46,25 +46,32 @@
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success">
+            <div class="alert alert-success">
             @TempData["SuccessMessage"]
-        </div>
+            </div>
     }
 
     @if (!ViewData.ModelState.IsValid)
     {
-        <div class="alert alert-danger">
-            <ul>
+            <div class="alert alert-danger">
+                <ul>
                 @foreach (var modelState in ViewData.ModelState.Values)
                 {
                     foreach (var error in modelState.Errors)
                     {
-                        <li>@error.ErrorMessage</li>
+                                    <li>@error.ErrorMessage</li>
                     }
                 }
-            </ul>
-        </div>
+                </ul>
+            </div>
     }
+
+    <div id="manageActionOverlay" class="manage-action-overlay">
+    <div class="manage-action-message">
+        <i></i>
+        <p></p>
+    </div>
+</div>
 
     <!-- Add Lecturer Form -->
     <div class="add-lecturer-form">
@@ -77,7 +84,7 @@
                     <option value="">Select a role</option>
                     @foreach (var role in Model.Roles)
                     {
-                        <option value="@role.RoleID">@role.RoleName</option>
+                            <option value="@role.RoleID">@role.RoleName</option>
                     }
                 </select>
             </div>
@@ -177,16 +184,16 @@
             <tbody>
                 @foreach (var user in Model.Users)
                 {
-                    <tr>
-                        <td>@user.FirstName @user.LastName</td>
-                        <td>@user.UserEmail</td>
-                        <td>@user.PhoneNumber</td>
-                        <td>@user.Role?.RoleName</td>
-                        <td>
-                            <button class="edit-lecturer-button">Edit</button>
-                            <button class="delete-lecturer-button">Delete</button>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>@user.FirstName @user.LastName</td>
+                            <td>@user.UserEmail</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>@user.Role?.RoleName</td>
+                            <td>
+                                <button class="edit-lecturer-button">Edit</button>
+                                <button class="delete-lecturer-button">Delete</button>
+                            </td>
+                        </tr>
                 }
             </tbody>
         </table>
@@ -197,53 +204,53 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script>
-        $(document).ready(function () {
-            $.validator.addMethod(
-                "regex",
-                function(value, element, regexp) {
-                    var re = new RegExp(regexp);
-                    return this.optional(element) || re.test(value);
-                },
-                "Please check your input."
-            );
+        <script>
+            $(document).ready(function () {
+                $.validator.addMethod(
+                    "regex",
+                    function(value, element, regexp) {
+                        var re = new RegExp(regexp);
+                        return this.optional(element) || re.test(value);
+                    },
+                    "Please check your input."
+                );
 
-            $("#lecturerForm").validate({
-                rules: {
-                    FirstName: {
-                        regex: /^[a-zA-Z\s-]*$/
+                $("#lecturerForm").validate({
+                    rules: {
+                        FirstName: {
+                            regex: /^[a-zA-Z\s-]*$/
+                        },
+                        LastName: {
+                            regex: /^[a-zA-Z\s-]*$/
+                        },
+                        BankName: {
+                            regex: /^[a-zA-Z\s-]*$/
+                        },
+                        BranchCode: {
+                            regex: /^\d{6}$/
+                        },
+                        BankAccountNumber: {
+                            regex: /^\d{9,12}$/
+                        }
                     },
-                    LastName: {
-                        regex: /^[a-zA-Z\s-]*$/
-                    },
-                    BankName: {
-                        regex: /^[a-zA-Z\s-]*$/
-                    },
-                    BranchCode: {
-                        regex: /^\d{6}$/
-                    },
-                    BankAccountNumber: {
-                        regex: /^\d{9,12}$/
+                    messages: {
+                        FirstName: {
+                            regex: "First name can only contain letters, spaces, and hyphens"
+                        },
+                        LastName: {
+                            regex: "Last name can only contain letters, spaces, and hyphens"
+                        },
+                        BankName: {
+                            regex: "Bank name can only contain letters, spaces, and hyphens"
+                        },
+                        BranchCode: {
+                            regex: "Branch code must be 6 digits"
+                        },
+                        BankAccountNumber: {
+                            regex: "Bank account number must be between 9 and 12 digits"
+                        }
                     }
-                },
-                messages: {
-                    FirstName: {
-                        regex: "First name can only contain letters, spaces, and hyphens"
-                    },
-                    LastName: {
-                        regex: "Last name can only contain letters, spaces, and hyphens"
-                    },
-                    BankName: {
-                        regex: "Bank name can only contain letters, spaces, and hyphens"
-                    },
-                    BranchCode: {
-                        regex: "Branch code must be 6 digits"
-                    },
-                    BankAccountNumber: {
-                        regex: "Bank account number must be between 9 and 12 digits"
-                    }
-                }
+                });
             });
-        });
-    </script>
+        </script>
 }

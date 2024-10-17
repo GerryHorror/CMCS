@@ -81,18 +81,19 @@ const initialiseManageLecturers = () => {
     };
 
     // Function to add a new lecturer to the table
-    const addLecturerToTable = (id, firstName, lastName, email, phone) => {
+    const addLecturerToTable = (id, firstName, lastName, email, phone, roleName) => {
         const newRow = lecturerTable.insertRow();
         newRow.dataset.id = id;
         newRow.innerHTML = `
-            <td>${firstName} ${lastName}</td>
-            <td>${email}</td>
-            <td>${phone}</td>
-            <td>
-                <button class="edit-lecturer-button">Edit</button>
-                <button class="delete-lecturer-button">Delete</button>
-            </td>
-        `;
+        <td>${firstName} ${lastName}</td>
+        <td>${email}</td>
+        <td>${phone}</td>
+        <td>${roleName || ''}</td>
+        <td>
+            <button class="edit-lecturer-button">Edit</button>
+            <button class="delete-lecturer-button">Delete</button>
+        </td>
+    `;
     };
 
     // Function to update a lecturer in the table
@@ -155,7 +156,8 @@ const initialiseManageLecturers = () => {
                                 formData.get('FirstName'),
                                 formData.get('LastName'),
                                 formData.get('UserEmail'),
-                                formData.get('PhoneNumber')
+                                formData.get('PhoneNumber'),
+                                formData.get('RoleID')
                             );
                             handleLecturerAction('update', formData.get('FirstName'), formData.get('LastName'));
                         } else {
@@ -164,7 +166,8 @@ const initialiseManageLecturers = () => {
                                 formData.get('FirstName'),
                                 formData.get('LastName'),
                                 formData.get('UserEmail'),
-                                formData.get('PhoneNumber')
+                                formData.get('PhoneNumber'),
+                                data.roleName
                             );
                             handleLecturerAction('add', formData.get('FirstName'), formData.get('LastName'));
                         }

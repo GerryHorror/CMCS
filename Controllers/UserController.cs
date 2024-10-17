@@ -143,10 +143,15 @@ namespace CMCS.Controllers
             {
                 try
                 {
+                    // Save the new user to the database
                     _context.Users.Add(userModel);
                     await _context.SaveChangesAsync();
+
+                    // Retrieve the newly added user with the Role navigation property loaded
+                    var addedUser = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserID == userModel.UserID);
+
                     _logger.LogInformation("New lecturer added successfully. ID: {UserId}", userModel.UserID);
-                    return Json(new { success = true, id = userModel.UserID });
+                    return Json(new { success = true, id = userModel.UserID, roleName = addedUser.Role?.RoleName });
                 }
                 catch (DbUpdateException ex)
                 {
