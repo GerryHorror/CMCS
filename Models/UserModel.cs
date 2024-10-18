@@ -41,7 +41,8 @@ namespace CMCS.Models
         public string UserEmail { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number")]
-        public string PhoneNumber { get; set; } // Changed from int to string because South African phone numbers start with 0, and to allow users to enter the country code if they have an international number
+        [RegularExpression(@"^(\+?\d{1,3})?\s?\(?\d{2,3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$", ErrorMessage = "Invalid phone number format. Please enter in format +27 12 345 6789 or 0123456789.")]
+        public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Bank is required")]
         public string BankName { get; set; }
