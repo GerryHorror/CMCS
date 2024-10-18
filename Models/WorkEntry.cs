@@ -1,4 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+    Student Name: Gérard Blankenberg
+    Student Number: ST10046280
+    Module: PROG6212
+    POE Part 2
+*/
+
+// This class will be used to create the WorkEntry object. This object will be used to store the work entry details. The work entry details will be stored in the database and will be used to track the work entries of the user. The work entry details will have the following columns:
+//  - WorkDate: This will be the date of the work entry.
+//  - HoursWorked: This will be the number of hours worked on that day.
+
+using System.ComponentModel.DataAnnotations;
 
 namespace CMCS.Models
 {
