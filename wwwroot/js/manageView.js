@@ -1,32 +1,27 @@
 ﻿// Reusable function for showing overlays. This function is used to show success and error messages to the user.
 const showActionOverlay = (overlayId, iconClass, iconColor, message, duration = 3000) => {
-    // Get the overlay, icon and text elements from the DOM using the overlayId parameter
+    // Get the overlay, icon, and text elements from the DOM using the overlayId parameter
     const overlay = document.getElementById(overlayId);
     const icon = overlay.querySelector('i');
     const text = overlay.querySelector('p');
-    // Set the icon class, color and text content to the values passed in as parameters to the function (i.e . iconClass, iconColor and message)
+    // Set the icon class, color, and text content to the values passed in as parameters to the function
     icon.className = iconClass;
     icon.style.color = iconColor;
     text.textContent = message;
-    // Display the overlay by setting its display style to 'flex' (i.e. show the overlay as a flex container)
+    // Display the overlay by setting its display style to 'flex' (i.e., show the overlay as a flex container)
     overlay.style.display = 'flex';
     setTimeout(() => {
         overlay.style.display = 'none';
     }, duration);
 };
 
-// <------------------------------------------------------------------------------------------------------------------------------------------------------------>
-
 // Manage Lecturers functionality - handles adding, editing, and deleting lecturers in a table
-
-// Function to initialise the Manage view
 const initialiseManageLecturers = () => {
     // Get the lecturer form, lecturer table, submit button, form title, and edit mode flag
     const form = document.getElementById('lecturerForm');
     const lecturerTable = document.querySelector('.lecturer-table tbody');
     const submitButton = document.getElementById('submitButton');
     const formTitle = document.getElementById('formTitle');
-    // Flag to track if the form is in edit mode
     let editMode = false;
 
     const branchCodes = {
@@ -36,7 +31,7 @@ const initialiseManageLecturers = () => {
         Capitec: "470010",
         Nedbank: "198765",
         TymeBank: "678910",
-        BankOfAthens: "410506",
+        BankofAthens: "410506",
         BidvestBank: "462005",
         Investec: "580105",
         SAPostBank: "460005",
@@ -85,15 +80,15 @@ const initialiseManageLecturers = () => {
         const newRow = lecturerTable.insertRow();
         newRow.dataset.id = id;
         newRow.innerHTML = `
-        <td>${firstName} ${lastName}</td>
-        <td>${email}</td>
-        <td>${phone}</td>
-        <td>${roleName || ''}</td>
-        <td>
-            <button class="edit-lecturer-button">Edit</button>
-            <button class="delete-lecturer-button">Delete</button>
-        </td>
-    `;
+            <td>${firstName} ${lastName}</td>
+            <td>${email}</td>
+            <td>${phone}</td>
+            <td>${roleName || ''}</td>
+            <td>
+                <button class="edit-lecturer-button">Edit</button>
+                <button class="delete-lecturer-button">Delete</button>
+            </td>
+        `;
     };
 
     // Function to update a lecturer in the table
@@ -122,55 +117,10 @@ const initialiseManageLecturers = () => {
         editMode = false;
     };
 
-    const debounce = (func, delay) => {
-        let debounceTimer;
-        return function () {
-            const context = this;
-            const args = arguments;
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => func.apply(context, args), delay);
-        }
-    };
-
-    const checkDuplicate = debounce((field, value) => {
-        fetch(`/User/CheckDuplicate?field=${field}&value=${encodeURIComponent(value)}`)
-            .then(response => response.json())
-            .then(data => {
-                const inputField = document.getElementById(field);
-                if (data.isDuplicate) {
-                    inputField.classList.add('error-field');
-                    showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', `This ${field.toLowerCase()} already exists.`);
-                } else {
-                    inputField.classList.remove('error-field');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }, 500);
-
-    document.getElementById('UserName').addEventListener('input', (e) => checkDuplicate('UserName', e.target.value));
-    document.getElementById('UserEmail').addEventListener('input', (e) => checkDuplicate('UserEmail', e.target.value));
-    document.getElementById('PhoneNumber').addEventListener('input', (e) => checkDuplicate('PhoneNumber', e.target.value));
-
-    const checkNameDuplicate = debounce(() => {
-        const firstName = document.getElementById('FirstName').value;
-        const lastName = document.getElementById('LastName').value;
-        if (firstName && lastName) {
-            checkDuplicate('Name', `${firstName} ${lastName}`);
-        }
-    }, 500);
-
-    document.getElementById('FirstName').addEventListener('input', checkNameDuplicate);
-    document.getElementById('LastName').addEventListener('input', checkNameDuplicate);
-
     // Event listener for form submission
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            if (document.querySelectorAll('.error-field').length > 0) {
-                showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Please correct the highlighted fields before submitting.');
-                return;
-            }
 
             const formData = new FormData(form);
             console.log('RoleID:', formData.get('RoleID'));
@@ -178,6 +128,7 @@ const initialiseManageLecturers = () => {
             // Log form data to console for debugging
             console.log('Form data:', Object.fromEntries(formData));
 
+            let lecturerId;
             if (editMode) {
                 const lecturerIdElement = document.getElementById('lecturerId');
                 if (lecturerIdElement) {
@@ -202,7 +153,7 @@ const initialiseManageLecturers = () => {
                                 formData.get('LastName'),
                                 formData.get('UserEmail'),
                                 formData.get('PhoneNumber'),
-                                formData.get('RoleID')
+                                formData.get('RoleID'),
                             );
                             handleLecturerAction('update', formData.get('FirstName'), formData.get('LastName'));
                         } else {
@@ -219,7 +170,7 @@ const initialiseManageLecturers = () => {
                         resetForm();
                     } else {
                         console.error('Failed to add lecturer:', data);
-                        showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Failed to add lecturer: ' + data.message);
+                        alert('Failed to add lecturer: ' + data.message + '\n' + (data.errors ? data.errors.join('\n') : ''));
                     }
                 })
                 .catch(error => {
@@ -229,63 +180,38 @@ const initialiseManageLecturers = () => {
         });
     }
 
+    // Show the "Coming Soon" modal
+    const showComingSoonModal = () => {
+        const modal = document.getElementById('comingSoonModal');
+        const closeButton = document.querySelector('.close-button');
+
+        modal.style.display = 'block';
+
+        // Close the modal when the user clicks on the close button
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Close the modal when the user clicks outside of the modal content
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    };
+
     // Event listener for table row clicks to edit or delete lecturers
     if (lecturerTable) {
         lecturerTable.addEventListener('click', (e) => {
-            if (e.target.classList.contains('edit-lecturer-button')) {
-                const row = e.target.closest('tr');
-                const [name, email, phone, role] = row.querySelectorAll('td');
-                const [firstName, lastName] = name.textContent.split(' ');
-
-                document.getElementById('lecturerId').value = row.dataset.id || '';
-                document.getElementById('RoleID').value = row.dataset.roleId || '';
-                document.getElementById('UserName').value = row.dataset.userName || '';
-                document.getElementById('FirstName').value = firstName;
-                document.getElementById('LastName').value = lastName;
-                document.getElementById('UserEmail').value = email.textContent;
-                document.getElementById('PhoneNumber').value = phone.textContent;
-
-                // Populate other fields if available in dataset attributes
-                document.getElementById('Address').value = row.dataset.address || '';
-                document.getElementById('BankName').value = row.dataset.bankName || '';
-                document.getElementById('BranchCode').value = row.dataset.branchCode || '';
-                document.getElementById('BankAccountNumber').value = row.dataset.bankAccountNumber || '';
-
-                submitButton.textContent = 'Update Lecturer';
-                formTitle.textContent = 'Edit Lecturer';
-                editMode = true;
-            } else if (e.target.classList.contains('delete-lecturer-button')) {
-                if (confirm('Are you sure you want to delete this lecturer?')) {
-                    const row = e.target.closest('tr');
-                    const lecturerId = row.dataset.id;
-                    const name = row.cells[0].textContent;
-
-                    // Make a DELETE request to delete the lecturer
-                    fetch(`/User/DeleteLecturer/${lecturerId}`, {
-                        method: 'DELETE'
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                row.remove();
-                                handleLecturerAction('delete', ...name.split(' '));
-                            } else {
-                                console.error('Failed to delete lecturer:', data.message);
-                                showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Failed to delete lecturer: ' + data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showActionOverlay('manageActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An unexpected error occurred while deleting. Please try again.');
-                        });
-                }
+            if (e.target.classList.contains('edit-lecturer-button') || e.target.classList.contains('delete-lecturer-button')) {
+                // Show a modal or overlay indicating that the functionality is coming soon
+                showActionOverlay('manageActionOverlay', 'fas fa-tools', 'var(--color-warning)', 'This feature is coming soon!');
             }
         });
     }
 };
 
-// <------------------------------------------------------------------------------------------------------------------------------------------------------------>
-
+// Document ready function to initialize the Manage Lecturers functionality
 document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('.manage-lecturers-container')) {
         initialiseManageLecturers();

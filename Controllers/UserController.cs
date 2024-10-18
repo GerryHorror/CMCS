@@ -64,7 +64,6 @@ namespace CMCS.Controllers
         [HttpPost]
         public async Task<IActionResult> User(UserModel userModel)
         {
-            // Remove validation for UserName and UserPassword as they are not being updated
             ModelState.Remove("UserName");
             ModelState.Remove("UserPassword");
 
@@ -72,15 +71,13 @@ namespace CMCS.Controllers
             {
                 try
                 {
-                    // Retrieve the user ID from the session
                     var userId = HttpContext.Session.GetInt32("UserID");
                     if (!userId.HasValue)
                     {
-                        _logger.LogWarning("Unauthorized update attempt");
+                        _logger.LogWarning("Unauthorised update attempt");
                         return Json(new { success = false, message = "User not authenticated" });
                     }
 
-                    // Retrieve the existing user from the database
                     var existingUser = await _context.Users.FindAsync(userId.Value);
                     if (existingUser == null)
                     {
@@ -88,7 +85,7 @@ namespace CMCS.Controllers
                         return Json(new { success = false, message = "User not found" });
                     }
 
-                    // Update specific fields
+                    // Update only specific fields
                     existingUser.FirstName = userModel.FirstName;
                     existingUser.LastName = userModel.LastName;
                     existingUser.UserEmail = userModel.UserEmail;
@@ -203,6 +200,49 @@ namespace CMCS.Controllers
         }
 
         // <-------------------------------------------------------------------------------------------------->
+
+        [HttpGet]
+        public async Task<IActionResult> CheckDuplicate(string field, string value)
+        {
+            try
+            {
+                bool isDuplicate = false;
+                switch (field.ToLower())
+                {
+                    case "username":
+                        isDuplicate = await _context.Users.AnyAsync(u => u.UserName == value);
+                        break;
+
+                    case "useremail":
+                        isDuplicate = await _context.Users.AnyAsync(u => u.UserEmail == value);
+                        break;
+
+                    case "phonenumber":
+                        isDuplicate = await _context.Users.AnyAsync(u => u.PhoneNumber == value);
+                        break;
+
+                    case "name":
+                        var names = value.Split(' ');
+                        if (names.Length == 2)
+                        {
+                            isDuplicate = await _context.Users.AnyAsync(u => u.FirstName == names[0] && u.LastName == names[1]);
+                        }
+                        break;
+
+                    default:
+                        return BadRequest("Invalid field specified");
+                }
+
+                return Json(new { isDuplicate });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while checking for duplicate {Field}: {Value}", field, value);
+                return StatusCode(500, "An error occurred while checking for duplicates");
+            }
+        }
+
+        // <!-------------------------------------------------------------------------------------->
 
         // Helper method to check for duplicate users
         private async Task<bool> IsUserDuplicate(UserModel userModel)

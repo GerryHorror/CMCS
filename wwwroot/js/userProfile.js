@@ -19,8 +19,7 @@ const showActionOverlay = (overlayId, iconClass, iconColor, message, duration = 
 
 // User Profile Functionality - handles form submission and shows success message when the form is submitted
 const initialiseUserProfile = () => {
-    const form = document.getElementById('userProfileForm');
-
+    // Define branch codes
     const branchCodes = {
         StandardBank: "051001",
         FNB: "250655",
@@ -37,69 +36,72 @@ const initialiseUserProfile = () => {
         OldMutual: "462005"
     };
 
+    // Get form and relevant elements
+    const form = document.getElementById('userProfileForm');
     const bankNameSelect = document.getElementById('BankName');
     const branchCodeInput = document.getElementById('BranchCode');
 
+    // Ensure that all necessary elements are present
     if (bankNameSelect && branchCodeInput) {
-        bankNameSelect.addEventListener('change', function () {
-            const selectedBank = this.value;
+        // Function to set branch code based on selected bank
+        const setBranchCode = () => {
+            const selectedBank = bankNameSelect.value;
             branchCodeInput.value = branchCodes[selectedBank] || '';
-        });
+        };
 
-        if (bankNameSelect && branchCodeInput) {
-            // Function to set branch code based on selected bank
-            const setBranchCode = () => {
-                const selectedBank = bankNameSelect.value;
-                branchCodeInput.value = branchCodes[selectedBank] || '';
-            };
+        // Set initial branch code when page loads
+        setBranchCode();
 
-            // Set initial branch code when page loads
-            setBranchCode();
+        // Update branch code when bank selection changes
+        bankNameSelect.addEventListener('change', setBranchCode);
+    } else {
+        console.error("Bank name select or branch code input not found.");
+    }
 
-            // Update branch code when bank selection changes
-            bankNameSelect.addEventListener('change', setBranchCode);
-        }
+    // Handle form submission
+    if (form) {
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            console.log("Form submission triggered");
 
-        if (form) {
-            form.onsubmit = async (e) => {
-                e.preventDefault();
-
-                try {
-                    const formData = new FormData(form);
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    });
-
-                    const result = await response.json();
-                    console.log('Server response:', result);
-
-                    if (result.success) {
-                        showActionOverlay('userActionOverlay', 'fas fa-user-check', 'var(--color-success)', 'Profile updated successfully!');
-                        // Clear password field after successful update
-                        document.getElementById('UserPassword').value = '';
-                    } else {
-                        let errorMessage = result.message;
-                        if (result.errors && result.errors.length > 0) {
-                            errorMessage += ': ' + result.errors.join(', ');
-                        }
-                        showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', errorMessage);
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An error occurred. Please try again.');
-                }
-            };
-        } else {
-            console.error('User Profile form is missing from the page.');
-        }
-    };
+                });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('userProfileForm')) {
-            initialiseUserProfile();
-        }
-    });
+                const result = await response.json();
+                console.log('Server response:', result);
+
+                if (result.success) {
+                    showActionOverlay('userActionOverlay', 'fas fa-user-check', 'var(--color-success)', 'Profile updated successfully!');
+                    // Clear password field after successful update
+                    const passwordField = document.getElementById('UserPassword');
+                    if (passwordField) {
+                        passwordField.value = '';
+                    } else {
+                        console.warn("Password field not found.");
+                    }
+                } else {
+                    let errorMessage = result.message;
+                    if (result.errors && result.errors.length > 0) {
+                        errorMessage += ': ' + result.errors.join(', ');
+                    }
+                    showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', errorMessage);
+                }
+            } catch (error) {
+                console.error('Error during form submission:', error);
+                showActionOverlay('userActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'An error occurred. Please try again.');
+            }
+        };
+    } else {
+        console.error('User Profile form is missing from the page.');
+    }
+};
+
+// Ensure the profile initialization occurs once DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initialiseUserProfile);
