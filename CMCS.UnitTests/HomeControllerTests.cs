@@ -1,4 +1,11 @@
-﻿using CMCS.Controllers;
+﻿/*
+    Student Name: Gérard Blankenberg
+    Student Number: ST10046280
+    Module: PROG6212
+    POE Part 2
+*/
+
+using CMCS.Controllers;
 using CMCS.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

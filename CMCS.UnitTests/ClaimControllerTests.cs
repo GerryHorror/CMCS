@@ -1,3 +1,10 @@
+/*
+    Student Name: Gérard Blankenberg
+    Student Number: ST10046280
+    Module: PROG6212
+    POE Part 2
+*/
+
 using Microsoft.AspNetCore.Mvc;
 using CMCS.Controllers;
 using Microsoft.Extensions.Logging;

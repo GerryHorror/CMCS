@@ -1,4 +1,13 @@
-﻿using CMCS.Data;
+﻿/*
+    Student Name: Gérard Blankenberg
+    Student Number: ST10046280
+    Module: PROG6212
+    POE Part 2
+*/
+
+// This is a helper class that seeds the database with test data for unit testing purposes.
+
+using CMCS.Data;
 using CMCS.Models;
 
 namespace CMCS.UnitTests.Helper
