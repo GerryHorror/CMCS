@@ -72,6 +72,22 @@ html {
     min-height: 100%;
 }
 
+/* General styling for validation error messages */
+.error {
+    color: var(--color-error); 
+    font-weight: bold;
+    font-size: 0.9rem; 
+    display: block; 
+}
+
+/* Style for inputs with validation errors */
+input.error,
+select.error,
+textarea.error {
+    border: 2px solid var(--color-error); 
+    background-color: #ffe6e6;
+}
+
 @media (min-width: 768px) {
     html {
         font-size: 16px;

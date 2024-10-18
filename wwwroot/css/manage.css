@@ -83,31 +83,71 @@
         padding: 0.5rem;
         border: 1px solid var(--color-secondary);
         border-radius: 4px;
+        box-sizing: border-box;
     }
 
+    .form-group textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--color-secondary);
+        border-radius: 4px;
+        box-sizing: border-box;
+        resize: vertical;
+    }
+
+/* Styling for validation messages */
+.text-danger.field-validation-valid,
+span.field-validation-valid[data-valmsg-replace="true"] {
+    color: var(--color-error); 
+    font-size: 0.9rem; 
+    margin-top: 0.25rem;
+    display: block;
+    font-weight: bold; 
+}
+
 /* Button styling */
-.add-lecturer-button, .edit-lecturer-button, .delete-lecturer-button, .update-lecturer-button {
+.add-lecturer-button,
+.edit-lecturer-button,
+.delete-lecturer-button,
+.update-lecturer-button {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform transition for scaling */
 }
 
-.add-lecturer-button, .update-lecturer-button {
+.add-lecturer-button,
+.update-lecturer-button {
     background-color: var(--color-success);
     color: var(--color-light);
 }
+
+    .add-lecturer-button:hover,
+    .update-lecturer-button:hover {
+        background-color: #218838;
+        transform: scale(1.05);
+    }
 
 .edit-lecturer-button {
     background-color: var(--color-secondary);
     color: var(--color-light);
 }
 
+    .edit-lecturer-button:hover {
+        background-color: #5a6268;
+        transform: scale(1.05);
+    }
+
 .delete-lecturer-button {
     background-color: var(--color-error);
     color: var(--color-light);
 }
+
+    .delete-lecturer-button:hover {
+        background-color: #cc0000;
+        transform: scale(1.05);
+    }
 
 /* Lecturer table styling */
 .lecturer-table {
