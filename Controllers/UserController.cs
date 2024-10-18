@@ -2,10 +2,10 @@
     Student Name: Gérard Blankenberg
     Student Number: ST10046280
     Module: PROG6212
-    POE Part 1
+    POE Part 2
 */
 
-// This is the boiler plate code for the User Controller. This controller will be used to handle the users. Functionality will be added to this controller in the future.
+// This controller is used to handle the users. It contains actions to display user details and manage users. The User action retrieves the user details from the database and displays them. The User action also allows the user to update their details. The Manage action retrieves all users from the database and displays them. The AddLecturer action adds a new lecturer to the database.
 
 using CMCS.Data;
 using CMCS.Models;
@@ -16,34 +16,40 @@ namespace CMCS.Controllers
 {
     public class UserController : Controller
     {
-        private readonly CMCSDbContext _context;
-        private readonly ILogger<UserController> _logger;
+        private readonly CMCSDbContext _context; // Database context for accessing the database
+        private readonly ILogger<UserController> _logger; // Logger for logging information, warnings, and errors
 
+        // Constructor to initialise the database context and logger
         public UserController(CMCSDbContext context, ILogger<UserController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
+        // <-------------------------------------------------------------------------------------------------->
+
+        // Action to display user details
         public async Task<IActionResult> User()
         {
             try
             {
+                // Retrieve the user ID from the session
                 var userId = HttpContext.Session.GetInt32("UserID");
                 if (!userId.HasValue)
                 {
-                    _logger.LogWarning("Unauthorised access attempt to User action");
-                    return RedirectToAction("Login", "Home");
+                    _logger.LogWarning("Unauthorized access attempt to User action");
+                    return RedirectToAction("Login", "Home"); // Redirect to login if user is not authenticated
                 }
 
+                // Retrieve the user from the database
                 var user = await _context.Users.FindAsync(userId.Value);
                 if (user == null)
                 {
                     _logger.LogWarning("User not found for ID: {UserId}", userId.Value);
-                    return NotFound("User not found");
+                    return NotFound("User not found"); // Return 404 if user is not found
                 }
 
-                return View(user);
+                return View(user); // Return the user details view
             }
             catch (Exception ex)
             {
@@ -52,9 +58,13 @@ namespace CMCS.Controllers
             }
         }
 
+        // <-------------------------------------------------------------------------------------------------->
+
+        // Action to update user details (POST request)
         [HttpPost]
         public async Task<IActionResult> User(UserModel userModel)
         {
+            // Remove validation for UserName and UserPassword as they are not being updated
             ModelState.Remove("UserName");
             ModelState.Remove("UserPassword");
 
@@ -62,13 +72,15 @@ namespace CMCS.Controllers
             {
                 try
                 {
+                    // Retrieve the user ID from the session
                     var userId = HttpContext.Session.GetInt32("UserID");
                     if (!userId.HasValue)
                     {
-                        _logger.LogWarning("Unauthorised update attempt");
+                        _logger.LogWarning("Unauthorized update attempt");
                         return Json(new { success = false, message = "User not authenticated" });
                     }
 
+                    // Retrieve the existing user from the database
                     var existingUser = await _context.Users.FindAsync(userId.Value);
                     if (existingUser == null)
                     {
@@ -76,7 +88,7 @@ namespace CMCS.Controllers
                         return Json(new { success = false, message = "User not found" });
                     }
 
-                    // Update only specific fields
+                    // Update specific fields
                     existingUser.FirstName = userModel.FirstName;
                     existingUser.LastName = userModel.LastName;
                     existingUser.UserEmail = userModel.UserEmail;
@@ -114,6 +126,9 @@ namespace CMCS.Controllers
             return Json(new { success = false, message = "Invalid data", errors = errors });
         }
 
+        // <-------------------------------------------------------------------------------------------------->
+
+        // Action to display the user management page
         public async Task<IActionResult> Manage()
         {
             try
@@ -123,7 +138,7 @@ namespace CMCS.Controllers
                     Users = await _context.Users.Include(u => u.Role).ToListAsync(),
                     Roles = await _context.Roles.ToListAsync()
                 };
-                return View(viewModel);
+                return View(viewModel); // Return the user management view
             }
             catch (Exception ex)
             {
@@ -132,17 +147,21 @@ namespace CMCS.Controllers
             }
         }
 
+        // <-------------------------------------------------------------------------------------------------->
+
+        // Action to add a new lecturer (POST request)
         [HttpPost]
         public async Task<IActionResult> AddLecturer([FromForm] UserModel userModel)
         {
             _logger.LogInformation("Received AddLecturer request: {UserModel}", System.Text.Json.JsonSerializer.Serialize(userModel));
 
-            userModel.Role = null;
+            userModel.Role = null; // Ensure the role is not set directly
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Check for duplicate user
                     var existingUser = await _context.Users.FirstOrDefaultAsync(u =>
                         u.UserName == userModel.UserName ||
                         u.UserEmail == userModel.UserEmail ||
@@ -177,15 +196,15 @@ namespace CMCS.Controllers
                 }
             }
 
-            var errors = ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
 
             _logger.LogWarning("Invalid model state in AddLecturer. Errors: {Errors}", string.Join(", ", errors));
             return Json(new { success = false, message = "Invalid data", errors });
         }
 
+        // <-------------------------------------------------------------------------------------------------->
+
+        // Helper method to check for duplicate users
         private async Task<bool> IsUserDuplicate(UserModel userModel)
         {
             return await _context.Users.AnyAsync(u =>
