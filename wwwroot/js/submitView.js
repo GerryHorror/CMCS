@@ -4,7 +4,7 @@ const showActionOverlay = (overlayId, iconClass, iconColor, message, duration = 
     const overlay = document.getElementById(overlayId);
     const icon = overlay.querySelector('i');
     const text = overlay.querySelector('p');
-    // Set the icon class, color and text content to the values passed in as parameters to the function (i.e . iconClass, iconColor and message)
+    // Set the icon class, color and text content to the values passed in as parameters to the function
     icon.className = iconClass;
     icon.style.color = iconColor;
     text.textContent = message;
@@ -14,8 +14,6 @@ const showActionOverlay = (overlayId, iconClass, iconColor, message, duration = 
         overlay.style.display = 'none';
     }, duration);
 };
-
-// <------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
 // Submit view functionality - handles form submission, adding work entries, and uploading supporting documents
 const initialiseSubmitView = () => {
@@ -27,6 +25,11 @@ const initialiseSubmitView = () => {
         const workEntriesContainer = document.getElementById('workEntries');
         const supportingDocumentInput = document.getElementById('supportingDocument');
         let entryCount = 1;
+
+        // Get today's date and two months ago for date restrictions
+        const today = new Date();
+        const twoMonthsAgo = new Date();
+        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
 
         const calculateClaimAmount = () => {
             const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
@@ -43,11 +46,11 @@ const initialiseSubmitView = () => {
                 <div class="work-entry">
                     <div class="form-group">
                         <label class="submit-label">Work Date:</label>
-                        <input type="date" name="WorkEntries[${entryCount}].WorkDate" class="submit-input work-date" required>
+                        <input type="date" name="WorkEntries[${entryCount}].WorkDate" class="submit-input work-date" min="${twoMonthsAgo.toISOString().split('T')[0]}" max="${today.toISOString().split('T')[0]}" required>
                     </div>
                     <div class="form-group">
                         <label class="submit-label">Hours Worked:</label>
-                        <input type="number" name="WorkEntries[${entryCount}].HoursWorked" class="submit-input work-hours" step="0.5" min="1" max="8" required>
+                        <input type="number" name="WorkEntries[${entryCount}].HoursWorked" class="submit-input work-hours" min="0.5" max="8" step="0.5" required oninput="this.value = this.value < 0 ? 0 : this.value">
                     </div>
                     <button type="button" class="btn btn-danger remove-entry">Remove</button>
                 </div>
@@ -58,24 +61,49 @@ const initialiseSubmitView = () => {
 
         const removeWorkEntry = (event) => {
             if (event.target.classList.contains('remove-entry')) {
-                event.target.closest('.work-entry').remove();
-                renumberEntries();
-                calculateClaimAmount();
+                const entries = document.querySelectorAll('.work-entry');
+                // Prevent removing the last entry
+                if (entries.length > 1) {
+                    event.target.closest('.work-entry').remove();
+                    renumberEntries();
+                    calculateClaimAmount();
+                } else {
+                    showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'At least one work entry is required');
+                }
             }
         };
 
         const renumberEntries = () => {
             document.querySelectorAll('.work-entry').forEach((entry, index) => {
-                entry.querySelector('.work-date').name = `WorkEntries[${index}].WorkDate`;
-                entry.querySelector('.work-hours').name = `WorkEntries[${index}].HoursWorked`;
+                const dateInput = entry.querySelector('.work-date');
+                const hoursInput = entry.querySelector('.work-hours');
+
+                dateInput.name = `WorkEntries[${index}].WorkDate`;
+                hoursInput.name = `WorkEntries[${index}].HoursWorked`;
+
+                // Ensure date restrictions are maintained
+                dateInput.min = twoMonthsAgo.toISOString().split('T')[0];
+                dateInput.max = today.toISOString().split('T')[0];
             });
             entryCount = document.querySelectorAll('.work-entry').length;
+        };
+
+        // Add validation to prevent users from manually entering dates outside allowed range
+        const validateDateInput = (input) => {
+            const dateValue = new Date(input.value);
+            if (dateValue < twoMonthsAgo || dateValue > today) {
+                input.value = "";
+                showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Please select a valid date within the allowed range.');
+            }
         };
 
         hourlyRateInput.addEventListener('input', calculateClaimAmount);
         workEntriesContainer.addEventListener('input', (event) => {
             if (event.target.classList.contains('work-hours')) {
                 calculateClaimAmount();
+            }
+            if (event.target.classList.contains('work-date')) {
+                validateDateInput(event.target);
             }
         });
         workEntriesContainer.addEventListener('click', removeWorkEntry);
