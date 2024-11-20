@@ -28,6 +28,18 @@ const initialiseSubmitView = () => {
         const supportingDocumentInput = document.getElementById('supportingDocument');
         let entryCount = 1;
 
+        // Function to format currency amounts using the ZAR currency
+        const formatCurrency = (amount) => {
+            // Format number to 2 decimal places with ZAR currency
+            return new Intl.NumberFormat('en-ZA', {
+                style: 'currency',
+                currency: 'ZAR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        };
+
+        // Function to calculate the claim amount based on the hourly rate and total hours worked
         const calculateClaimAmount = () => {
             const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
             let totalHours = 0;
@@ -35,7 +47,17 @@ const initialiseSubmitView = () => {
                 totalHours += parseFloat(input.value) || 0;
             });
             const totalAmount = totalHours * hourlyRate;
+
+            // Update hidden input with raw number for form submission
             claimAmountInput.value = totalAmount.toFixed(2);
+
+            // Update display input with formatted currency
+            const displayElement = document.getElementById('displayClaimAmount');
+            if (displayElement) {
+                // Remove currency symbol from formatted value since we already show R in the input group
+                const formattedValue = formatCurrency(totalAmount).replace('ZAR', '').trim();
+                displayElement.value = formattedValue;
+            }
         };
 
         const addNewWorkEntry = () => {
@@ -56,6 +78,7 @@ const initialiseSubmitView = () => {
             entryCount++;
         };
 
+        // Function to remove a work entry when the 'Remove' button is clicked
         const removeWorkEntry = (event) => {
             if (event.target.classList.contains('remove-entry')) {
                 event.target.closest('.work-entry').remove();
@@ -64,6 +87,7 @@ const initialiseSubmitView = () => {
             }
         };
 
+        // Function to renumber the work entries when one is removed
         const renumberEntries = () => {
             document.querySelectorAll('.work-entry').forEach((entry, index) => {
                 entry.querySelector('.work-date').name = `WorkEntries[${index}].WorkDate`;
@@ -72,6 +96,7 @@ const initialiseSubmitView = () => {
             entryCount = document.querySelectorAll('.work-entry').length;
         };
 
+        // Event listeners for the form elements
         hourlyRateInput.addEventListener('input', calculateClaimAmount);
         workEntriesContainer.addEventListener('input', (event) => {
             if (event.target.classList.contains('work-hours')) {
@@ -80,6 +105,36 @@ const initialiseSubmitView = () => {
         });
         workEntriesContainer.addEventListener('click', removeWorkEntry);
         addEntryButton.addEventListener('click', addNewWorkEntry);
+
+        // Function to validate work entries
+        function validateWorkEntry(hours, date) {
+            const errors = [];
+            if (hours < 1 || hours > 8) {
+                errors.push('Hours worked must be between 1 and 8.');
+            }
+            if (new Date(date) > new Date()) {
+                errors.push('Work date cannot be in the future.');
+            }
+            return errors;
+        }
+
+        // Add validation to work entries before submitting the form
+        workEntriesContainer.addEventListener('change', (event) => {
+            if (event.target.classList.contains('work-hours') || event.target.classList.contains('work-date')) {
+                const entry = event.target.closest('.work-entry');
+                const hours = parseFloat(entry.querySelector('.work-hours').value);
+                const date = entry.querySelector('.work-date').value;
+                const errors = validateWorkEntry(hours, date);
+
+                // Display error messages if there are any
+                const errorDiv = entry.querySelector('.error-messages') || document.createElement('div');
+                errorDiv.className = 'error-messages text-danger';
+                errorDiv.textContent = errors.join(', ');
+                if (!entry.querySelector('.error-messages')) {
+                    entry.appendChild(errorDiv);
+                }
+            }
+        });
 
         submitForm.addEventListener('submit', async (event) => {
             event.preventDefault();

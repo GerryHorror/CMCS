@@ -97,7 +97,12 @@
                     <div class="work-entry">
                         <div class="form-group">
                             <label class="submit-label">Work Date:</label>
-                            <input type="date" name="WorkEntries[0].WorkDate" class="submit-input work-date" required>
+                            <input type="date" name="WorkEntries[${entryCount}].WorkDate"
+                                   class="submit-input work-date"
+                                   required
+                                   max="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                   min="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")">
+                            <small class="form-text text-muted">Select a date within the last month</small>
                         </div>
                         <div class="form-group">
                             <label class="submit-label">Hours Worked:</label>
@@ -113,8 +118,11 @@
                 <div class="form-group">
                     <label asp-for="ClaimAmount" class="submit-label">Total Claim Amount:</label>
                     <div class="input-group">
+                        <!-- Hidden input for form submission -->
+                        <input asp-for="ClaimAmount" type="hidden" class="submit-input" required>
+                        <!-- Display element for formatted amount -->
                         <span class="input-group-text">R</span>
-                        <input asp-for="ClaimAmount" type="number" class="submit-input" step="0.01" min="0" required readonly>
+                        <input type="text" id="displayClaimAmount" class="submit-input" readonly>
                     </div>
                     <span asp-validation-for="ClaimAmount" class="text-danger"></span>
                 </div>
