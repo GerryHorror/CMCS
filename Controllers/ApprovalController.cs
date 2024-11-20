@@ -9,6 +9,7 @@
 
 using CMCS.Data;
 using CMCS.Models;
+using CMCS.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,30 +21,51 @@ namespace CMCS.Controllers
 
         private readonly CMCSDbContext _context;
         private readonly ILogger<ApprovalController> _logger;
+        private readonly ClaimProcessor _claimProcessor;
 
         // Constructor to initialise the database context and logger
         public ApprovalController(CMCSDbContext context, ILogger<ApprovalController> logger)
         {
             _context = context;
             _logger = logger;
+            var validator = new ClaimValidator(); // Assuming ClaimValidator has a parameterless constructor
+            _claimProcessor = new ClaimProcessor(validator, context);
         }
 
         // Method to retrieve claims for verification and return the view
         public async Task<IActionResult> Verify()
         {
-            // Try to retrieve claims from the database and return the view
             try
             {
-                // Retrieve claims from the database, include related entities, order by submission date and return the view
-                var claims = await _context.Claims.Include(c => c.User).Include(c => c.Status).OrderByDescending(c => c.SubmissionDate).ToListAsync();
+                // Retrieve claims from the database
+                var claims = await _context.Claims
+                    .Include(c => c.User)
+                    .Include(c => c.Status)
+                    .OrderByDescending(c => c.SubmissionDate)
+                    .ToListAsync();
+
+                // Check each pending claim for auto-approval
+                foreach (var claim in claims.Where(c => c.Status.StatusName == "Pending"))
+                {
+                    var (success, message, autoApproved) = await _claimProcessor.ProcessClaimAsync(claim);
+                    if (autoApproved)
+                    {
+                        _logger.LogInformation("Claim {ClaimId} was auto-approved", claim.ClaimID);
+                    }
+                }
+
+                // Refresh claims after potential auto-approvals
+                claims = await _context.Claims
+                    .Include(c => c.User)
+                    .Include(c => c.Status)
+                    .OrderByDescending(c => c.SubmissionDate)
+                    .ToListAsync();
 
                 return View(claims);
             }
-            // Catch any exceptions and log the error
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while retrieving claims for verification");
-                // Return a status code 500 with an error message if an exception occurs
                 return StatusCode(500, "An error occurred while retrieving claims. Please try again later.");
             }
         }
@@ -54,46 +76,75 @@ namespace CMCS.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusModel model)
         {
-            // Check if the model state is valid (i.e. all required fields are present and have valid values)
             if (!ModelState.IsValid)
             {
-                return BadRequest(new { success = false, message = "Invalid model state", errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+                return BadRequest(new { success = false, message = "Invalid model state" });
             }
-            // Try to update the status of the claim and return a success message
+
             try
             {
-                var claim = await _context.Claims.FindAsync(model.ClaimId);
+                var claim = await _context.Claims
+                    .Include(c => c.User)
+                    .Include(c => c.Status)
+                    .FirstOrDefaultAsync(c => c.ClaimID == model.ClaimId);
+
                 if (claim == null)
                 {
-                    return NotFound(new { success = false, message = $"Claim with ID {model.ClaimId} not found" });
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = $"Claim with ID {model.ClaimId} not found"
+                    });
                 }
 
-                var newStatus = await _context.ClaimStatuses.FirstOrDefaultAsync(s => s.StatusName == model.Status);
-                if (newStatus == null)
+                // Process claim for auto-approval
+                var (success, message, autoApproved) = await _claimProcessor.ProcessClaimAsync(claim);
+
+                if (!success)
                 {
-                    return BadRequest(new { success = false, message = $"Invalid status: {model.Status}" });
+                    return BadRequest(new { success = false, message });
                 }
 
-                claim.StatusID = newStatus.StatusID;
-                if (model.Status == "Approved" || model.Status == "Rejected")
+                // If not auto-approved and manual approval requested, process manual approval
+                if (!autoApproved && model.Status != null)
                 {
+                    var newStatus = await _context.ClaimStatuses
+                        .FirstOrDefaultAsync(s => s.StatusName == model.Status);
+
+                    if (newStatus == null)
+                    {
+                        return BadRequest(new
+                        {
+                            success = false,
+                            message = $"Invalid status: {model.Status}"
+                        });
+                    }
+
+                    claim.StatusID = newStatus.StatusID;
                     claim.ApprovalDate = DateTime.Now;
+                    await _context.SaveChangesAsync();
+
+                    message = $"Claim {model.ClaimId} has been manually {model.Status.ToLower()}.";
                 }
 
-                await _context.SaveChangesAsync();
+                _logger.LogInformation("Claim {ClaimId} processed. Auto-approved: {AutoApproved}",
+                    model.ClaimId, autoApproved);
 
-                _logger.LogInformation("Claim {ClaimId} status updated to {Status}", model.ClaimId, model.Status);
-                return Json(new { success = true, message = $"Claim {model.ClaimId} has been {model.Status.ToLower()}." });
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex, "Database error occurred while updating claim {ClaimId} status", model.ClaimId);
-                return StatusCode(500, new { success = false, message = "A database error occurred while updating the claim status." });
+                return Json(new
+                {
+                    success = true,
+                    message = message,
+                    isAutoApproved = autoApproved
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error occurred while updating claim {ClaimId} status", model.ClaimId);
-                return StatusCode(500, new { success = false, message = "An unexpected error occurred while updating the claim status." });
+                _logger.LogError(ex, "Error processing claim {ClaimId}", model.ClaimId);
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "An error occurred while processing the claim."
+                });
             }
         }
 

@@ -1,4 +1,6 @@
 using CMCS.Data;
+using CMCS.Validation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CMCS
@@ -22,6 +24,8 @@ namespace CMCS
 
             // Add database context to the container (Dependency Injection)
             builder.Services.AddDbContext<CMCSDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ClaimValidator>());
 
             var app = builder.Build();
 

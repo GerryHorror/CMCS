@@ -67,14 +67,36 @@ const initialiseVerifyView = () => {
             if (result.success) {
                 const row = document.querySelector(`.verify-row[data-id="${claimId}"]`);
                 const statusCell = row.querySelector('.verify-status');
-                statusCell.textContent = action === 'approve' ? 'Approved' : 'Rejected';
-                statusCell.className = `verify-status verify-status-${action === 'approve' ? 'approved' : 'rejected'}`;
-                row.querySelectorAll('.verify-approve-button, .verify-reject-button').forEach(btn => btn.remove());
-                showActionOverlay('verifyActionOverlay', `fas fa-${action === 'approve' ? 'check' : 'times'}-circle`, `var(--color-${action === 'approve' ? 'success' : 'error'})`, result.message);
+
+                // Update status display
+                const statusText = result.isAutoApproved ? 'Auto-Approved' :
+                    (action === 'approve' ? 'Approved' : 'Rejected');
+
+                statusCell.textContent = statusText;
+                statusCell.className = `verify-status verify-status-${statusText.toLowerCase()}`;
+
+                // Only remove buttons if the claim was approved (auto or manual) or rejected
+                if (result.isAutoApproved || action === 'approve' || action === 'reject') {
+                    row.querySelectorAll('.verify-approve-button, .verify-reject-button')
+                        .forEach(btn => btn.remove());
+                }
+
+                // Show appropriate message with icon
+                const iconClass = result.isAutoApproved ? 'fas fa-robot' :
+                    `fas fa-${action === 'approve' ? 'check' : 'times'}-circle`;
+
+                const iconColor = action === 'approve' || result.isAutoApproved ?
+                    'var(--color-success)' : 'var(--color-error)';
+
+                showActionOverlay('verifyActionOverlay', iconClass, iconColor, result.message);
             }
         } catch (error) {
             console.error('Error:', error);
-            showActionOverlay('verifyActionOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', error.message);
+            showActionOverlay('verifyActionOverlay',
+                'fas fa-exclamation-circle',
+                'var(--color-error)',
+                error.message
+            );
         }
     };
 

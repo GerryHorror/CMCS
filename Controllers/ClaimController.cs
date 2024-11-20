@@ -132,6 +132,20 @@ namespace CMCS.Controllers
         [HttpPost]
         public async Task<IActionResult> Submit(ClaimModel claimModel, List<WorkEntry> workEntries, IFormFile supportingDocument)
         {
+            // Clear any existing model state errors for HoursWorked
+            ModelState.Remove("HoursWorked");
+            ModelState.Remove("ClaimAmount");
+
+            // Calculate total hours worked and claim amount
+            decimal totalHours = workEntries.Sum(w => w.HoursWorked);
+            claimModel.HoursWorked = totalHours;
+            claimModel.ClaimAmount = totalHours * claimModel.HourlyRate;
+
+            _logger.LogInformation("Before validation - Hours: {Hours}, Rate: {Rate}, Amount: {Amount}",
+                claimModel.HoursWorked,
+                claimModel.HourlyRate,
+                claimModel.ClaimAmount);
+
             if (!ModelState.IsValid)
             {
                 // Log a warning if the model state is invalid
@@ -189,10 +203,6 @@ namespace CMCS.Controllers
                         return Json(new { success = false, message = "Invalid work hours" });
                     }
                 }
-
-                // Calculate total hours worked and claim amount
-                claimModel.HoursWorked = workEntries.Sum(w => w.HoursWorked);
-                claimModel.ClaimAmount = claimModel.HoursWorked * claimModel.HourlyRate;
 
                 // Add the claim to the database
                 _context.Claims.Add(claimModel);
