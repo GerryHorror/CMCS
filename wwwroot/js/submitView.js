@@ -45,11 +45,11 @@ const initialiseSubmitView = () => {
             const newEntry = `
                 <div class="work-entry">
                     <div class="form-group">
-                        <label class="submit-label">Work Date:</label>
+                        <label class="submit-label" title="Please select a date within the last two months and no later than today">Work Date:</label>
                         <input type="date" name="WorkEntries[${entryCount}].WorkDate" class="submit-input work-date" min="${twoMonthsAgo.toISOString().split('T')[0]}" max="${today.toISOString().split('T')[0]}" required>
                     </div>
                     <div class="form-group">
-                        <label class="submit-label">Hours Worked:</label>
+                        <label class="submit-label" title="Enter hours between 1 and 8">Hours Worked:</label>
                         <input type="number" name="WorkEntries[${entryCount}].HoursWorked" class="submit-input work-hours" min="0.5" max="8" step="0.5" required oninput="this.value = this.value < 0 ? 0 : this.value">
                     </div>
                     <button type="button" class="btn btn-danger remove-entry">Remove</button>
@@ -93,7 +93,7 @@ const initialiseSubmitView = () => {
             const dateValue = new Date(input.value);
             if (dateValue < twoMonthsAgo || dateValue > today) {
                 input.value = "";
-                showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Please select a valid date within the allowed range.');
+                showActionOverlay('successOverlay', 'fas fa-exclamation-circle', 'var(--color-error)', 'Please select a date within the last two months and no later than today.');
             }
         };
 

@@ -78,10 +78,14 @@
             <form id="claimForm" class="submit-form" asp-controller="Claim" asp-action="Submit" method="post" enctype="multipart/form-data">
                 <input type="hidden" asp-for="UserID" value="@Context.Session.GetInt32("UserID")" />
                 <input type="hidden" asp-for="SubmissionDate" id="submissionDate">
+
+                <!-- Claim Submission Date -->
                 <div class="form-group">
                     <label class="submit-label">Claim Submission Date:</label>
                     <input type="text" id="displaySubmissionDate" class="submit-input" readonly>
                 </div>
+
+                <!-- Hourly Rate -->
                 <div class="form-group">
                     <label asp-for="HourlyRate" class="submit-label">Hourly Rate:</label>
                     <div class="input-group">
@@ -95,17 +99,18 @@
                 <div id="workEntries">
                     <div class="work-entry">
                         <div class="form-group">
-                            <label class="submit-label">Work Date:</label>
+                            <label class="submit-label" title="Please select a date within the last two months and no later than today">Work Date:</label>
                             <input type="date" name="WorkEntries[0].WorkDate" class="submit-input work-date" required>
                         </div>
                         <div class="form-group">
-                            <label class="submit-label">Hours Worked:</label>
+                            <label class="submit-label" title="Enter hours between 1 and 8">Hours Worked:</label>
                             <input type="number" name="WorkEntries[0].HoursWorked" class="submit-input work-hours" step="0.5" min="1" max="8" required>
                             <span class="text-danger" data-valmsg-for="WorkEntries[0].HoursWorked" data-valmsg-replace="true"></span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Add Work Entry Button -->
                 <button type="button" id="addEntry" class="btn btn-secondary">Add Another Work Date</button>
 
                 <!-- Total Claim Amount and Description -->
@@ -118,6 +123,7 @@
                     <span asp-validation-for="ClaimAmount" class="text-danger"></span>
                 </div>
 
+                <!-- Claim Type/Description -->
                 <div class="form-group">
                     <label asp-for="ClaimType" class="submit-label">Description:</label>
                     <textarea asp-for="ClaimType" class="submit-textarea" rows="4" required></textarea>
@@ -128,9 +134,9 @@
                 <div class="form-group">
                     <label for="supportingDocument" class="submit-label">Supporting Document:</label>
                     <input type="file" id="supportingDocument" name="supportingDocument" class="submit-file-input" accept=".pdf,.docx,.xlsx" data-max-size="5242880" required>
-                    <small class="form-text text-muted">Upload any relevant documents (PDF, JPG, XLSX, max 5MB)</small>
                 </div>
 
+                <!-- Submit Button -->
                 <button type="submit" class="submit-button">Submit Claim</button>
             </form>
         </div>
