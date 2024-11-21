@@ -2,6 +2,7 @@ using CMCS.Data;
 using CMCS.Validation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 
 namespace CMCS
 {
@@ -11,8 +12,11 @@ namespace CMCS
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            QuestPDF.Settings.License = LicenseType.Community;
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
             // Add session services
             builder.Services.AddSession(options =>
@@ -25,7 +29,7 @@ namespace CMCS
             // Add database context to the container (Dependency Injection)
             builder.Services.AddDbContext<CMCSDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ClaimValidator>());
+            
 
             var app = builder.Build();
 
@@ -55,7 +59,7 @@ namespace CMCS
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Login}/{id?}"); // Set the Login view as the default view (Users have to login to access the system)
-
+            app.MapRazorPages();
             app.Run();
         }
     }

@@ -1,0 +1,158 @@
+﻿@page
+@model CMCS.Pages.HR.ReportsModel
+@{
+    ViewData["Title"] = "Claims Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/reports.css" />
+
+<div class="reports-container">
+    <h2 class="reports-title">Claims Reports</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" asp-page-handler="GenerateReport" id="reportForm">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Filter.StartDate">Start Date</label>
+                            <input asp-for="Filter.StartDate"
+                                   type="date"
+                                   class="form-control"
+                                   id="StartDate"
+                                   name="Filter.StartDate"
+                                   value="@Model.Filter.StartDate.ToString("yyyy-MM-dd")"
+                                   required />
+                            <span asp-validation-for="Filter.StartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Filter.EndDate">End Date</label>
+                            <input asp-for="Filter.EndDate"
+                                   type="date"
+                                   class="form-control"
+                                   id="EndDate"
+                                   name="Filter.EndDate"
+                                   value="@Model.Filter.EndDate.ToString("yyyy-MM-dd")"
+                                   required />
+                            <span asp-validation-for="Filter.EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label>Claim Status</label>
+                    <div class="row status-checkboxes">
+                        @foreach (var status in Model.AvailableStatuses)
+                        {
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                           name="Filter.SelectedStatuses"
+                                           value="@status"
+                                           checked="checked"
+                                           class="form-check-input"
+                                           id="status-@status.ToLower()" />
+                                    <label class="form-check-label" for="status-@status.ToLower()">
+                                        @status
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('reportForm');
+            const startDateInput = document.getElementById('StartDate');
+            const endDateInput = document.getElementById('EndDate');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const submitData = {
+                    Filter: {
+                        StartDate: formData.get('Filter.StartDate'),
+                        EndDate: formData.get('Filter.EndDate'),
+                        SelectedStatuses: Array.from(formData.getAll('Filter.SelectedStatuses'))
+                    }
+                };
+
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                fetch('?handler=GenerateReport', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(submitData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/pdf')) {
+                        return response.blob();
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data instanceof Blob) {
+                        const url = window.URL.createObjectURL(data);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Claims_Report_${submitData.Filter.StartDate}_${submitData.Filter.EndDate}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while generating the report.');
+                });
+            });
+
+            if (startDateInput && endDateInput) {
+                startDateInput.addEventListener('change', function() {
+                    endDateInput.min = this.value;
+                    if (endDateInput.value && endDateInput.value < this.value) {
+                        endDateInput.value = this.value;
+                    }
+                });
+
+                endDateInput.addEventListener('change', function() {
+                    if (this.value < startDateInput.value) {
+                        this.value = startDateInput.value;
+                    }
+                });
+
+                endDateInput.min = startDateInput.value;
+            }
+        });
+    </script>
+}
