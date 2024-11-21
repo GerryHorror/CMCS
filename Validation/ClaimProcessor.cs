@@ -6,15 +6,19 @@ namespace CMCS.Validation
 {
     public class ClaimProcessor
     {
+        // Properties for the ClaimValidator and CMCSDbContext
+
         private readonly ClaimValidator _validator;
         private readonly CMCSDbContext _context;
 
+        // Constructor to initialise the ClaimProcessor with the ClaimValidator and CMCSDbContext
         public ClaimProcessor(ClaimValidator validator, CMCSDbContext context)
         {
             _validator = validator;
             _context = context;
         }
 
+        // Method to process the claim asynchronously and return a tuple with the success status, message, and auto-approval status
         public async Task<(bool Success, string Message, bool AutoApproved)> ProcessClaimAsync(ClaimModel claim)
         {
             // Validate the claim using the ClaimValidator
