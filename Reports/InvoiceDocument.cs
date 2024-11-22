@@ -33,23 +33,27 @@ namespace CMCS.Reports
         {
             container.Column(column =>
             {
-                // Company Details and Invoice Title
+                // Contractor Details (Left side)
                 column.Item().Row(row =>
                 {
                     row.RelativeItem().Column(c =>
                     {
-                        c.Item().Text(_data.InstitutionName)
+                        c.Item().Text(_data.CompanyName)
                             .FontSize(20)
                             .FontColor("#003366")
                             .Bold();
-                        c.Item().Text(_data.InstitutionAddress)
-                            .FontSize(10)
-                            .FontColor("#333333");
-                        c.Item().Text(_data.InstitutionCity)
-                            .FontSize(10)
-                            .FontColor("#333333");
+                        c.Item().Text("Independent Contractor")
+                            .FontSize(12)
+                            .FontColor("#666666");
+                        c.Item().Text(_data.CompanyAddress)
+                            .FontSize(10);
+                        c.Item().Text($"Tel: {_data.CompanyContact}")
+                            .FontSize(10);
+                        c.Item().Text($"Email: {_data.CompanyEmail}")
+                            .FontSize(10);
                     });
 
+                    // Invoice Details (Right side)
                     row.RelativeItem().Column(c =>
                     {
                         c.Item().AlignRight().Text("INVOICE")
@@ -58,34 +62,34 @@ namespace CMCS.Reports
                             .Bold();
                         c.Item().AlignRight().Text($"Invoice #: {_data.InvoiceNumber}")
                             .FontSize(10);
-                        c.Item().AlignRight().Text($"Date: {_data.InvoiceDate:yyyy/MM/dd}")
+                        c.Item().AlignRight().Text($"Date: {_data.InvoiceDate:dd/MM/yyyy}")
                             .FontSize(10);
                     });
                 });
 
-                // Lecturer Details and Bank Information
-                column.Item().PaddingTop(20).Row(row =>
+                // Bill To Section
+                column.Item().PaddingTop(20).Column(c =>
                 {
-                    row.RelativeItem().Column(c =>
-                    {
-                        c.Item().Text("Bill To:").Bold();
-                        c.Item().Text($"{_data.Lecturer.FirstName} {_data.Lecturer.LastName}");
-                        c.Item().Text(_data.Lecturer.Address);
-                        c.Item().Text(_data.Lecturer.PhoneNumber);
-                        c.Item().Text(_data.Lecturer.UserEmail);
-                    });
-
-                    row.RelativeItem().Column(c =>
-                    {
-                        c.Item().Text("Bank Details:").Bold();
-                        c.Item().Text($"Bank: {_data.Lecturer.BankName}");
-                        c.Item().Text($"Branch Code: {_data.Lecturer.BranchCode}");
-                        c.Item().Text($"Account: {_data.Lecturer.BankAccountNumber}");
-                    });
+                    c.Item().Text("Bill To:").Bold();
+                    c.Item().Text(_data.BillTo.Name);
+                    c.Item().Text(_data.BillTo.Address);
+                    c.Item().Text($"{_data.BillTo.City}, {_data.BillTo.PostalCode}");
+                    c.Item().Text(_data.BillTo.Country);
                 });
 
-                column.Item().PaddingTop(20).BorderBottom(1).BorderColor("#003366")
-                    .Text($"Period: {_data.StartDate:yyyy/MM/dd} - {_data.EndDate:yyyy/MM/dd}")
+                // Bank Details Section
+                column.Item().PaddingTop(20).Column(c =>
+                {
+                    c.Item().Text("Bank Details:").Bold();
+                    c.Item().Text($"Bank: {_data.BankDetails.BankName}");
+                    c.Item().Text($"Account Number: {_data.BankDetails.AccountNumber}");
+                    c.Item().Text($"Branch Code: {_data.BankDetails.BranchCode}");
+                });
+
+                column.Item().PaddingTop(10)
+                    .BorderBottom(1)
+                    .BorderColor("#003366")
+                    .Text($"Period: {_data.StartDate:dd/MM/yyyy} - {_data.EndDate:dd/MM/yyyy}")
                     .FontSize(10);
             });
         }

@@ -18,6 +18,9 @@ namespace CMCS.Pages.HR
         [BindProperty]
         public ClaimReportFilter Filter { get; set; } = new();
 
+        [BindProperty]
+        public List<UserModel> Lecturers { get; set; } = new();
+
         public List<string> AvailableStatuses { get; set; } = new();
 
         public ReportsModel(CMCSDbContext context, ILogger<ReportsModel> logger)
@@ -36,6 +39,13 @@ namespace CMCS.Pages.HR
 
             Filter.StartDate = DateTime.Today.AddMonths(-1);
             Filter.EndDate = DateTime.Today;
+
+            // Load lecturers
+            Lecturers = await _context.Users
+                .Where(u => u.RoleID == 1)
+                .OrderBy(u => u.LastName)
+                .ThenBy(u => u.FirstName)
+                .ToListAsync();
 
             await LoadStatuses();
             return Page();
@@ -109,6 +119,11 @@ namespace CMCS.Pages.HR
             {
                 var filterElement = jsonElement.GetProperty("Filter");
                 Filter = JsonSerializer.Deserialize<ClaimReportFilter>(filterElement.GetRawText());
+                var lecturerIdStr = jsonElement.GetProperty("LecturerId").GetString();
+                if (!int.TryParse(lecturerIdStr, out int lecturerId))
+                {
+                    return new JsonResult(new { error = "Invalid lecturer ID" });
+                }
 
                 if (!ModelState.IsValid)
                 {
@@ -117,8 +132,10 @@ namespace CMCS.Pages.HR
 
                 var claims = await _context.Claims
                     .Include(c => c.User)
-                    .Where(c => c.SubmissionDate.Date >= Filter.StartDate.Date &&
-                                c.SubmissionDate.Date <= Filter.EndDate.Date)
+                    .Where(c => c.UserID == lecturerId &&
+                               c.SubmissionDate.Date >= Filter.StartDate.Date &&
+                               c.SubmissionDate.Date <= Filter.EndDate.Date &&
+                               c.Status.StatusName == "Approved")
                     .Select(c => new ClaimReportData
                     {
                         LecturerName = $"{c.User.FirstName} {c.User.LastName}",
@@ -133,26 +150,43 @@ namespace CMCS.Pages.HR
 
                 if (!claims.Any())
                 {
-                    return new JsonResult(new { error = "No claims found for the selected criteria" });
+                    return new JsonResult(new { error = "No approved claims found for the selected lecturer in this date range" });
                 }
 
+                var lecturer = await _context.Users.FindAsync(lecturerId);
+
+                // In your ReportsModel.cs
                 var invoiceModel = new InvoiceModel
                 {
-                    Lecturer = new UserModel // Assume you fill in these details appropriately
+                    // The lecturer is now the one issuing the invoice
+                    CompanyName = $"{lecturer.FirstName} {lecturer.LastName} - Independent Contractor",
+                    CompanyAddress = lecturer.Address,
+                    CompanyContact = lecturer.PhoneNumber,
+                    CompanyEmail = lecturer.UserEmail,
+                    BankDetails = new BankDetails
                     {
-                        FirstName = claims.First().LecturerName.Split(' ')[0],
-                        LastName = claims.First().LecturerName.Split(' ')[1],
-                        // Fill in other details here
+                        BankName = lecturer.BankName,
+                        AccountNumber = lecturer.BankAccountNumber,
+                        BranchCode = lecturer.BranchCode
                     },
+
+                    // The institution is now being invoiced
+                    BillTo = new BillingDetails
+                    {
+                        Name = "Southern Hemisphere Institute of Technology",
+                        Address = "123 University Street",
+                        City = "Johannesburg",
+                        PostalCode = "2000",
+                        Country = "South Africa"
+                    },
+
                     StartDate = Filter.StartDate,
                     EndDate = Filter.EndDate,
-                    InvoiceNumber = Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
+                    InvoiceNumber = $"INV-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 4)}",
                     InvoiceDate = DateTime.Now,
                     Claims = claims,
-                    InstitutionName = "The Independent Institute of Education",
-                    InstitutionAddress = "123 University Street",
-                    InstitutionCity = "City, State, ZIP",
-                    PaymentTerms = "Payment due within 30 days"
+                    PaymentTerms = "Payment due within 30 days",
+                    VAT = "Not VAT Registered" // or lecturer's VAT number if applicable
                 };
 
                 var document = new InvoiceDocument(invoiceModel);
@@ -161,7 +195,7 @@ namespace CMCS.Pages.HR
                 return File(
                     pdfBytes,
                     "application/pdf",
-                    $"Invoice_{Filter.StartDate:yyyyMMdd}_to_{Filter.EndDate:yyyyMMdd}.pdf"
+                    $"Invoice_{lecturer.FirstName}_{lecturer.LastName}_{Filter.StartDate:yyyyMMdd}.pdf"
                 );
             }
             catch (Exception ex)
