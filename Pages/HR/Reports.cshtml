@@ -8,167 +8,116 @@
 <link rel="stylesheet" href="~/css/reports.css" />
 
 <div class="reports-container">
-    <h2 class="reports-title">Claims Reports & Invoices</h2>
+    <h2 class="reports-title">Claims Reports</h2>
 
     <div class="card">
         <div class="card-body">
-            <ul class="nav nav-tabs mb-4" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="report-tab" data-bs-toggle="tab" href="#report" role="tab">
-                        <i class="fas fa-chart-bar"></i> Generate Report
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="invoice-tab" data-bs-toggle="tab" href="#invoice" role="tab">
-                        <i class="fas fa-file-invoice"></i> Generate Invoice
-                    </a>
-                </li>
-            </ul>
+            <form method="post" asp-page-handler="GenerateReport" id="reportForm">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger"></div>
 
-            <div class="tab-content">
-                <!-- Reports Tab -->
-                <div class="tab-pane fade show active" id="report" role="tabpanel">
-                    <form method="post" asp-page-handler="GenerateReport" id="reportForm">
-                        @Html.AntiForgeryToken()
-                        <div asp-validation-summary="All" class="text-danger"></div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="Filter.StartDate">Start Date</label>
-                                    <input asp-for="Filter.StartDate"
-                                           type="date"
-                                           class="form-control"
-                                           value="@Model.Filter.StartDate.ToString("yyyy-MM-dd")"
-                                           required />
-                                    <span asp-validation-for="Filter.StartDate" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="Filter.EndDate">End Date</label>
-                                    <input asp-for="Filter.EndDate"
-                                           type="date"
-                                           class="form-control"
-                                           value="@Model.Filter.EndDate.ToString("yyyy-MM-dd")"
-                                           required />
-                                    <span asp-validation-for="Filter.EndDate" class="text-danger"></span>
-                                </div>
-                            </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Filter.StartDate">Start Date</label>
+                            <input asp-for="Filter.StartDate"
+                                   type="date"
+                                   class="form-control"
+                                   id="StartDate"
+                                   name="Filter.StartDate"
+                                   value="@Model.Filter.StartDate.ToString("yyyy-MM-dd")"
+                                   required />
+                            <span asp-validation-for="Filter.StartDate" class="text-danger"></span>
                         </div>
-
-                        <div class="form-group mt-3">
-                            <label>Claim Status</label>
-                            <div class="row status-checkboxes">
-                                @foreach (var status in Model.AvailableStatuses)
-                                {
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input type="checkbox"
-                                                   name="Filter.SelectedStatuses"
-                                                   value="@status"
-                                                   checked="checked"
-                                                   class="form-check-input"
-                                                   id="status-@status.ToLower()" />
-                                            <label class="form-check-label" for="status-@status.ToLower()">
-                                                @status
-                                            </label>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Filter.EndDate">End Date</label>
+                            <input asp-for="Filter.EndDate"
+                                   type="date"
+                                   class="form-control"
+                                   id="EndDate"
+                                   name="Filter.EndDate"
+                                   value="@Model.Filter.EndDate.ToString("yyyy-MM-dd")"
+                                   required />
+                            <span asp-validation-for="Filter.EndDate" class="text-danger"></span>
                         </div>
-
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-file-pdf"></i> Generate Report
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
 
-                <!-- Invoice Tab -->
-                <div class="tab-pane fade" id="invoice" role="tabpanel">
-                    <form method="post" asp-page-handler="GenerateInvoice" id="invoiceForm">
-                        @Html.AntiForgeryToken()
-
-                        <div class="row">
+                <div class="form-group mt-3">
+                    <label>Claim Status</label>
+                    <div class="row status-checkboxes">
+                        @foreach (var status in Model.AvailableStatuses)
+                        {
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Select Lecturer</label>
-                                    <select name="LecturerId" class="form-control" required>
-                                        <option value="">Choose a lecturer...</option>
-                                        @foreach (var lecturer in Model.Lecturers)
-                                        {
-                                            <option value="@lecturer.UserID">@lecturer.FirstName @lecturer.LastName</option>
-                                        }
-                                    </select>
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                           name="Filter.SelectedStatuses"
+                                           value="@status"
+                                           checked="checked"
+                                           class="form-check-input"
+                                           id="status-@status.ToLower()" />
+                                    <label class="form-check-label" for="status-@status.ToLower()">
+                                        @status
+                                    </label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Start Date</label>
-                                    <input type="date"
-                                           id="InvoiceStartDate"
-                                           name="InvoiceStartDate"
-                                           class="form-control"
-                                           required />
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>End Date</label>
-                                    <input type="date"
-                                           id="InvoiceEndDate"
-                                           name="InvoiceEndDate"
-                                           class="form-control"
-                                           required />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-4">
-                            <button type="submit" asp-page-handler="Preview" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Preview Invoice
-                            </button>
-                            <button type="submit" asp-page-handler="GenerateAllInvoices" class="btn btn-secondary">
-                                <i class="fas fa-file-archive"></i> Generate All Invoices
-                            </button>
-                        </div>
-                    </form>
-
-                    @if (Model.InvoicePreview != null)
-                    {
-                        <div class="card mt-4">
-                            <div class="card-body">
-                                <h4>Invoice Preview</h4>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Lecturer:</strong> @Model.InvoicePreview.LecturerName</p>
-                                        <p><strong>Number of Claims:</strong> @Model.InvoicePreview.ClaimCount</p>
-                                        <p><strong>Total Amount:</strong> R @Model.InvoicePreview.TotalAmount.ToString("N2")</p>
-                                    </div>
-                                </div>
-
-                                @if (Model.InvoicePreview.ClaimCount > 0)
-                                {
-                                    <button type="submit" form="invoiceForm"
-                                            asp-page-handler="GenerateInvoice"
-                                            class="btn btn-success">
-                                        <i class="fas fa-file-pdf"></i> Generate Invoice
-                                    </button>
-                                }
-                                else
-                                {
-                                    <div class="alert alert-warning">
-                                        No approved claims found for the selected period.
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invoice Generation Section -->
+    <h2 class="reports-title mt-5">Generate Invoice</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" asp-page-handler="GenerateInvoice" id="invoiceForm">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="InvoiceFilter.StartDate">Invoice Start Date</label>
+                            <input asp-for="InvoiceFilter.StartDate"
+                                   type="date"
+                                   class="form-control"
+                                   id="InvoiceStartDate"
+                                   name="InvoiceFilter.StartDate"
+                                   required />
+                            <span asp-validation-for="InvoiceFilter.StartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="InvoiceFilter.EndDate">Invoice End Date</label>
+                            <input asp-for="InvoiceFilter.EndDate"
+                                   type="date"
+                                   class="form-control"
+                                   id="InvoiceEndDate"
+                                   name="InvoiceFilter.EndDate"
+                                   required />
+                            <span asp-validation-for="InvoiceFilter.EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-pdf"></i> Generate Invoice
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -176,32 +125,85 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        function setupDateInputs(startId, endId) {
-            const startDateInput = document.getElementById(startId);
-            const endDateInput = document.getElementById(endId);
-
-            if (startDateInput && endDateInput) {
-                startDateInput.addEventListener('change', function() {
-                    endDateInput.min = this.value;
-                    if (endDateInput.value && endDateInput.value < this.value) {
-                        endDateInput.value = this.value;
-                    }
-                });
-
-                endDateInput.addEventListener('change', function() {
-                    if (this.value < startDateInput.value) {
-                        this.value = startDateInput.value;
-                    }
-                });
-
-                endDateInput.min = startDateInput.value;
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup date inputs for both forms
-            setupDateInputs('Filter_StartDate', 'Filter_EndDate');
-            setupDateInputs('InvoiceStartDate', 'InvoiceEndDate');
+            // JavaScript handling for both forms can be combined or managed separately
+            const form = document.getElementById('reportForm');
+            const invoiceForm = document.getElementById('invoiceForm');
+
+            // Handle Claim Report Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleFormSubmit(form, 'GenerateReport');
+            });
+
+            // Handle Invoice Form submission
+            invoiceForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleFormSubmit(invoiceForm, 'GenerateInvoice');
+            });
+
+            function handleFormSubmit(form, handler) {
+                const formData = new FormData(form);
+                let submitData;
+
+                if (handler === 'GenerateReport') {
+                    // Collect data for the report generation form
+                    submitData = {
+                        Filter: {
+                            StartDate: formData.get('Filter.StartDate'),
+                            EndDate: formData.get('Filter.EndDate'),
+                            SelectedStatuses: Array.from(formData.getAll('Filter.SelectedStatuses'))
+                        }
+                    };
+                } else if (handler === 'GenerateInvoice') {
+                    // Collect data for the invoice generation form
+                    submitData = {
+                        Filter: {
+                            StartDate: formData.get('InvoiceFilter.StartDate'),
+                            EndDate: formData.get('InvoiceFilter.EndDate')
+                        }
+                    };
+                }
+
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                fetch(`?handler=${handler}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(submitData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/pdf')) {
+                        return response.blob();
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data instanceof Blob) {
+                        const url = window.URL.createObjectURL(data);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${handler}_Report_${submitData.Filter.StartDate}_${submitData.Filter.EndDate}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while generating the report.');
+                });
+            }
         });
     </script>
 }

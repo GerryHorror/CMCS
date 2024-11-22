@@ -18,19 +18,7 @@ namespace CMCS.Pages.HR
         [BindProperty]
         public ClaimReportFilter Filter { get; set; } = new();
 
-        // New properties for invoices
-        [BindProperty]
-        public int? LecturerId { get; set; }
-
-        [BindProperty]
-        public DateTime? InvoiceStartDate { get; set; }
-
-        [BindProperty]
-        public DateTime? InvoiceEndDate { get; set; }
-
         public List<string> AvailableStatuses { get; set; } = new();
-        public List<UserModel> Lecturers { get; set; } = new();
-        public InvoicePreviewModel? InvoicePreview { get; set; }
 
         public ReportsModel(CMCSDbContext context, ILogger<ReportsModel> logger)
         {
@@ -49,44 +37,53 @@ namespace CMCS.Pages.HR
             Filter.StartDate = DateTime.Today.AddMonths(-1);
             Filter.EndDate = DateTime.Today;
 
-            await LoadInitialData();
+            await LoadStatuses();
             return Page();
         }
 
-        private async Task LoadInitialData()
+        private async Task LoadStatuses()
         {
-            // Load statuses
             AvailableStatuses = await _context.ClaimStatuses
                 .Select(s => s.StatusName)
                 .ToListAsync();
-
-            // Load lecturers
-            Lecturers = await _context.Users
-                .Where(u => u.Role.RoleName == "Lecturer")
-                .OrderBy(u => u.LastName)
-                .ThenBy(u => u.FirstName)
-                .ToListAsync();
-
             Filter.SelectedStatuses = new List<string>(AvailableStatuses);
         }
 
-        public async Task<IActionResult> OnPostGenerateReportAsync()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostGenerateReportAsync([FromBody] JsonElement jsonElement)
         {
-            if (!ModelState.IsValid)
-            {
-                await LoadInitialData();
-                return Page();
-            }
-
             try
             {
-                var claims = await GetFilteredClaims(Filter.StartDate, Filter.EndDate, Filter.SelectedStatuses);
+                var filterElement = jsonElement.GetProperty("Filter");
+                Filter = JsonSerializer.Deserialize<ClaimReportFilter>(filterElement.GetRawText());
+
+                if (!ModelState.IsValid)
+                {
+                    return new JsonResult(new { error = "Invalid data received" });
+                }
+
+                var claims = await _context.Claims
+                    .Include(c => c.User)
+                    .Include(c => c.Status)
+                    .Where(c => c.SubmissionDate.Date >= Filter.StartDate.Date &&
+                               c.SubmissionDate.Date <= Filter.EndDate.Date &&
+                               (Filter.SelectedStatuses.Count == 0 || Filter.SelectedStatuses.Contains(c.Status.StatusName)))
+                    .Select(c => new ClaimReportData
+                    {
+                        LecturerName = $"{c.User.FirstName} {c.User.LastName}",
+                        SubmissionDate = c.SubmissionDate,
+                        ClaimAmount = c.ClaimAmount,
+                        Status = c.Status.StatusName,
+                        HoursWorked = c.HoursWorked,
+                        HourlyRate = c.HourlyRate,
+                        ClaimType = c.ClaimType
+                    })
+                    .OrderByDescending(c => c.SubmissionDate)
+                    .ToListAsync();
 
                 if (!claims.Any())
                 {
-                    ModelState.AddModelError(string.Empty, "No claims found for the selected criteria");
-                    await LoadInitialData();
-                    return Page();
+                    return new JsonResult(new { error = "No claims found for the selected criteria" });
                 }
 
                 var document = new ClaimReportDocument(claims, Filter.StartDate, Filter.EndDate);
@@ -101,233 +98,77 @@ namespace CMCS.Pages.HR
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error generating claims report");
-                ModelState.AddModelError(string.Empty, "An error occurred while generating the report.");
-                await LoadInitialData();
-                return Page();
+                return new JsonResult(new { error = "An error occurred while generating the report" });
             }
         }
 
-        public async Task<IActionResult> OnPostPreviewAsync()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostGenerateInvoiceAsync([FromBody] JsonElement jsonElement)
         {
-            if (!LecturerId.HasValue || !InvoiceStartDate.HasValue || !InvoiceEndDate.HasValue)
-            {
-                ModelState.AddModelError(string.Empty, "Please select a lecturer and date range");
-                await LoadInitialData();
-                return Page();
-            }
-
             try
             {
-                var lecturer = await _context.Users
-                    .FirstOrDefaultAsync(u => u.UserID == LecturerId);
+                var filterElement = jsonElement.GetProperty("Filter");
+                Filter = JsonSerializer.Deserialize<ClaimReportFilter>(filterElement.GetRawText());
 
-                if (lecturer == null)
+                if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError(string.Empty, "Selected lecturer not found");
-                    await LoadInitialData();
                     return Page();
                 }
 
-                var claims = await GetFilteredClaims(
-                    InvoiceStartDate.Value,
-                    InvoiceEndDate.Value,
-                    new[] { "Approved" },
-                    LecturerId.Value
-                );
-
-                InvoicePreview = new InvoicePreviewModel
-                {
-                    LecturerName = $"{lecturer.FirstName} {lecturer.LastName}",
-                    ClaimCount = claims.Count,
-                    TotalAmount = claims.Sum(c => c.ClaimAmount),
-                    Claims = claims,
-                    LecturerDetails = lecturer
-                };
-
-                await LoadInitialData();
-                return Page();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error generating invoice preview");
-                ModelState.AddModelError(string.Empty, "An error occurred while generating the preview");
-                await LoadInitialData();
-                return Page();
-            }
-        }
-
-        public async Task<IActionResult> OnPostGenerateInvoiceAsync()
-        {
-            if (!LecturerId.HasValue || !InvoiceStartDate.HasValue || !InvoiceEndDate.HasValue)
-            {
-                ModelState.AddModelError(string.Empty, "Please select a lecturer and date range");
-                await LoadInitialData();
-                return Page();
-            }
-
-            try
-            {
-                var lecturer = await _context.Users
-                    .FirstOrDefaultAsync(u => u.UserID == LecturerId);
-
-                if (lecturer == null)
-                {
-                    ModelState.AddModelError(string.Empty, "Selected lecturer not found");
-                    await LoadInitialData();
-                    return Page();
-                }
-
-                var claims = await GetFilteredClaims(
-                    InvoiceStartDate.Value,
-                    InvoiceEndDate.Value,
-                    new[] { "Approved" },
-                    LecturerId.Value
-                );
+                var claims = await _context.Claims
+                    .Include(c => c.User)
+                    .Where(c => c.SubmissionDate.Date >= Filter.StartDate.Date &&
+                                c.SubmissionDate.Date <= Filter.EndDate.Date)
+                    .Select(c => new ClaimReportData
+                    {
+                        LecturerName = $"{c.User.FirstName} {c.User.LastName}",
+                        SubmissionDate = c.SubmissionDate,
+                        ClaimAmount = c.ClaimAmount,
+                        HoursWorked = c.HoursWorked,
+                        HourlyRate = c.HourlyRate,
+                        ClaimType = c.ClaimType
+                    })
+                    .OrderByDescending(c => c.SubmissionDate)
+                    .ToListAsync();
 
                 if (!claims.Any())
                 {
-                    ModelState.AddModelError(string.Empty, "No approved claims found for the selected period");
-                    await LoadInitialData();
-                    return Page();
+                    return new JsonResult(new { error = "No claims found for the selected criteria" });
                 }
 
-                var invoiceData = new InvoiceModel
+                var invoiceModel = new InvoiceModel
                 {
-                    Lecturer = lecturer,
-                    StartDate = InvoiceStartDate.Value,
-                    EndDate = InvoiceEndDate.Value,
-                    InvoiceNumber = GenerateInvoiceNumber(),
+                    Lecturer = new UserModel // Assume you fill in these details appropriately
+                    {
+                        FirstName = claims.First().LecturerName.Split(' ')[0],
+                        LastName = claims.First().LecturerName.Split(' ')[1],
+                        // Fill in other details here
+                    },
+                    StartDate = Filter.StartDate,
+                    EndDate = Filter.EndDate,
+                    InvoiceNumber = Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
                     InvoiceDate = DateTime.Now,
-                    Claims = claims
+                    Claims = claims,
+                    InstitutionName = "The Independent Institute of Education",
+                    InstitutionAddress = "123 University Street",
+                    InstitutionCity = "City, State, ZIP",
+                    PaymentTerms = "Payment due within 30 days"
                 };
 
-                var document = new InvoiceDocument(invoiceData);
+                var document = new InvoiceDocument(invoiceModel);
                 var pdfBytes = document.GeneratePdf();
 
                 return File(
                     pdfBytes,
                     "application/pdf",
-                    $"Invoice_{lecturer.LastName}_{InvoiceStartDate:yyyyMMdd}.pdf"
+                    $"Invoice_{Filter.StartDate:yyyyMMdd}_to_{Filter.EndDate:yyyyMMdd}.pdf"
                 );
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error generating invoice");
-                ModelState.AddModelError(string.Empty, "An error occurred while generating the invoice");
-                await LoadInitialData();
-                return Page();
+                return new JsonResult(new { error = "An error occurred while generating the invoice" });
             }
         }
-
-        public async Task<IActionResult> OnPostGenerateAllInvoicesAsync()
-        {
-            if (!InvoiceStartDate.HasValue || !InvoiceEndDate.HasValue)
-            {
-                ModelState.AddModelError(string.Empty, "Please select a date range");
-                await LoadInitialData();
-                return Page();
-            }
-
-            try
-            {
-                var lecturers = await _context.Users
-                    .Where(u => u.Role.RoleName == "Lecturer")
-                    .ToListAsync();
-
-                using var memoryStream = new MemoryStream();
-                using (var archive = new System.IO.Compression.ZipArchive(memoryStream, System.IO.Compression.ZipArchiveMode.Create, true))
-                {
-                    foreach (var lecturer in lecturers)
-                    {
-                        var claims = await GetFilteredClaims(
-                            InvoiceStartDate.Value,
-                            InvoiceEndDate.Value,
-                            new[] { "Approved" },
-                            lecturer.UserID
-                        );
-
-                        if (claims.Any())
-                        {
-                            var invoiceData = new InvoiceModel
-                            {
-                                Lecturer = lecturer,
-                                StartDate = InvoiceStartDate.Value,
-                                EndDate = InvoiceEndDate.Value,
-                                InvoiceNumber = GenerateInvoiceNumber(),
-                                InvoiceDate = DateTime.Now,
-                                Claims = claims
-                            };
-
-                            var document = new InvoiceDocument(invoiceData);
-                            var pdfBytes = document.GeneratePdf();
-
-                            var entry = archive.CreateEntry($"Invoice_{lecturer.LastName}_{InvoiceStartDate:yyyyMMdd}.pdf");
-                            using var entryStream = entry.Open();
-                            await entryStream.WriteAsync(pdfBytes);
-                        }
-                    }
-                }
-
-                return File(
-                    memoryStream.ToArray(),
-                    "application/zip",
-                    $"Invoices_{InvoiceStartDate:yyyyMMdd}_to_{InvoiceEndDate:yyyyMMdd}.zip"
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error generating invoices");
-                ModelState.AddModelError(string.Empty, "An error occurred while generating the invoices");
-                await LoadInitialData();
-                return Page();
-            }
-        }
-
-        private async Task<List<ClaimReportData>> GetFilteredClaims(
-            DateTime startDate,
-            DateTime endDate,
-            IEnumerable<string> statuses,
-            int? lecturerId = null)
-        {
-            var query = _context.Claims
-                .Include(c => c.User)
-                .Include(c => c.Status)
-                .Where(c => c.SubmissionDate.Date >= startDate.Date &&
-                           c.SubmissionDate.Date <= endDate.Date &&
-                           statuses.Contains(c.Status.StatusName));
-
-            if (lecturerId.HasValue)
-            {
-                query = query.Where(c => c.UserID == lecturerId.Value);
-            }
-
-            return await query
-                .Select(c => new ClaimReportData
-                {
-                    LecturerName = $"{c.User.FirstName} {c.User.LastName}",
-                    SubmissionDate = c.SubmissionDate,
-                    ClaimAmount = c.ClaimAmount,
-                    Status = c.Status.StatusName,
-                    HoursWorked = c.HoursWorked,
-                    HourlyRate = c.HourlyRate,
-                    ClaimType = c.ClaimType
-                })
-                .OrderByDescending(c => c.SubmissionDate)
-                .ToListAsync();
-        }
-
-        private string GenerateInvoiceNumber()
-        {
-            return $"INV-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8)}";
-        }
-    }
-
-    public class InvoicePreviewModel
-    {
-        public string LecturerName { get; set; }
-        public int ClaimCount { get; set; }
-        public decimal TotalAmount { get; set; }
-        public List<ClaimReportData> Claims { get; set; }
-        public UserModel LecturerDetails { get; set; }
     }
 }
