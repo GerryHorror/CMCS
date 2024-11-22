@@ -13,6 +13,7 @@ namespace CMCS.Reports
         private readonly DateTime _endDate;
         private readonly ClaimSummary _summary;
 
+        // This constructor is used to initialise the ClaimReportDocument with the claims, start date, and end date.
         public ClaimReportDocument(List<ClaimReportData> claims, DateTime startDate, DateTime endDate)
         {
             _claims = claims;
@@ -21,6 +22,7 @@ namespace CMCS.Reports
             _summary = CalculateSummary(claims);
         }
 
+        // This method is used to calculate the summary of the claims and return the summary.
         private ClaimSummary CalculateSummary(List<ClaimReportData> claims)
         {
             var summary = new ClaimSummary
@@ -29,6 +31,7 @@ namespace CMCS.Reports
                 TotalAmount = claims.Sum(c => c.ClaimAmount)
             };
 
+            // Group claims by status and calculate total amount for each status
             foreach (var claim in claims)
             {
                 if (summary.ClaimsByStatus.ContainsKey(claim.Status))
@@ -45,10 +48,15 @@ namespace CMCS.Reports
             return summary;
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to get the metadata of the document and return the default metadata of the document.
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
+        // This method is used to compose the document with the header, content, and footer.
         public void Compose(IDocumentContainer container)
         {
+            // Compose the document with the header, content, and footer
             container.Page(page =>
             {
                 page.Margin(50);
@@ -60,6 +68,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the header of the document. The header of the document will contain the title and period of the report.
         private void ComposeHeader(IContainer container)
         {
             container.Column(column =>
@@ -86,6 +97,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the content of the document. The content of the document will contain the summary and table of the claims.
         private void ComposeContent(IContainer container)
         {
             container.PaddingVertical(20).Column(column =>
@@ -96,6 +110,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the summary section of the document. The summary section will contain the total claims, total amount, claims by status, and amount by status.
         private void ComposeSummary(IContainer container)
         {
             container.Background("#F8F9FA")
@@ -132,6 +149,9 @@ namespace CMCS.Reports
                 });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the table with the claims data. The table will contain the columns for Lecturer, Date, Hours, Rate, Amount, and Status. The table will also contain the header row and the data rows.
         private void ComposeTable(IContainer container)
         {
             container.Table(table =>
@@ -203,6 +223,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the footer of the document. The footer of the document will contain the page number and the generated date.
         private void ComposeFooter(IContainer container)
         {
             container.BorderTop(1).BorderColor("#dee2e6").PaddingTop(10)

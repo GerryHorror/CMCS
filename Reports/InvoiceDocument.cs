@@ -14,6 +14,7 @@ namespace CMCS.Reports
             _data = data;
         }
 
+        // This method is used to get the metadata of the document and return the default metadata of the document.
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
         public void Compose(IDocumentContainer container)
@@ -29,6 +30,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the header of the document. The header of the document will contain the contractor details, invoice details, bill to section, and bank details section.
         private void ComposeHeader(IContainer container)
         {
             container.Column(column =>
@@ -94,6 +98,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the content of the document. The content of the document will contain the table with the claims data and the summary section with the total amount and payment terms.
         private void ComposeContent(IContainer container)
         {
             container.PaddingVertical(20).Column(column =>
@@ -104,6 +111,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the table with the claims data. The table will contain the columns for Date, Hours, Rate, and Amount. The table will also contain the header row and the data rows.
         private void ComposeTable(IContainer container)
         {
             container.Table(table =>
@@ -149,6 +159,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the summary section of the document. The summary section will contain the total amount and payment terms.
         private void ComposeSummary(IContainer container)
         {
             container.Column(column =>
@@ -163,6 +176,9 @@ namespace CMCS.Reports
             });
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to compose the footer of the document. The footer of the document will contain the page number and total pages.
         private void ComposeFooter(IContainer container)
         {
             container.AlignCenter().Text(text =>

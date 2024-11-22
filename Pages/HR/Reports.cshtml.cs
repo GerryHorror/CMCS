@@ -12,8 +12,12 @@ namespace CMCS.Pages.HR
 {
     public class ReportsModel : PageModel
     {
+        // Properties for the CMCSDbContext and ILogger
+
         private readonly CMCSDbContext _context;
         private readonly ILogger<ReportsModel> _logger;
+
+        // Bind properties for the ClaimReportFilter and Lecturers (List of UserModel)
 
         [BindProperty]
         public ClaimReportFilter Filter { get; set; } = new();
@@ -21,6 +25,7 @@ namespace CMCS.Pages.HR
         [BindProperty]
         public List<UserModel> Lecturers { get; set; } = new();
 
+        // List of available statuses
         public List<string> AvailableStatuses { get; set; } = new();
 
         public ReportsModel(CMCSDbContext context, ILogger<ReportsModel> logger)
@@ -29,14 +34,17 @@ namespace CMCS.Pages.HR
             _logger = logger;
         }
 
+        // This method is used to handle the GET request for the Reports page. It checks the user role and loads the lecturers and statuses.
         public async Task<IActionResult> OnGetAsync()
         {
+            // Check user role and redirect if not Coordinator or Manager
             var userRole = HttpContext.Session.GetString("UserRole");
             if (userRole != "Coordinator" && userRole != "Manager")
             {
                 return RedirectToPage("/Index");
             }
 
+            // Set default date range for the filter
             Filter.StartDate = DateTime.Today.AddMonths(-1);
             Filter.EndDate = DateTime.Today;
 
@@ -51,6 +59,9 @@ namespace CMCS.Pages.HR
             return Page();
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to handle the POST request for the Reports page. It generates the claims report based on the filter criteria.
         private async Task LoadStatuses()
         {
             AvailableStatuses = await _context.ClaimStatuses
@@ -59,11 +70,15 @@ namespace CMCS.Pages.HR
             Filter.SelectedStatuses = new List<string>(AvailableStatuses);
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to handle the POST request for the Reports page. It generates the claims report based on the filter criteria.
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostGenerateReportAsync([FromBody] JsonElement jsonElement)
         {
             try
             {
+                // Deserialize the JSON data received from the client
                 var filterElement = jsonElement.GetProperty("Filter");
                 Filter = JsonSerializer.Deserialize<ClaimReportFilter>(filterElement.GetRawText());
 
@@ -72,6 +87,7 @@ namespace CMCS.Pages.HR
                     return new JsonResult(new { error = "Invalid data received" });
                 }
 
+                // Retrieve claims based on the filter criteria
                 var claims = await _context.Claims
                     .Include(c => c.User)
                     .Include(c => c.Status)
@@ -95,7 +111,7 @@ namespace CMCS.Pages.HR
                 {
                     return new JsonResult(new { error = "No claims found for the selected criteria" });
                 }
-
+                // Generate the claims report document
                 var document = new ClaimReportDocument(claims, Filter.StartDate, Filter.EndDate);
                 var pdfBytes = document.GeneratePdf();
 
@@ -112,6 +128,9 @@ namespace CMCS.Pages.HR
             }
         }
 
+        // <-------------------------------------------------------------------------------------->
+
+        // This method is used to handle the POST request for the Reports page. It generates the invoice based on the filter criteria.
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostGenerateInvoiceAsync([FromBody] JsonElement jsonElement)
         {
@@ -155,10 +174,8 @@ namespace CMCS.Pages.HR
 
                 var lecturer = await _context.Users.FindAsync(lecturerId);
 
-                // In your ReportsModel.cs
                 var invoiceModel = new InvoiceModel
                 {
-                    // The lecturer is now the one issuing the invoice
                     CompanyName = $"{lecturer.FirstName} {lecturer.LastName} - Independent Contractor",
                     CompanyAddress = lecturer.Address,
                     CompanyContact = lecturer.PhoneNumber,
@@ -170,7 +187,6 @@ namespace CMCS.Pages.HR
                         BranchCode = lecturer.BranchCode
                     },
 
-                    // The institution is now being invoiced
                     BillTo = new BillingDetails
                     {
                         Name = "Southern Hemisphere Institute of Technology",

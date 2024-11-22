@@ -2,6 +2,8 @@
 using CMCS.Models;
 using Microsoft.EntityFrameworkCore;
 
+// This class is used to process the claim details of the user. The ClaimID is the primary key and UserID is the foreign key. The ClaimAmount is the amount of the claim, ClaimType is the type of the claim, ClaimStatus is the status of the claim, SubmissionDate is the date when the claim was submitted and ApprovalDate is the date when the claim was approved.
+
 namespace CMCS.Validation
 {
     public class ClaimProcessor
