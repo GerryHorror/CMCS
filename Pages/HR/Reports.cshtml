@@ -8,7 +8,23 @@
 <link rel="stylesheet" href="~/css/reports.css" />
 
 <div class="reports-container">
-    <h2 class="reports-title">Claims Reports</h2>
+
+    <div class="reports-header">
+        <h2 class="reports-title">Claims Reports & Invoices</h2>
+        <p class="reports-subtitle">Generate comprehensive reports and invoices for contract lecturers</p>
+    </div>
+
+    <!-- Claims Report Section -->
+    <div class="report-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="fas fa-file-alt"></i>
+                Claims Reports
+            </h3>
+            <p class="section-description">
+                Generate detailed reports of all claims within a specific date range. Filter by claim status to focus on specific types of claims.
+            </p>
+        </div>
 
     <div class="card">
         <div class="card-body">
@@ -77,7 +93,16 @@
     </div>
 
     <!-- Invoice Generation Section -->
-    <h2 class="reports-title mt-5">Generate Invoice</h2>
+        <div class="report-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-file-invoice"></i>
+                    Generate Invoice
+                </h3>
+                <p class="section-description">
+                    Create professional invoices for independent contractors. Select a lecturer and date range to generate a detailed invoice of approved claims.
+                </p>
+            </div>
 
     <div class="card">
         <div class="card-body">
@@ -132,7 +157,8 @@
         </div>
     </div>
 </div>
-
+</div>
+</div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
