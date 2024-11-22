@@ -1,4 +1,4 @@
-﻿# Contract Monthly Claim System (CMCS) - Part 2
+﻿# Contract Monthly Claim System (CMCS) - Part 3
 
 ## Overview
 
@@ -19,6 +19,8 @@ The Contract Monthly Claim System (CMCS) helps independent contractor lecturers 
 <a href="#"><img alt="Entity Framework Core" src="https://img.shields.io/badge/Entity%20Framework%20Core-%23512BD4.svg?style=for-the-badge&logo=.net&logoColor=white"></a>
 <a href="#"><img alt="Font Awesome" src="https://img.shields.io/badge/Font%20Awesome-%23528DD7.svg?style=for-the-badge&logo=font-awesome&logoColor=white"></a>
 <a href="#"><img alt="Google Fonts" src="https://img.shields.io/badge/Google%20Fonts-%234285F4.svg?style=for-the-badge&logo=google-fonts&logoColor=white"></a>
+<a href="#"><img alt="QuestPDF" src="https://img.shields.io/badge/QuestPDF-%23007ACC.svg?style=for-the-badge&logo=pdf&logoColor=white"></a>
+<a href="#"><img alt="FluentValidation" src="https://img.shields.io/badge/FluentValidation-%2300BFFF.svg?style=for-the-badge&logo=check-circle&logoColor=white"></a>
 </p>
 
 ### IDE/Editors
@@ -28,14 +30,8 @@ The Contract Monthly Claim System (CMCS) helps independent contractor lecturers 
 
 ## Recent Changes and Improvements
 
-1. Implemented full CRUD functionality for claims and user management.
-2. Added unit tests to ensure reliability and maintainability.
-3. Integrated a local database using Entity Framework Core.
-4. Implemented a DatabaseSeeder for the initial data population.
-5. Enhanced user interface with responsive design and improved user experience.
-6. Added role-based access control for different user types.
-7. Implemented file upload functionality for supporting documents.
-8. Added client-side and server-side validation for data integrity.
+1. Automated claim calculation and auto-approval for claims based on perquisite conditions.
+2. Implemented report and invoice generation using QuestPDF.
 
 ## Installation and Setup
 
@@ -143,3 +139,5 @@ For demonstration purposes, the following users are seeded:
 - [Element: insertAdjacentHTML() method](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
 - [Overview of ASP.NET Core MVC](https://learn.microsoft.com/en-us/aspnet/core/mvc/overview?view=aspnetcore-8.0)
 - [Protection of Personal Information Act 4 of 2013](https://www.gov.za/documents/protection-personal-information-act)
+- [QuestPDF](https://www.questpdf.com/quick-start.html)
+- [FluentValidation](https://fluentvalidation.net/)
