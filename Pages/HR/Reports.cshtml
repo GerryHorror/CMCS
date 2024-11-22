@@ -26,14 +26,13 @@
             </p>
         </div>
 
-    <div class="card">
-        <div class="card-body">
-            <form method="post" asp-page-handler="GenerateReport" id="reportForm">
-                @Html.AntiForgeryToken()
-                <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" asp-page-handler="GenerateReport" id="reportForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="text-danger"></div>
 
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="form-row">
                         <div class="form-group">
                             <label asp-for="Filter.StartDate">Start Date</label>
                             <input asp-for="Filter.StartDate"
@@ -45,8 +44,6 @@
                                    required />
                             <span asp-validation-for="Filter.StartDate" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Filter.EndDate">End Date</label>
                             <input asp-for="Filter.EndDate"
@@ -59,14 +56,12 @@
                             <span asp-validation-for="Filter.EndDate" class="text-danger"></span>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group mt-3">
-                    <label>Claim Status</label>
-                    <div class="row status-checkboxes">
-                        @foreach (var status in Model.AvailableStatuses)
-                        {
-                            <div class="col-md-4">
+                    <div class="form-group mt-3">
+                        <label>Claim Status</label>
+                        <div class="status-checkboxes">
+                            @foreach (var status in Model.AvailableStatuses)
+                            {
                                 <div class="form-check">
                                     <input type="checkbox"
                                            name="Filter.SelectedStatuses"
@@ -78,51 +73,50 @@
                                         @status
                                     </label>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
-                </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-file-pdf"></i> Generate Report
-                    </button>
-                </div>
-            </form>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-pdf"></i> Generate Report
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Invoice Generation Section -->
-        <div class="report-section">
-            <div class="section-header">
-                <h3 class="section-title">
-                    <i class="fas fa-file-invoice"></i>
-                    Generate Invoice
-                </h3>
-                <p class="section-description">
-                    Create professional invoices for independent contractors. Select a lecturer and date range to generate a detailed invoice of approved claims.
-                </p>
-            </div>
+    <div class="report-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="fas fa-file-invoice"></i>
+                Generate Invoice
+            </h3>
+            <p class="section-description">
+                Create professional invoices for independent contractors. Select a lecturer and date range to generate a detailed invoice of approved claims.
+            </p>
+        </div>
 
-    <div class="card">
-        <div class="card-body">
-            <form method="post" asp-page-handler="GenerateInvoice" id="invoiceForm">
-                @Html.AntiForgeryToken()
-                <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" asp-page-handler="GenerateInvoice" id="invoiceForm">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="text-danger"></div>
 
-                <div class="form-group mb-3">
-                    <label for="LecturerId">Select Lecturer</label>
-                    <select id="LecturerId" name="LecturerId" class="form-control" required>
-                        <option value="">-- Select Lecturer --</option>
-                        @foreach (var lecturer in Model.Lecturers)
-                        {
-                            <option value="@lecturer.UserID">@lecturer.FirstName @lecturer.LastName</option>
-                        }
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="LecturerId">Select Lecturer</label>
+                        <select id="LecturerId" name="LecturerId" class="form-control" required>
+                            <option value="">-- Select Lecturer --</option>
+                            @foreach (var lecturer in Model.Lecturers)
+                            {
+                                <option value="@lecturer.UserID">@lecturer.FirstName @lecturer.LastName</option>
+                            }
+                        </select>
+                    </div>
 
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="form-row">
                         <div class="form-group">
                             <label asp-for="InvoiceFilter.StartDate">Invoice Start Date</label>
                             <input asp-for="InvoiceFilter.StartDate"
@@ -133,8 +127,6 @@
                                    required />
                             <span asp-validation-for="InvoiceFilter.StartDate" class="text-danger"></span>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="InvoiceFilter.EndDate">Invoice End Date</label>
                             <input asp-for="InvoiceFilter.EndDate"
@@ -146,19 +138,19 @@
                             <span asp-validation-for="InvoiceFilter.EndDate" class="text-danger"></span>
                         </div>
                     </div>
-                </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-file-pdf"></i> Generate Invoice
-                    </button>
-                </div>
-            </form>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-pdf"></i> Generate Invoice
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-</div>
-</div>
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>

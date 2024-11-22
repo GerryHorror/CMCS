@@ -1,205 +1,28 @@
-﻿.reports-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.reports-title {
-    color: var(--color-primary);
-    margin-bottom: 2rem;
-    text-align: center;
-    font-weight: 600;
-}
-
-.reports-container .card {
-    background-color: var(--color-light);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-}
-
-.reports-container .form-group {
-    margin-bottom: 1rem;
-}
-
-.reports-container label {
-    color: var(--color-primary);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-.reports-container .form-control {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--color-secondary);
-    border-radius: 4px;
-    transition: border-color 0.3s ease;
-}
-
-    .reports-container .form-control:focus {
-        border-color: var(--color-primary);
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.1);
-    }
-
-.reports-container .status-checkboxes {
-    margin-top: 0.5rem;
-}
-
-.reports-container .form-check {
-    margin: 0.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.reports-container .form-check-input {
-    cursor: pointer;
-    margin-right: 0.5rem;
-}
-
-.reports-container .form-check-label {
-    cursor: pointer;
-    margin-bottom: 0;
-    font-weight: normal;
-}
-
-.reports-container .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.reports-container .btn-primary {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
-    color: var(--color-light);
-}
-
-    .reports-container .btn-primary:hover {
-        background-color: var(--color-accent);
-        border-color: var(--color-accent);
-        transform: translateY(-1px);
-    }
-
-.reports-container .btn i {
-    font-size: 1.1rem;
-}
-
-.reports-container .text-danger {
-    color: var(--color-error);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.reports-container .validation-summary-errors {
-    color: var(--color-error);
-    background-color: rgba(220, 53, 69, 0.1);
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-}
-
-    .reports-container .validation-summary-errors ul {
-        margin: 0;
-        padding-left: 1.25rem;
-    }
-
-/* Loading state for button */
-.reports-container .btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-    .reports-container {
-        padding: 1rem;
-    }
-
-    .reports-title {
-        font-size: 1.5rem;
-    }
-
-    .reports-container .btn {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .reports-container .form-check {
-        margin: 0.75rem 0;
-    }
-}
-
-/* Date input styling */
-.reports-container input[type="date"] {
-    min-height: 38px;
-}
-
-/* Custom checkbox styling */
-.reports-container .form-check-input {
-    width: 1.1em;
-    height: 1.1em;
-    background-color: var(--color-light);
-    border: 2px solid var(--color-secondary);
-    border-radius: 3px;
-    transition: all 0.2s ease;
-}
-
-    .reports-container .form-check-input:checked {
-        background-color: var(--color-primary);
-        border-color: var(--color-primary);
-    }
-
-    .reports-container .form-check-input:focus {
-        box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.2);
-    }
-
-/* Card body padding */
-.reports-container .card-body {
-    padding: 2rem;
-}
-
-/* Alert styling */
-.reports-container .alert {
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-radius: 4px;
-}
-
-.reports-container .alert-danger {
-    color: var(--color-error);
-    background-color: rgba(220, 53, 69, 0.1);
-    border: 1px solid rgba(220, 53, 69, 0.2);
-}
-
-/* Container and Header Styles */
+﻿/* General Container Styling */
 .reports-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    background-color: #f8f9fa;
+    background-color: var(--color-light);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
 }
 
+/* Header Styling for Reports Page */
 .reports-header {
     text-align: center;
     margin-bottom: 3rem;
     padding: 2rem;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    background-color: var(--color-primary);
     border-radius: 10px;
-    color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: var(--color-light);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .reports-title {
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    color: white;
+    color: var(--color-light);
 }
 
 .reports-subtitle {
@@ -219,29 +42,26 @@
 }
 
 .section-title {
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--color-primary);
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
+    text-align: center;
 }
 
-    .section-title i {
-        font-size: 1.5rem;
-    }
-
 .section-description {
-    color: #666;
+    color: var(--color-text);
     font-size: 1rem;
     max-width: 800px;
     line-height: 1.6;
 }
 
-/* Card Enhancements */
+/* Card Styling */
 .card {
-    background-color: white;
-    border-radius: 10px;
+    background-color: var(--color-light);
+    border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: none;
@@ -257,59 +77,99 @@
     padding: 2.5rem;
 }
 
-/* Form Control Enhancements */
+/* Form Control Styling */
 .form-control, .form-select {
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--color-secondary);
     padding: 0.75rem;
     border-radius: 6px;
     transition: all 0.3s ease;
+    width: 100%;
 }
 
     .form-control:focus, .form-select:focus {
         border-color: var(--color-primary);
         box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+        outline: none;
     }
 
-/* Button Enhancements */
-.btn-primary {
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
-    border: none;
-    border-radius: 6px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+/* Form Group Styling */
+.form-group {
+    margin-bottom: 1rem;
 }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        background: linear-gradient(45deg, var(--color-secondary), var(--color-primary));
-    }
+label {
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
 
-/* Status Checkboxes Enhancement */
+/* Status Checkboxes Styling */
 .status-checkboxes {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: var(--color-background);
     border-radius: 8px;
 }
 
 .form-check {
     padding: 0.5rem;
-    background-color: white;
+    background-color: var(--color-light);
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Responsive Adjustments */
+/* Button Styling */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-primary {
+    color: var(--color-light);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        background-color: var(--color-secondary);
+    }
+
+/* Validation and Error Messages */
+.text-danger {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.validation-summary-errors {
+    color: var(--color-error);
+    background-color: rgba(220, 53, 69, 0.1);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .reports-header {
-        padding: 1.5rem;
+    .reports-container {
+        padding: 1rem;
     }
 
     .reports-title {
@@ -327,9 +187,32 @@
     .status-checkboxes {
         grid-template-columns: 1fr;
     }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
-/* Loading State Animation */
+/* Date Input Styling */
+input[type="date"] {
+    min-height: 38px;
+}
+
+/* Alert Styling */
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    color: var(--color-error);
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+/* Loading State for Button */
 .btn-loading {
     position: relative;
     pointer-events: none;
