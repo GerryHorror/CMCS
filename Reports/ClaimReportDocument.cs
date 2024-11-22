@@ -49,51 +49,48 @@ namespace CMCS.Reports
 
         public void Compose(IDocumentContainer container)
         {
-            container
-                .Page(page =>
-                {
-                    page.Margin(50);
+            container.Page(page =>
+            {
+                page.Margin(50);
+                page.DefaultTextStyle(x => x.FontFamily("Arial").FontSize(8));
 
-                    page.Header().Element(ComposeHeader);
-                    page.Content().Element(ComposeContent);
-                    page.Footer().Element(ComposeFooter);
-                });
+                page.Header().Element(ComposeHeader);
+                page.Content().Element(ComposeContent);
+                page.Footer().Element(ComposeFooter);
+            });
         }
 
         private void ComposeHeader(IContainer container)
         {
-            container.Background(Colors.Grey.Lighten5)
-                .Padding(20)
-                .Row(row =>
+            container.Column(column =>
+            {
+                // Title section
+                column.Item().Row(row =>
                 {
-                    row.RelativeItem().Column(column =>
-                    {
-                        column.Item().Text("Claims Report")
-                            .FontSize(24)
-                            .FontColor("#003366") // Your primary color
-                            .Bold();
+                    row.AutoItem().Text("Claims Report")
+                        .FontFamily("Arial")
+                        .FontSize(20)
+                        .FontColor("#003366")
+                        .Bold();
 
-                        column.Item().Text($"Period: {_startDate:yyyy/MM/dd} - {_endDate:yyyy/MM/dd}")
-                            .FontSize(14)
-                            .FontColor("#87CEEB"); // Your secondary color
-                    });
-
-                    row.RelativeItem().Column(column =>
-                    {
-                        column.Item().Text(DateTime.Now.ToString("dd/MM/yyyy"))
-                            .FontSize(12)
-                            .FontColor("#333333")
-                            .AlignRight();
-                    });
+                    row.RelativeItem().AlignRight().Text(DateTime.Now.ToString("dd/MM/yyyy"))
+                        .FontColor("#333333");
                 });
+
+                // Period section
+                column.Item().PaddingTop(10).Text($"Period: {_startDate:yyyy/MM/dd} - {_endDate:yyyy/MM/dd}")
+                    .FontSize(14)
+                    .FontColor("#87CEEB");
+
+                column.Item().BorderBottom(1).BorderColor("#003366").PaddingTop(5);
+            });
         }
 
         private void ComposeContent(IContainer container)
         {
             container.PaddingVertical(20).Column(column =>
             {
-                column.Spacing(20);
-
+                column.Spacing(30);
                 column.Item().Element(ComposeSummary);
                 column.Item().Element(ComposeTable);
             });
@@ -101,32 +98,36 @@ namespace CMCS.Reports
 
         private void ComposeSummary(IContainer container)
         {
-            container.Background("#F0F0F0") // Your background color
-                .Padding(20)
+            container.Background("#F8F9FA")
+                .Border(1)
+                .BorderColor("#DEE2E6")
+                .Padding(30)
                 .Column(column =>
                 {
+                    column.Spacing(15);
                     column.Item().Text("Summary")
-                        .FontSize(16)
+                        .FontSize(20)
                         .FontColor("#003366")
                         .Bold();
 
-                    column.Spacing(10);
-
-                    column.Item().Text($"Total Claims: {_summary.TotalClaims}")
-                        .FontColor("#333333");
-                    column.Item().Text($"Total Amount: R {_summary.TotalAmount:N2}")
-                        .FontColor("#333333");
-
-                    column.Spacing(5);
+                    column.Item().Column(c =>
+                    {
+                        c.Spacing(8);
+                        c.Item().Text($"Total Claims: {_summary.TotalClaims}")
+                            .FontSize(12);
+                        c.Item().Text($"Total Amount: R {_summary.TotalAmount:N2}")
+                            .FontSize(12);
+                    });
 
                     column.Item().Text("Claims by Status:")
+                        .FontSize(14)
                         .FontColor("#003366")
                         .Bold();
 
                     foreach (var status in _summary.ClaimsByStatus)
                     {
                         column.Item().Text($"{status.Key}: {status.Value} claims (R {_summary.AmountByStatus[status.Key]:N2})")
-                            .FontColor("#333333");
+                            .FontSize(12);
                     }
                 });
         }
@@ -135,25 +136,35 @@ namespace CMCS.Reports
         {
             container.Table(table =>
             {
+                // Define columns
                 table.ColumnsDefinition(columns =>
                 {
-                    columns.RelativeColumn(3);
-                    columns.RelativeColumn(2);
-                    columns.RelativeColumn();
-                    columns.RelativeColumn();
-                    columns.RelativeColumn();
-                    columns.RelativeColumn();
+                    columns.RelativeColumn(2);    // Lecturer
+                    columns.RelativeColumn(2);    // Date
+                    columns.RelativeColumn(1.5f);    // Hours
+                    columns.RelativeColumn(1.5f); // Rate
+                    columns.RelativeColumn(2);    // Amount
+                    columns.RelativeColumn(1.5f); // Status
                 });
 
                 // Header
                 table.Header(header =>
                 {
-                    foreach (var text in new[] { "Lecturer", "Submission Date", "Hours", "Rate", "Amount", "Status" })
+                    foreach (var (text, width) in new[]
                     {
-                        header.Cell().Background("#003366").Padding(10).Column(c =>
+                    ("Lecturer", 2f),
+                    ("Submission Date", 2f),
+                    ("Hours", 1.5f),
+                    ("Rate", 1.5f),
+                    ("Amount", 2f),
+                    ("Status", 1.5f)
+                })
+                    {
+                        header.Cell().Background("#003366").Padding(15).AlignLeft().Column(c =>
                         {
                             c.Item().Text(text)
                                 .FontColor(Colors.White)
+                                .FontSize(10)
                                 .Bold();
                         });
                     }
@@ -162,47 +173,51 @@ namespace CMCS.Reports
                 // Content
                 foreach (var claim in _claims)
                 {
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(10)
-                        .Text(claim.LecturerName).FontColor("#333333");
+                    var cells = new[]
+                    {
+                    claim.LecturerName,
+                    claim.SubmissionDate.ToString("yyyy/MM/dd"),
+                    $"{claim.HoursWorked:N1}",
+                    $"R {claim.HourlyRate:N2}",
+                    $"R {claim.ClaimAmount:N2}",
+                    claim.Status
+                };
 
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(10)
-                        .Text(claim.SubmissionDate.ToString("yyyy/MM/dd")).FontColor("#333333");
-
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(10)
-                        .Text($"{claim.HoursWorked:N1}").FontColor("#333333");
-
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(10)
-                        .Text($"R {claim.HourlyRate:N2}").FontColor("#333333");
-
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(10)
-                        .Text($"R {claim.ClaimAmount:N2}").FontColor("#333333");
-
-                    var statusColor = claim.Status == "Approved" ? "#28a745" : "#dc3545";
-                    table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(10)
-                        .Text(claim.Status).FontColor(statusColor).Bold();
+                    foreach (var (text, index) in cells.Select((t, i) => (t, i)))
+                    {
+                        if (index == cells.Length - 1) // Status column
+                        {
+                            var statusColor = text == "Approved" ? "#28a745" : "#dc3545";
+                            table.Cell().Border(1).BorderColor("#dee2e6").Padding(12)
+                                .Text(text)
+                                .FontColor(statusColor)
+                                .Bold();
+                        }
+                        else
+                        {
+                            table.Cell().Border(1).BorderColor("#dee2e6").Padding(12)
+                                .Text(text);
+                        }
+                    }
                 }
             });
         }
 
         private void ComposeFooter(IContainer container)
         {
-            container.Background(Colors.Grey.Lighten5)
-                .Padding(10)
+            container.BorderTop(1).BorderColor("#dee2e6").PaddingTop(10)
                 .Row(row =>
                 {
-                    row.RelativeItem().Text(x =>
+                    row.RelativeItem().Text(text =>
                     {
-                        x.Span("Page ").FontColor("#333333");
-                        x.CurrentPageNumber().FontColor("#003366");
-                        x.Span(" / ").FontColor("#333333");
-                        x.TotalPages().FontColor("#003366");
+                        text.Span("Page ");
+                        text.CurrentPageNumber();
+                        text.Span(" / ");
+                        text.TotalPages();
                     });
 
-                    row.RelativeItem().AlignRight().Text(x =>
-                    {
-                        x.Span("Generated: ").FontColor("#333333");
-                        x.Span(DateTime.Now.ToString("g")).FontColor("#003366");
-                    });
+                    row.RelativeItem().AlignRight().Text($"Generated: {DateTime.Now:yyyy/MM/dd HH:mm}")
+                        .FontColor("#666666");
                 });
         }
     }
